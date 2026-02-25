@@ -1,0 +1,34 @@
+Meeting Type: Advisor
+Date: 2026-01-30
+Start–End Time: 3:30-4:15PM
+Location/Mode: Google Meet
+
+Attendees:
+- Kaushika Uppu
+- Miranda Billawala
+- Kalyani Chitre
+- Dr. Magdalini Eirinaki
+
+1) Accomplished Since Last Meeting
+- N/A - first advisor meeting of semester
+
+2) Accomplished During This Meeting
+- Presented project idea to advisor as well as possible benchmarks + papers
+- Advisor talked about literature review (first big assignment, need to focus on this for next few weeks)
+- Discussed computational resources --> advisor will provide HPC access for team
+- For baseline for project, advisor said possible path will be to recreate concepts in related work papers
+
+3) Issues / Blockers
+- Large computational resources likely needed for working with LLM and RL
+
+4) Action Items
+- Action: Send student IDs to advisor for HPC access | Owner: Miranda | Due: 2/3
+- Action: Read 2-3 papers for lit review | Owner: Miranda | Due: 2/13
+- Action: Read 2-3 papers for lit review | Owner: Kaushika | Due: 2/13
+- Action: Read 2-3 papers for lit review | Owner: Kalyani | Due: 2/13
+- Action: Work on lit review presentation for advisor meeting | Owner: Miranda | Due: 2/13
+- Action: Work on lit review presentation for advisor meeting | Owner: Kaushika | Due: 2/13
+- Action: Work on lit review presentation for advisor meeting | Owner: Kalyani | Due: 2/13
+
+5) Plans / Goals for Next Meeting
+- Make significant progress on finding papers for lit review and create update presentation for advisor to go over in meeting

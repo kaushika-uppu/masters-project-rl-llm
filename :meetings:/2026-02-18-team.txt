@@ -1,0 +1,35 @@
+Meeting Type: Team-Only
+Date: 2026-02-18
+Start–End Time: 7:30-8:30PM
+Location/Mode: Zoom
+
+Attendees:
+- Kaushika Uppu
+- Miranda Billawala
+- Kalyani Chitre
+
+1) Accomplished Since Last Meeting
+- Team found and read through 4-5 total papers for lit review
+
+2) Accomplished During This Meeting
+- Review of papers found individually, making sure there was no overlap and checking relevance
+- Created an in-depth plan for workbook 1; assigned tasks for each person
+
+3) Issues / Blockers
+- Haven't yet identified SOTA models/architectures for project --> need to examine the papers we have so far and come up with SOTA models
+- For baseline, need to make sure that code is open-source
+
+4) Action Items
+- Action: Workbook 1 Section: lit review | Owner: Kaushika | Due: 2/27
+- Action: Workbook 1 Section: lit review | Owner: Miranda | Due: 2/27
+- Action: Workbook 1 Section: lit review | Owner: Kalyani | Due: 2/27
+- Action: Workbook 1 Section: sota review | Owner: Kaushika | Due: 2/27
+- Action: Workbook 1 Section: project justification | Owner: Kaushika | Due: 2/27 (can be pushed if needed)
+- Action: Workbook 1 Section: baseline approaches | Owner: Kalyani | Due: 2/27 (can be pushed if needed)
+- Action: Workbook 1 Section: project architecture | Owner: Miranda | Due: 2/27 (can be pushed if needed)
+- - Action: Workbook 1 Section: implementation plan | Owner: Miranda | Due: 2/27 (can be pushed if needed)
+- Action: Workbook 1 Section: project schedule | Owner: Miranda | Due: 2/27 (can be pushed if needed)
+
+5) Plans / Goals for Next Meeting
+- Get a significant portion of lit review completed (first draft)
+- Start working on individual sections of workbook 1

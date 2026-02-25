@@ -1,0 +1,29 @@
+Meeting Type: Advisor
+Date: 2026-02-12
+Start–End Time: 3:30-4:15PM
+Location/Mode: Google Meet
+
+Attendees:
+- Kaushika Uppu
+- Miranda Billawala
+- Kalyani Chitre
+- Dr. Magdalini Eirinaki
+
+1) Accomplished Since Last Meeting
+- Team created presentation going over 2 papers that each of us found for lit review
+
+2) Accomplished During This Meeting
+- Went over grade for abstract briefly
+- Presented literature review update, focusing on high-level overview of each paper
+- Discussed overall outline for lit review section of workbook 1 + what is needed for project architecture and baselines
+
+3) Issues / Blockers
+- Advisor said papers found were good and recent work without peer-review is okay, but to also find relevant peer-reviewed ones by working backwards through cited papers
+
+4) Action Items
+- Action: Work on lit review | Owner: Miranda | Due: 2/27
+- Action: Work on lit review | Owner: Kaushika | Due: 2/27
+- Action: Work on lit review| Owner: Kalyani | Due: 2/27
+
+5) Plans / Goals for Next Meeting
+- Have a first draft for literature review and maybe also rest of workbook 1 sections to go over with advisor
