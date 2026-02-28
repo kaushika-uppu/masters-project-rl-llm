@@ -1,0 +1,30 @@
+Meeting Type: Advisor
+Date: 2026-02-27
+Start–End Time: 3:30-4:15PM
+Location/Mode: Google Meet
+
+Attendees:
+- Kaushika Uppu
+- Miranda Billawala
+- Kalyani Chitre
+- Dr. Magdalini Eirinaki
+
+1) Accomplished Since Last Meeting
+- First draft of literature review complete
+- Outlines of remaining sections complete
+
+2) Accomplished During This Meeting
+- Went over workbook 1 with advisor, discussed modfiications, things left to do
+- Asked about presentation format --> need to talk to professor
+
+3) Issues / Blockers
+- No pressing blockers or issues at the moment
+
+4) Action Items
+- Action: Reorganize sections of literature review | Owner: Miranda | Due: 3/5
+- Action: Summarize sections into tables | Owner: Kaushika | Due: 3/5
+- Action: Finish the rest of workbook 1 | Owner: All | Due: 3/5
+
+5) Plans / Goals for Next Meeting
+- By next advisor meeting, want to present potential baselines and architectures
+- By next group meeting, have finished workbook 1 so we can go over before submitting
