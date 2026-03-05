@@ -1,0 +1,33 @@
+Meeting Type: Team-Only
+Date: 2026-03-06
+Start–End Time: 6:30-7:40PM
+Location/Mode: Zoom
+
+Attendees:
+- Kaushika Uppu
+- Miranda Billawala
+- Kalyani Chitre
+
+1) Accomplished Since Last Meeting
+- Polished already written sections of workbook 1, continued working on rest of the sections
+- Went through what we had so far with advisor last week
+
+2) Accomplished During This Meeting
+- Read-through of workbook 1
+- Discussed any changes that need to be made before submission
+- Went over any sections that still need to be finished before tonight
+
+3) Issues / Blockers
+- Still unsure of what workbook 1 presentation is
+
+4) Action Items
+- Action: Workbook 1 Section: reference paragraphs 1-8 | Owner: Miranda | Due: 3/5
+- Action: Workbook 1 Section: reference paragraphs 9-16 | Owner: Kalyani | Due: 3/5
+- Action: Workbook 1 Section: reference paragraphs 17-24 | Owner: Kaushika | Due: 3/5
+- Action: Workbook 1 Section: dependencies + deliverables | Owner: Miranda | Due: 3/5
+- Action: Workbook 1 Section: sota review | Owner: Kaushika | Due: 3/5
+- Action: Workbook 1 Section: baseline approaches | Owner: Kalyani | Due: 3/5
+
+5) Plans / Goals for Next Meeting
+- Finish and submit workbook 1 by tomorrow morning (3/5)
+- Start thinking about baseline approach implementations
