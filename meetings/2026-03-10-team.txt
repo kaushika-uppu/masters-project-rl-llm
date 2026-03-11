@@ -1,0 +1,29 @@
+Meeting Type: Team-Only
+Date: 2026-03-10
+Start–End Time: 7:30-8:00PM
+Location/Mode: Zoom
+
+Attendees:
+- Kaushika Uppu
+- Miranda Billawala
+- Kalyani Chitre
+
+1) Accomplished Since Last Meeting
+- Finished and submitted workbook 1 and presented it in class
+
+2) Accomplished During This Meeting
+- Talked about next steps and assigned tasks individually for this sprint
+- Discussed plan for meeting with advisor
+
+3) Issues / Blockers
+- None for right now
+
+4) Action Items
+- Action: Start evaluation architecture | Owner: Miranda | Due: 3/16
+- Action: Look into CoT prompting implementation for baseline | Owner: Kalyani | Due: 3/25
+- Action: Look into downloading model and model serialization | Owner: Kaushika | Due: 3/25
+
+
+5) Plans / Goals for Next Meeting
+- Assign specific benchmarks to set up
+- Start working on workbook 2
