@@ -1,0 +1,30 @@
+Meeting Type: Advisor
+Date: 2026-03-13
+Start–End Time: 4:15-4:45PM
+Location/Mode: Google Meet
+
+Attendees:
+- Kaushika Uppu
+- Miranda Billawala
+- Kalyani Chitre
+- Dr. Magdalini Eirinaki
+
+1) Accomplished Since Last Meeting
+- Finished workbook 1 and presented in class
+- Assigned individual tasks for next steps
+
+2) Accomplished During This Meeting
+- Discussed baselines and what we should work on before next workbook submission
+- Setup new meeting date b/c of conflicts in schedule
+
+3) Issues / Blockers
+- No pressing blockers or issues at the moment
+
+4) Action Items
+- Action: Work on evaluation pipeline | Owner: Miranda | Due: 3/16
+- Action: Look into downloading model and model serialization | Owner: Kaushika | Due: 3/25
+- Action: Look into CoT prompting implementation for baseline | Owner: Kaylani | Due: 3/25
+
+5) Plans / Goals for Next Meeting
+- By next advisor meeting, have one baseline implemented if possible in order to ask questions + workshop
+- By next submission, have two baselines implemented if possible
