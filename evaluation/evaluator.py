@@ -12,25 +12,25 @@ from evaluation.benchmark_registry import create_benchmark, get_benchmarks
 
 class Evaluator:
     def __init__(
-            self, 
-            model_fn: Callable[[str], str],
-            workers: int = 1, 
+            self,
+            inference_fn: Callable[[str], str],
+            workers: int = 1,
             benchmarks: List[str] = None,
             output_dir: str = "./results",
             verbose: bool = False
         ):
         """
         Docstring for __init__
-        
+
         :param self: Description
-        :param model_fn: Function to get model output given a prompt
-        :type model_fn: Callable[[str], str]
+        :param inference_fn: Function to get model output given a prompt
+        :type inference_fn: Callable[[str], str]
         :param workers: Number of workers to use for evaluation
         :type workers: int
         :param benchmarks: List of benchmark names to evaluate (if None, all available benchmarks are used)
         :type benchmarks: List[str]
         """
-        self.model_fn = model_fn
+        self.inference_fn = inference_fn
         self.workers = workers
         self.benchmarks = benchmarks or get_benchmarks()
         self.verbose = verbose
@@ -55,7 +55,6 @@ class Evaluator:
             "metadata": {
                 "timestamp": datetime.now().isoformat(),
                 "workers": self.workers,
-                "trials": self.trials,
                 "benchmarks": self.benchmarks,
             },
             "results": {}
@@ -122,11 +121,11 @@ class Evaluator:
     
     def _evaluate_item(self, benchmark, item: DataSetItem) -> Dict[str, Any]:
         """Evaluate a single item (can run in parallel)."""
-        input_data = item["input"]
-        gt_output = item["output"]
+        input_data = item.input
+        gt_output = item.output
 
         prompt = benchmark.get_user_prompt(input_data)
-        at_output = self.model_fn(prompt)
+        at_output = self.inference_fn(prompt)
         parsed_at_output = benchmark.parse_output(at_output)
         score = benchmark.score(gt_output, at_output)
         
