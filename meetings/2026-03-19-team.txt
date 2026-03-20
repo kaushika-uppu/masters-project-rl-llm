@@ -1,0 +1,32 @@
+Meeting Type: Team-Only
+Date: 2026-03-19
+Start–End Time: 7:00-7:40PM
+Location/Mode: Zoom
+
+Attendees:
+- Kaushika Uppu
+- Miranda Billawala
+- Kalyani Chitre
+
+1) Accomplished Since Last Meeting
+- Set up structure for evaluation framework
+- Researched model serialization/downloading and CoT baseline
+
+2) Accomplished During This Meeting
+- Discussed progress so far
+- Assigned next steps in project before next advisor meeting
+
+3) Issues / Blockers
+- Need to set up model and benchmark before baseline can be implemented
+
+4) Action Items
+- Action: Set up RiddleBench | Owner: Miranda | Due: 3/22
+- Action: Set up LiveCodeBench | Owner: Miranda | Due: 3/27
+- Action: Figure out CoT prompting for datasets | Owner: Kalyani | Due: 3/22
+- Action: Set up model and inference functions | Owner: Kaushika | Due: 3/22
+- Action: Set up math benchmark (GSM8K) | Owner: Kaushika | Due: 3/27
+- Action: Run CoT on RiddleBench | Owner: Kalyani | Due: 3/27
+
+5) Plans / Goals for Next Meeting
+- Have at least one baseline done by next advisor meeting
+- Make significant progress towards goals and workbook 2
