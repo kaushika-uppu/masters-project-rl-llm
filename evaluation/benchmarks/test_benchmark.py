@@ -1,8 +1,8 @@
 from evaluation.benchmarks.base_benchmark import BaseBenchmark, DataSetItem
 from typing import List
 
-class TestBenchmark(BaseBenchmark):
-    def load_dataset(self) -> List[DataSetItem]:
+class TestBenchmark(BaseBenchmark[str, str]):
+    def load_dataset(self) -> List[DataSetItem[str, str]]:
         return [
             DataSetItem(input="test_correct", output="test_correct"),
             DataSetItem(input="test_incorrect", output="incorrect")

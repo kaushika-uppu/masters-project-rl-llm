@@ -24,7 +24,7 @@ class BaseBenchmark(ABC, Generic[InputType, OutputType]):
     """
 
     @abstractmethod
-    def load_dataset(self) -> List[DataSetItem]:
+    def load_dataset(self) -> List[DataSetItem[InputType, OutputType]]:
         pass
 
     @abstractmethod
