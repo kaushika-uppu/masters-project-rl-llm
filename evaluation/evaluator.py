@@ -127,10 +127,11 @@ class Evaluator:
         prompt = benchmark.get_user_prompt(input_data)
         at_output = self.inference_fn(prompt)
         parsed_at_output = benchmark.parse_output(at_output)
-        score = benchmark.score(gt_output, at_output)
+        score = benchmark.score(gt_output, parsed_at_output)
         
         return {
             "input": input_data,
+            "full_output": at_output,
             "prediction": parsed_at_output,
             "expected": gt_output,
             "score": score
