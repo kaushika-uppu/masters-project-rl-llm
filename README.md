@@ -53,7 +53,7 @@ python scripts/evaluate.py --inference-fn dummy --benchmarks test --verbose
 
 **Options:**
 - `--inference-fn`: Inference function to use (see `src/function_registry.py`)
-- `--benchmarks`: Space-separated list of benchmarks (see `evaluation/benchmark_registry.py`)
+- `--benchmarks`: Space-separated list of benchmarks (see `evaluation/benchmark_registry.py`), if not provided, all available benchmarks are used
 - `--workers`: Number of parallel workers (default: 1)
 - `--output-dir`: Results directory (default: `evaluation/results`)
 - `--verbose`: Show progress bars and detailed output
