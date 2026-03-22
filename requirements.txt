@@ -1,2 +1,2 @@
 tqdm
-datasets
+datasets==2.16.0

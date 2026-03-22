@@ -143,9 +143,15 @@ class Evaluator:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"eval_results_{timestamp}.json"
         filepath = self.output_dir / filename
-        
+
+        # Custom JSON encoder to handle dataclasses and other non-serializable objects
+        def default_serializer(obj):
+            if hasattr(obj, '__dict__'):
+                return obj.__dict__
+            return str(obj)
+
         with open(filepath, 'w', encoding='utf-8') as f:
-            json.dump(results, f, indent=2, ensure_ascii=False)
- 
+            json.dump(results, f, indent=2, ensure_ascii=False, default=default_serializer)
+
         print(f"\nResults saved to: {filepath}")
 
