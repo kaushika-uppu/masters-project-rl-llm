@@ -39,3 +39,4 @@ class RiddleBench(BaseBenchmark[str, str]):
         if item.output is None:
             return 0.0
         return 1.0 if item.output.lower() == at_output.lower() else 0.0
+    

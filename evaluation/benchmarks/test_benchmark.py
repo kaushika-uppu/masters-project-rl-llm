@@ -16,3 +16,4 @@ class TestBenchmark(BaseBenchmark[str, str]):
     
     def score(self, item: DataSetItem[str, str], at_output: str) -> float:
         return 1.0 if item.output == at_output else 0.0
+    
