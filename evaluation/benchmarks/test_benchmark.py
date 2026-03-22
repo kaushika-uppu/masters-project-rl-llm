@@ -14,5 +14,5 @@ class TestBenchmark(BaseBenchmark[str, str]):
     def parse_output(self, output: str) -> str:
         return output
     
-    def score(self, gt_output: str, at_output: str) -> float:
-        return 1.0 if gt_output == at_output else 0.0
+    def score(self, item: DataSetItem[str, str], at_output: str) -> float:
+        return 1.0 if item.output == at_output else 0.0

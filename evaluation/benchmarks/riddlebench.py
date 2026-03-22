@@ -15,7 +15,7 @@ class RiddleBench(BaseBenchmark[str, str]):
         }
         """
         dataset = load_dataset("ai4bharat/RiddleBench", num_proc=1)
-        return [DataSetItem(input=item["question"], output=item["answer"]) for item in dataset["train"]]
+        return [DataSetItem(input=item["question"], output=item["answer"], id=item["id"], metadata={"type": item["type"]}) for item in dataset["train"]]
 
     def get_user_prompt(self, input: str) -> str:
         return f""" {input}
@@ -35,5 +35,7 @@ class RiddleBench(BaseBenchmark[str, str]):
             return answer_match.group(1).strip()
         return ""
         
-    def score(self, gt_output: str, at_output: str) -> float:
-        return 1.0 if gt_output.lower() == at_output.lower() else 0.0
+    def score(self, item: DataSetItem[str, str], at_output: str) -> float:
+        if item.output is None:
+            return 0.0
+        return 1.0 if item.output.lower() == at_output.lower() else 0.0

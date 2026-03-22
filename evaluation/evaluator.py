@@ -122,18 +122,19 @@ class Evaluator:
     def _evaluate_item(self, benchmark, item: DataSetItem) -> Dict[str, Any]:
         """Evaluate a single item (can run in parallel)."""
         input_data = item.input
-        gt_output = item.output
 
         prompt = benchmark.get_user_prompt(input_data)
         at_output = self.inference_fn(prompt)
         parsed_at_output = benchmark.parse_output(at_output)
-        score = benchmark.score(gt_output, parsed_at_output)
+        score = benchmark.score(item, parsed_at_output)
         
         return {
+            "id": item.id,
             "input": input_data,
             "full_output": at_output,
             "prediction": parsed_at_output,
-            "expected": gt_output,
+            "expected": item.output,
+            "metadata": item.metadata,
             "score": score
         }
     
