@@ -2,10 +2,11 @@
 # keeps track of all functions that can be used for inference
 
 from typing import Dict, Callable
-from src.inference import dummy_inference
+from src.inference import dummy_inference, cot_3shot
 
 INFER_FUNCTION_REGISTRY: Dict[str, Callable[[str], str]] = {
     "dummy": dummy_inference,
+    "cot_3shot": cot_3shot,
 }
 
 def get_available_functions() -> list[str]:
