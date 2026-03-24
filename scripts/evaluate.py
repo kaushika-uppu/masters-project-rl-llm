@@ -82,14 +82,17 @@ def main():
     # Run evaluation
     try:
         results = evaluator.evaluate()
-        
+
         # Print summary
         if not args.verbose:
             print_summary(results)
-                
+
     except KeyboardInterrupt:
         sys.exit(1)
     except Exception as e:
+        print(f"\nError: {e}")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 
