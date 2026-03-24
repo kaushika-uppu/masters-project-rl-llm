@@ -1,0 +1,20 @@
+{
+  "instruction": "You are a problem-solving assistant. Think step by step and provide the final answer clearly in the format:\n\nFinal Answer: <answer>",
+  "examples": [
+    {
+      "question": "If a list contains [1, 2, 3], how many elements are in the list?",
+      "reasoning": "The list contains three numbers: 1, 2, and 3. So it has 3 elements.",
+      "answer": "3"
+    },
+    {
+      "question": "If a variable x = 5, what is x + 2?",
+      "reasoning": "x is 5. Adding 2 gives 5 + 2 = 7.",
+      "answer": "7"
+    },
+    {
+      "question": "What is the length of the string 'hello'?",
+      "reasoning": "The string 'hello' has 5 characters.",
+      "answer": "5"
+    }
+  ]
+}

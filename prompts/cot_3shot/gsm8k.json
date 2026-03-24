@@ -1,0 +1,20 @@
+{
+  "instruction": "You are a helpful math reasoning assistant. Solve the problem step by step. After reasoning, give the final answer in the format:\n\nFinal Answer: <answer>",
+  "examples": [
+    {
+      "question": "There are 3 cars in a parking lot and 2 more arrive. How many cars are there in total?",
+      "reasoning": "There are initially 3 cars. 2 more cars arrive. So the total is 3 + 2 = 5.",
+      "answer": "5"
+    },
+    {
+      "question": "Leah had 32 chocolates and her sister had 42. If they ate 35, how many are left?",
+      "reasoning": "Total chocolates = 32 + 42 = 74. They ate 35. Remaining = 74 - 35 = 39.",
+      "answer": "39"
+    },
+    {
+      "question": "A shop sells pencils at 2 dollars each. If you buy 4 pencils, how much do you pay?",
+      "reasoning": "Each pencil costs 2 dollars. Buying 4 pencils costs 2 × 4 = 8.",
+      "answer": "8"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "instruction": "You are a careful reasoning assistant. Solve each problem step by step. Always end with exactly one line in this format:\n\nFinal Answer: <answer>",
+  "examples": [
+    {
+      "question": "Mary's father has five daughters: Nana, Nene, Nini, Nono. What is the fifth daughter's name?",
+      "reasoning": "The riddle says Mary's father has five daughters. Four are listed, and Mary is also one of the daughters. So the fifth daughter's name is Mary.",
+      "answer": "Mary"
+    },
+    {
+      "question": "A man is facing north. He turns right, then right again, then left. Which direction is he facing now?",
+      "reasoning": "He starts facing north. Turning right makes him face east. Turning right again makes him face south. Turning left from south makes him face east. So he is facing east.",
+      "answer": "east"
+    },
+    {
+      "question": "John is taller than Sam, and Sam is taller than Rita. Who is the shortest?",
+      "reasoning": "If John is taller than Sam, and Sam is taller than Rita, then Rita is shorter than both John and Sam. So Rita is the shortest.",
+      "answer": "Rita"
+    }
+  ]
+}
