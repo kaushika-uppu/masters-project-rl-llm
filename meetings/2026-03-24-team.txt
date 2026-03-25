@@ -1,0 +1,35 @@
+Meeting Type: Team-Only
+Date: 2026-03-24
+Start–End Time: 6:30-7:00PM
+Location/Mode: Zoom
+
+Attendees:
+- Kaushika Uppu
+- Miranda Billawala
+- Kalyani Chitre
+
+1) Accomplished Since Last Meeting
+- Set up RiddleBench and LiveCodeBench benchmarks
+- Set up Qwen2.5-7b model + base inference
+- Start with CoT baseline
+
+2) Accomplished During This Meeting
+- Discussed progress so far
+- Talked about what needs to be done before next advisor meeting
+- Assigned next steps for project and workbook 2
+
+3) Issues / Blockers
+- Need to figure out HPC for larger models
+
+4) Action Items
+- Action: Set up MATH benchmark | Owner: Miranda | Due: 3/27
+- Action: Optimize LiveCodeBench | Owner: Miranda | Due: 3/27
+- Action: Figure out CoT prompting for datasets | Owner: Kalyani | Due: 3/27
+- Action: Figure out HPC | Owner: Kaushika/Kalyani | Due: 3/30
+- Action: Set up math benchmark (GSM8K) | Owner: Kaushika | Due: 3/27
+- Action: Run CoT on RiddleBench | Owner: Kalyani | Due: 3/27
+- Action: Work on workbook 2 | Owner: All | Due: 3/31
+
+5) Plans / Goals for Next Meeting
+- Have at least one baseline done by next advisor meeting
+- Figure out how to run larger models for benchmarks (probably not locally)
