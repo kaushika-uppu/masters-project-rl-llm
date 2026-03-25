@@ -12,21 +12,22 @@ from pathlib import Path
 from typing import Optional
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+import yaml
 
-MODEL_NAME = os.getenv("QWEN_MODEL_NAME", "Qwen/Qwen2.5-7B-Instruct")
-MAX_NEW_TOKENS = int(os.getenv("QWEN_MAX_NEW_TOKENS", "256"))
+from src.models.qwen_wrapper import load_model
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 # Prompt file for the current benchmark (riddlebench)
-PROMPT_FILE = Path(__file__).resolve().parents[2] / "prompts" / "cot_3shot" / "riddlebench.json"
+PROMPT_FILE = PROJECT_ROOT / "prompts" / "cot_3shot" / "riddlebench.json"
+CONFIG_FILE = PROJECT_ROOT / "configs" / "qwen2.5_7b.yaml"
 
-# Cache model, tokenizer, and prompt data.
-_tokenizer: Optional[AutoTokenizer] = None
-_model: Optional[AutoModelForCausalLM] = None
-_prompt_data: Optional[dict] = None
+_prompt_data: Optional[dict[str, Any]] = None
+_config_data: Optional[dict[str, Any]] = None
+_model = None
+_tokenizer = None
 
-
-def _load_prompt_data() -> dict:
+def _load_prompt_data() -> dict[str, Any]:
     """Load prompt config once."""
     global _prompt_data
 
@@ -38,32 +39,32 @@ def _load_prompt_data() -> dict:
 
     return _prompt_data
 
+def _load_config() -> dict[str, Any]:
+    """Loads the shared Qwen config once."""
+    global _config_data
 
-def _load_model() -> tuple[AutoTokenizer, AutoModelForCausalLM]:
-    """Load model and tokenizer once."""
-    global _tokenizer, _model
+    if _config_data is not None:
+        return _config_data
 
-    if _tokenizer is not None and _model is not None:
-        return _tokenizer, _model
+    with CONFIG_FILE.open("r", encoding="utf-8") as f:
+        _config_data = yaml.safe_load(f)
 
-    _tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    return _config_data
 
-    if _tokenizer.pad_token_id is None:
-        _tokenizer.pad_token = _tokenizer.eos_token
+def _load_model_and_tokenizer():
+    """Loads model and tokenizer once through the shared wrapper."""
+    global _model, _tokenizer
 
-    model_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+    if _model is not None and _tokenizer is not None:
+        return _model, _tokenizer
 
-    _model = AutoModelForCausalLM.from_pretrained(
-        MODEL_NAME,
-        dtype=model_dtype,
-        device_map="auto",
-    )
+    config = _load_config()
+    _model, _tokenizer = load_qwen_model(config)
     _model.eval()
 
-    return _tokenizer, _model
+    return _model, _tokenizer
 
-
-def _build_examples(examples: list[dict]) -> str:
+def _build_examples(examples: list[dict[str, str]]) -> str:
     """Format few-shot examples."""
     blocks = []
 
@@ -96,8 +97,16 @@ def _build_prompt(user_prompt: str) -> str:
 
 
 def cot_3shot(user_prompt: str) -> str:
-    """Run 3-shot CoT inference."""
-    tokenizer, model = _load_model()
+    """Runs 3-shot CoT inference, basically the main function of this file."""
+    model, tokenizer = _load_model_and_tokenizer()
+    config = _load_config()
+    inference_config = config.get("inference", {})
+
+    max_new_tokens = int(inference_config.get("max_new_tokens", 256))
+    temperature = float(inference_config.get("temperature", 0.0))
+    top_p = float(inference_config.get("top_p", 1.0))
+    do_sample = bool(inference_config.get("do_sample", False))
+
     full_prompt = _build_prompt(user_prompt)
 
     messages = [
@@ -116,15 +125,19 @@ def cot_3shot(user_prompt: str) -> str:
     inputs = tokenizer(text_prompt, return_tensors="pt")
     inputs = {key: value.to(model.device) for key, value in inputs.items()}
 
+    generate_kwargs = {
+        "max_new_tokens": max_new_tokens,
+        "do_sample": do_sample,
+        "pad_token_id": tokenizer.pad_token_id,
+        "eos_token_id": tokenizer.eos_token_id,
+    }
+
+    if do_sample:
+        generate_kwargs["temperature"] = temperature
+        generate_kwargs["top_p"] = top_p
+
     with torch.no_grad():
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=MAX_NEW_TOKENS,
-            do_sample=False,
-            temperature=0.0,
-            pad_token_id=tokenizer.pad_token_id,
-            eos_token_id=tokenizer.eos_token_id,
-        )
+        outputs = model.generate(**inputs, **generate_kwargs)
 
     generated_ids = outputs[0][inputs["input_ids"].shape[1]:]
     decoded = tokenizer.decode(generated_ids, skip_special_tokens=True)
