@@ -1,0 +1,28 @@
+Meeting Type: Advisor
+Date: 2026-03-30
+Start–End Time: 1:15-1:30PM
+Location/Mode: Google Meet
+
+Attendees:
+- Kaushika Uppu
+- Kalyani Chitre
+- Dr. Magdalini Eirinaki
+
+1) Accomplished Since Last Meeting
+- Started work on workbook 2
+- Began implementing project: benchmarks, model, inference, evaluation
+
+2) Accomplished During This Meeting
+- Discussed project progress and evaluation set-up
+- Talked about what should be done before workbook 2 deadline
+
+3) Issues / Blockers
+- Need to figure out HPC for larger model implementation
+
+4) Action Items
+- Action: Work on workbook 2 | Owner: All | Due: 4/8
+- Action: Figure out HPC | Owner: Kaushika/Kalyani | Due: 4/3
+- Action: Implement and evaluate CoT baseline | Owner: Kaylani | Due: 4/4
+
+5) Plans / Goals for Next Meeting
+- By next advisor meeting, have draft of workbook 2 and CoT implementation
