@@ -1,0 +1,11 @@
+model:
+  name: "Qwen/Qwen2.5-32B-Instruct"
+  is_instruct: true
+  torch_dtype: "bfloat16"
+  device_map: "auto"
+  quantization: "4bit"
+
+inference:
+  max_new_tokens: 1024
+  temperature: 0.7
+  do_sample: true
