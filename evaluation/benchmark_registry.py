@@ -2,12 +2,13 @@
 # keeps track of all available benchmarks
 
 from typing import Dict, List, Type
-from evaluation.benchmarks import BaseBenchmark, TestBenchmark, RiddleBench, LiveCodeBench
+from evaluation.benchmarks import BaseBenchmark, TestBenchmark, RiddleBench, LiveCodeBench, GSM8K
 
 BENCHMARK_REGISTRY: Dict[str, Type[BaseBenchmark]]= {
     "test": TestBenchmark,
     "riddlebench": RiddleBench,
     "livecodebench": LiveCodeBench,
+    "gsm8k": GSM8K
 }
 
 def get_benchmarks() -> List[str]:

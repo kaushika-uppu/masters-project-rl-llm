@@ -14,7 +14,7 @@ from typing import Optional
 import torch
 import yaml
 
-from src.models.qwen_wrapper import load_model
+from src.models.qwen_wrapper import load_qwen_model
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
