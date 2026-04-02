@@ -2,6 +2,7 @@ from evaluation.benchmarks.base_benchmark import BaseBenchmark, DataSetItem
 from typing import List
 from datasets import load_dataset
 import re
+from .utils import grade_answer
 
 class MATH500(BaseBenchmark[str, str]):
     def load_dataset(self) -> List(DataSetItem[str, str]):
@@ -47,7 +48,5 @@ class MATH500(BaseBenchmark[str, str]):
         return ""
     
     def score(self, item: DataSetItem[str, str], at_output: str) -> float:
-        if item.output is None:
-            return 0.0
-        return 1.0 if item.output.lower() == at_output.lower() else 0.0
+        return grade_answer(at_output, item["answer"]) ? 1.0 : 0.0
 
