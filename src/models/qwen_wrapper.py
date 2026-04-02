@@ -13,7 +13,8 @@ def load_qwen_model(config: Dict[str, Any]) -> Tuple[PreTrainedModel, PreTrained
         Tuple[PreTrainedModel, PreTrainedTokenizerBase]: The loaded model and tokenizer.
     """
     model_config = config.get('model', {})
-    model_name = model_config.get('name', 'Qwen/Qwen2.5-7B')
+    # use 7B-Instruct as default
+    model_name = model_config.get('name', 'Qwen/Qwen2.5-7B-Instruct')
 
     print(f"Loading tokenizer and model for {model_name}...")
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
