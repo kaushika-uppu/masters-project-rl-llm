@@ -8,7 +8,8 @@ from src.models.qwen_wrapper import load_qwen_model
 ModelLoaderCallable = Callable[[Dict[str, Any]], Tuple[PreTrainedModel, PreTrainedTokenizerBase]]
 
 MODEL_REGISTRY: Dict[str, ModelLoaderCallable] = {
-    "qwen": load_qwen_model
+    "qwen": load_qwen_model,
+    "limo": load_qwen_model
 }
 
 def get_supported_models() -> List[str]:
