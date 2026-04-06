@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 import re
-from collections import Counter
 from pathlib import Path
 from typing import Any, Optional
 
@@ -23,9 +22,7 @@ PROMPT_FILE = Path(__file__).resolve().parents[2] / "prompts" / "cot_3shot" / "g
 QUANTIZATION = "none"
 
 MODEL_NAME = "Qwen/Qwen2.5-32B-Instruct"
-SAMPLE_COUNT = 1
 MAX_NEW_TOKENS = 512
-VERIFY_TOKENS = 160
 
 _model = None
 _tokenizer = None
@@ -208,29 +205,6 @@ def _generate_one(
     decoded = tokenizer.decode(generated_ids, skip_special_tokens=True)
 
     return decoded.strip()
-
-
-def _build_verifier_prompt(user_prompt: str, candidate_outputs: list[str]) -> str:
-    """Builds one verification pass over the sampled candidates."""
-    blocks = []
-    for i, candidate in enumerate(candidate_outputs, start=1):
-        blocks.append(f"Candidate {i}:\n{candidate}")
-
-    joined_candidates = "\n\n".join(blocks)
-
-    return (
-        "You are verifying candidate answers for a reasoning problem.\n"
-        "Check each candidate against every condition in the original problem.\n"
-        "Reject any candidate that fails even one condition.\n\n"
-        "Verification rules:\n"
-        "- For sequence or symbol-pattern tasks, check every position or component, not just one visible pattern.\n"
-        "- Verify the answer against both the left side and the right side of the missing term.\n"
-        "- Do not accept a candidate just because part of the pattern fits.\n"
-        "- If all candidates are wrong, solve the problem yourself carefully.\n"
-        "- Return the final result in exactly the format requested by the original problem.\n\n"
-        f"Original problem:\n{user_prompt.strip()}\n\n"
-        f"{joined_candidates}\n"
-    )
 
 
 def cot_3shot(user_prompt: str) -> str:
