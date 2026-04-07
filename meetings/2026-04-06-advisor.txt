@@ -1,0 +1,31 @@
+Meeting Type: Advisor
+Date: 2026-04-06
+Start–End Time: 4:45-5:15 PM
+Location/Mode: Google Meet
+
+Attendees:
+- Kaushika Uppu
+- Kalyani Chitre
+- Miranda Billawala
+- Dr. Magdalini Eirinaki
+
+1) Accomplished Since Last Meeting
+- Continued working on workbook 2 sections
+- Began implementing CoT and LIMO baselines, got evaluation score for subset of questions (CoT)
+
+2) Accomplished During This Meeting
+- Got feedback for workbook 1 and things to change for workbook 2
+- Discussed implementation progress for baselines
+
+3) Issues / Blockers
+- Need to run full dataset for benchmarks on HPC (have only tried subsets so far)
+
+4) Action Items
+- Action: Work on workbook 2 | Owner: All | Due: 4/8
+- Action: Run eval on CoT | Owner: Kalyani | Due: 4/8
+- Action: Run eval on LIMO | Owner: Kaushika | Due: 4/8
+- Action: Work on new architecture diagram | Owner: Miranda | Due: 4/8
+
+5) Plans / Goals for Next Meeting
+- Finish workbook 2 sections before Thursday
+- Continue working on getting evalulation scores for baselines
