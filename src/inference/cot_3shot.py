@@ -7,28 +7,49 @@ and returns the model's generated answer text.
 from __future__ import annotations
 
 import json
-import os
+import re
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import torch
-import yaml
+from transformers import StoppingCriteria, StoppingCriteriaList
 
 from src.models.qwen_wrapper import load_qwen_model
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROMPT_FILE = Path(__file__).resolve().parents[2] / "prompts" / "cot_3shot" / "general_prompts.json"
 
-# Prompt file for the current benchmark (riddlebench)
-PROMPT_FILE = PROJECT_ROOT / "prompts" / "cot_3shot" / "riddlebench.json"
-CONFIG_FILE = PROJECT_ROOT / "configs" / "qwen2.5_7b.yaml"
+# If bitsandbytes is already working on the machine, change this to "4bit".
+QUANTIZATION = "none"
 
-_prompt_data: Optional[dict[str, Any]] = None
-_config_data: Optional[dict[str, Any]] = None
+MODEL_NAME = "Qwen/Qwen2.5-32B-Instruct"
+MAX_NEW_TOKENS = 512
+
 _model = None
 _tokenizer = None
+_prompt_data: Optional[dict[str, Any]] = None
+
+
+class StopOnSequence(StoppingCriteria):
+    """Stops once the chosen closing tag has been emitted."""
+
+    def __init__(self, stop_ids: list[int]) -> None:
+        self.stop_ids = stop_ids
+
+    def __call__(
+        self,
+        input_ids: torch.LongTensor,
+        scores: torch.FloatTensor,
+        **kwargs: Any,
+    ) -> bool:
+        if not self.stop_ids or input_ids.shape[1] < len(self.stop_ids):
+            return False
+
+        tail = input_ids[0, -len(self.stop_ids):].tolist()
+        return tail == self.stop_ids
+
 
 def _load_prompt_data() -> dict[str, Any]:
-    """Load prompt config once."""
+    """Loads the shared reasoning prompt once."""
     global _prompt_data
 
     if _prompt_data is not None:
@@ -39,102 +60,143 @@ def _load_prompt_data() -> dict[str, Any]:
 
     return _prompt_data
 
-def _load_config() -> dict[str, Any]:
-    """Loads the shared Qwen config once."""
-    global _config_data
-
-    if _config_data is not None:
-        return _config_data
-
-    with CONFIG_FILE.open("r", encoding="utf-8") as f:
-        _config_data = yaml.safe_load(f)
-
-    return _config_data
 
 def _load_model_and_tokenizer():
-    """Loads model and tokenizer once through the shared wrapper."""
+    """Loads the model through the shared wrapper once."""
     global _model, _tokenizer
 
     if _model is not None and _tokenizer is not None:
         return _model, _tokenizer
 
-    config = _load_config()
+    config = {
+        "model": {
+            "name": MODEL_NAME,
+            "torch_dtype": "float16",
+            "device_map": "auto",
+            "quantization": QUANTIZATION,
+        }
+    }
+
     _model, _tokenizer = load_qwen_model(config)
     _model.eval()
 
     return _model, _tokenizer
 
-def _build_examples(examples: list[dict[str, str]]) -> str:
-    """Format few-shot examples."""
-    blocks = []
-
-    for i, ex in enumerate(examples, start=1):
-        block = (
-            f"Example {i}\n"
-            f"Question: {ex['question']}\n"
-            f"Reasoning: {ex['reasoning']}\n"
-            f"Final Answer: {ex['answer']}"
-        )
-        blocks.append(block)
-
-    return "\n\n".join(blocks)
-
 
 def _build_prompt(user_prompt: str) -> str:
-    """Combine instruction, examples, and benchmark prompt."""
+    """Combines the shared reasoning prompt with the benchmark prompt."""
     prompt_data = _load_prompt_data()
+    base_prompt = prompt_data["prompt"].strip()
 
-    instruction = prompt_data["instruction"].strip()
-    examples = _build_examples(prompt_data["examples"])
-
-    return (
-        f"{instruction}\n\n"
-        f"{examples}\n\n"
-        f"Now solve this problem.\n\n"
-        f"{user_prompt}\n\n"
-        f"Reasoning:"
-    )
+    return f"{base_prompt}\n\n{user_prompt.strip()}\n"
 
 
-def cot_3shot(user_prompt: str) -> str:
-    """Runs 3-shot CoT inference, basically the main function of this file."""
+def _detect_tags(user_prompt: str) -> tuple[Optional[str], Optional[str]]:
+    """Finds the output schema requested by the benchmark prompt."""
+    if "</python>" in user_prompt:
+        return "<python>", "</python>"
+
+    if "</answer>" in user_prompt:
+        return "<answer>", "</answer>"
+
+    return None, None
+
+
+def _extract_payload(output: str, user_prompt: str) -> str:
+    """Pulls out the answer block the benchmark actually scores."""
+    open_tag, close_tag = _detect_tags(user_prompt)
+
+    if open_tag and close_tag:
+        match = re.search(
+            rf"{re.escape(open_tag)}\s*(.*?)\s*{re.escape(close_tag)}",
+            output,
+            re.IGNORECASE | re.DOTALL,
+        )
+        if match:
+            return match.group(1).strip()
+        return ""
+
+    return output.strip()
+
+
+def _normalize_vote_key(payload: str, user_prompt: str) -> str:
+    """Normalizes answers for voting."""
+    cleaned = re.sub(r"\s+", " ", payload).strip()
+
+    if "</python>" in user_prompt:
+        return cleaned
+
+    cleaned_no_commas = cleaned.replace(",", "")
+    number_match = re.fullmatch(r"-?\d+(?:\.\d+)?", cleaned_no_commas)
+    if number_match:
+        return cleaned_no_commas
+
+    return cleaned.lower()
+
+
+def _build_stopping_criteria(user_prompt: str, tokenizer) -> Optional[StoppingCriteriaList]:
+    """Stops when the benchmark's closing tag is generated."""
+    _, close_tag = _detect_tags(user_prompt)
+    if not close_tag:
+        return None
+
+    stop_ids = tokenizer.encode(close_tag, add_special_tokens=False)
+    if not stop_ids:
+        return None
+
+    return StoppingCriteriaList([StopOnSequence(stop_ids)])
+
+
+def _generate_one(
+    prompt_text: str,
+    user_prompt: str,
+    *,
+    do_sample: bool,
+    temperature: Optional[float],
+    top_p: Optional[float],
+    max_new_tokens: int,
+) -> str:
+    """Runs one generation pass."""
     model, tokenizer = _load_model_and_tokenizer()
-    config = _load_config()
-    inference_config = config.get("inference", {})
-
-    max_new_tokens = int(inference_config.get("max_new_tokens", 256))
-    temperature = float(inference_config.get("temperature", 0.0))
-    top_p = float(inference_config.get("top_p", 1.0))
-    do_sample = bool(inference_config.get("do_sample", False))
-
-    full_prompt = _build_prompt(user_prompt)
 
     messages = [
         {
+            "role": "system",
+            "content": (
+                "You are a careful reasoning assistant. "
+                "Think step by step, verify the result, "
+                "and follow the output format requested in the user's problem exactly."
+            ),
+        },
+        {
             "role": "user",
-            "content": full_prompt,
-        }
+            "content": prompt_text,
+        },
     ]
 
-    text_prompt = tokenizer.apply_chat_template(
+    text = tokenizer.apply_chat_template(
         messages,
         tokenize=False,
         add_generation_prompt=True,
     )
 
-    inputs = tokenizer(text_prompt, return_tensors="pt")
+    inputs = tokenizer([text], return_tensors="pt")
     inputs = {key: value.to(model.device) for key, value in inputs.items()}
 
-    generate_kwargs = {
+    generate_kwargs: dict[str, Any] = {
         "max_new_tokens": max_new_tokens,
         "do_sample": do_sample,
         "pad_token_id": tokenizer.pad_token_id,
         "eos_token_id": tokenizer.eos_token_id,
     }
 
+    stopping_criteria = _build_stopping_criteria(user_prompt, tokenizer)
+    if stopping_criteria is not None:
+        generate_kwargs["stopping_criteria"] = stopping_criteria
+
     if do_sample:
-        generate_kwargs["temperature"] = temperature
-        generate_kwargs["top_p"] = top_p
+        generate_kwargs["temperature"] = temperature if temperature is not None else 0.6
+        generate_kwargs["top_p"] = top_p if top_p is not None else 0.9
 
     with torch.no_grad():
         outputs = model.generate(**inputs, **generate_kwargs)
@@ -143,3 +205,17 @@ def cot_3shot(user_prompt: str) -> str:
     decoded = tokenizer.decode(generated_ids, skip_special_tokens=True)
 
     return decoded.strip()
+
+
+def cot_3shot(user_prompt: str) -> str:
+    """Runs pure shared CoT prompting with a single generation pass."""
+    full_prompt = _build_prompt(user_prompt)
+
+    return _generate_one(
+        full_prompt,
+        user_prompt,
+        do_sample=False,
+        temperature=None,
+        top_p=None,
+        max_new_tokens=MAX_NEW_TOKENS,
+    )
