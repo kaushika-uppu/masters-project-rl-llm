@@ -42,6 +42,13 @@ def parse_args():
         help="Enable verbose output with progress bars"
     )
 
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Limit the number of benchmark problems to run (great for quick testing!)"
+    )
+
     return parser.parse_args()
 
 def print_summary(results: dict):
@@ -76,7 +83,8 @@ def main():
         workers=workers,
         benchmarks=benchmarks,
         output_dir=output_dir,
-        verbose=args.verbose
+        verbose=args.verbose,
+        limit=args.limit
     )
 
     # Run evaluation

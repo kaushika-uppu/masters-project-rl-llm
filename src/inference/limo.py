@@ -1,7 +1,10 @@
 import torch
 from typing import Dict, Any, List
 import re
-from base_inference import BaseInference
+import yaml
+from src.inference.base_inference import BaseInference
+from src.models.model_registry import get_model_and_tokenizer
+
 
 class LIMO(BaseInference):
     def post_process_output(self, raw_output: str) -> str:
@@ -63,3 +66,19 @@ class LIMO(BaseInference):
                                            skip_special_tokens=True)
         
         return self.post_process_output(raw_output)
+    
+def limo():
+    """
+    Function that sets up the LIMO environment.
+    Loads the config, initializes the model, creates LIMO object, 
+    and returns the .generate method.
+    """
+    print("Loading LIMO configuration...")
+    with open("configs/limo.yaml", "r") as f:
+        config = yaml.safe_load(f)
+        
+    print(f"Loading model {config['model']['name']}...")
+    model, tokenizer = get_model_and_tokenizer(config)
+    
+    limo_instance = LIMO(model, tokenizer, config)
+    return limo_instance.generate

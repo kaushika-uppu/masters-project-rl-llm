@@ -17,7 +17,8 @@ class Evaluator:
             workers: int = 1,
             benchmarks: List[str] = None,
             output_dir: str = "./results",
-            verbose: bool = False
+            verbose: bool = False,
+            limit: int = None
         ):
         """
         Docstring for __init__
@@ -34,6 +35,7 @@ class Evaluator:
         self.workers = workers
         self.benchmarks = benchmarks or get_benchmarks()
         self.verbose = verbose
+        self.limit = limit
 
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -72,6 +74,11 @@ class Evaluator:
                 print(f"Loaded {len(dataset)} samples")
             
             results = self._evaluate_benchmark(benchmark_name, benchmark, dataset)
+            if self.limit is not None:
+                dataset = dataset[:self.limit]
+                print(f"Limiting evaluation to the first {self.limit} samples.")
+
+
             all_results['results'][benchmark_name] = results
 
             if self.verbose:
