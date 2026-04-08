@@ -69,14 +69,14 @@ class Evaluator:
                 print(f"{'='*60}")
             benchmark = create_benchmark(benchmark_name)
             dataset = benchmark.load_dataset()
+            if self.limit is not None:
+                dataset = dataset[:self.limit]
+                print(f"Limiting evaluation to the first {self.limit} samples.")
 
             if self.verbose:
                 print(f"Loaded {len(dataset)} samples")
             
             results = self._evaluate_benchmark(benchmark_name, benchmark, dataset)
-            if self.limit is not None:
-                dataset = dataset[:self.limit]
-                print(f"Limiting evaluation to the first {self.limit} samples.")
 
 
             all_results['results'][benchmark_name] = results

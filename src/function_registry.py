@@ -2,7 +2,8 @@
 # keeps track of all functions that can be used for inference
 
 from typing import Dict, Callable
-from src.inference import dummy_inference, cot_3shot, limo
+from src.inference import dummy_inference, cot_3shot
+from src.inference.limo_inference import limo
 
 INFER_FUNCTION_REGISTRY: Dict[str, Callable[[str], str]] = {
     "dummy": dummy_inference,
@@ -18,5 +19,7 @@ def get_inference_function(name: str) -> Callable[[str], str]:
     if name not in INFER_FUNCTION_REGISTRY:
         available = get_available_functions()
         raise ValueError(f"Unknown inference function '{name}'. Available: {available}")
+    if name == 'limo':
+        return limo()
     
     return INFER_FUNCTION_REGISTRY[name]

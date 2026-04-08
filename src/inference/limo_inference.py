@@ -31,7 +31,7 @@ class LIMO(BaseInference):
                 # return raw output to keep reasoning, append final answer within <answer> tags for evaluation
                 return raw_output + f"\n\n<answer>\n{answer.strip()}\n</answer>"
             
-            return raw_output
+        return raw_output
 
 
     def generate(self, prompt: str) -> str:
