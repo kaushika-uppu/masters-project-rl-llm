@@ -1,0 +1,32 @@
+Meeting Type: Team-Only
+Date: 2026-04-10
+Start–End Time: 5:30-5:50PM
+Location/Mode: In-Person
+
+Attendees:
+- Kaushika Uppu
+- Miranda Billawala
+- Kalyani Chitre
+
+1) Accomplished Since Last Meeting
+- Set up CoT and LIMO baseline inference pipelines
+- Started evaluation for both on RiddleBench
+- Started figuring out and setting up HPC
+- Workbook 2 submission
+
+2) Accomplished During This Meeting
+- Discussed what short-term goals are (HPC, full evaluation of GSM8K for CoT)
+- Planned for rest of semester and what needs to get done
+
+3) Issues / Blockers
+- HPC is set up, but LIMO still has high computational complexity since it's a 32B model -> possibly need to implement it with the 7B one
+
+4) Action Items
+- Action: Set-up HPC | Owner: Miranda | Due: 4/13
+- Action: See if LIMO can be optimized | Owner: Miranda/Kaushika | Due: 4/13
+- Action: Try to run evaluation on GSM8K for LIMO | Owner: Kaushika | Due: 4/13
+- Action: Try to run evaluation on GSM8K for CoT | Owner: Kalyani | Due: 4/13
+
+5) Plans / Goals for Next Meeting
+- Have at least one full evaluation for CoT and LIMO
+- Figure out how to optimize evaluation pipeline
