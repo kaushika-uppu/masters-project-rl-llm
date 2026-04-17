@@ -18,7 +18,8 @@ class Evaluator:
             benchmarks: List[str] = None,
             output_dir: str = "./results",
             verbose: bool = False,
-            limit: int = None
+            limit: int = None,
+            offset: int = 0
         ):
         """
         Docstring for __init__
@@ -36,6 +37,7 @@ class Evaluator:
         self.benchmarks = benchmarks or get_benchmarks()
         self.verbose = verbose
         self.limit = limit
+        self.offset = offset
 
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -70,7 +72,9 @@ class Evaluator:
             benchmark = create_benchmark(benchmark_name)
             dataset = benchmark.load_dataset()
             if self.limit is not None:
-                dataset = dataset[:self.limit]
+                start = self.offset
+                end = min(self.offset + self.limit, len(dataset))
+                dataset = dataset[start:end]
                 print(f"Limiting evaluation to the first {self.limit} samples.")
 
             if self.verbose:
@@ -97,22 +101,46 @@ class Evaluator:
     
     def _evaluate_benchmark(self, benchmark_name: str, benchmark: BaseBenchmark, dataset: List[DataSetItem]) -> Dict[str, Any]:
         """Evaluate a single benchmark with parallel workers."""
-        if self.workers == 1:
+        # with batching
+        if getattr(self.inference_fn, "is_batch", False):
+            print(f"\n[vLLM Engine] Running batch inference on {len(dataset)} items...")
+            
+            # format all prompts and send to vLLM at once
+            prompts = [benchmark.get_user_prompt(item.input) for item in dataset]
+            batch_outputs = self.inference_fn(prompts)
+            
+            # temporarily trick _evaluate_item into pulling from batch_outputs
+            original_fn = self.inference_fn
+            output_iterator = iter(batch_outputs)
+            self.inference_fn = lambda p: next(output_iterator)
+            
+            # run sequentially to calculate scores
             results = [
                 self._evaluate_item(benchmark, item)
-                for item in tqdm(dataset, desc=f"{benchmark_name}")
+                for item in tqdm(dataset, desc=f"{benchmark_name} (Scoring)")
             ]
+            
+            # restore original function
+            self.inference_fn = original_fn
+
+        # without batching (original pipeline)
         else:
-            results = []
-            with ThreadPoolExecutor(max_workers=self.workers) as executor:
-                futures = [
-                    executor.submit(self._evaluate_item, benchmark, item)
-                    for item in dataset
+            if self.workers == 1:
+                results = [
+                    self._evaluate_item(benchmark, item)
+                    for item in tqdm(dataset, desc=f"{benchmark_name}")
                 ]
+            else:
+                results = []
+                with ThreadPoolExecutor(max_workers=self.workers) as executor:
+                    futures = [
+                        executor.submit(self._evaluate_item, benchmark, item)
+                        for item in dataset
+                    ]
                 
-                for future in tqdm(as_completed(futures), total=len(dataset), desc=f"{benchmark_name}"):
-                    result = future.result()
-                    results.append(result)
+                    for future in tqdm(as_completed(futures), total=len(dataset), desc=f"{benchmark_name}"):
+                        result = future.result()
+                        results.append(result)
         
         scores = [r["score"] for r in results]
         avg_score = sum(scores) / len(scores) if scores else 0.0
