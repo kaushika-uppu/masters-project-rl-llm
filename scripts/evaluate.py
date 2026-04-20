@@ -56,6 +56,20 @@ def parse_args():
         help="Start index for the dataset (used for parallel array jobs)"
     )
 
+    parser.add_argument(
+        "--job-id",
+        type=str,
+        default=None,
+        help="SLURM job ID for organizing results into job-specific folders"
+    )
+
+    parser.add_argument(
+        "--array-task-id",
+        type=int,
+        default=None,
+        help="SLURM array task ID for naming result files"
+    )
+
     return parser.parse_args()
 
 def print_summary(results: dict):
@@ -92,7 +106,9 @@ def main():
         output_dir=output_dir,
         verbose=args.verbose,
         limit=args.limit,
-        offset=args.offset
+        offset=args.offset,
+        job_id=args.job_id,
+        array_task_id=args.array_task_id
     )
 
     # Run evaluation

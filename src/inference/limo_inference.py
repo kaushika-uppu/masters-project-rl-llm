@@ -53,9 +53,56 @@ class LIMO(BaseInference):
         final_results = []
         for out in outputs:
             raw_text = out.outputs[0].text
-            final_results.append(self.post_process_output(raw_text))
-        
+            processed_text = self.post_process_output(raw_text)
+
+            # Extract metrics from vLLM RequestOutput
+            metrics = self._extract_metrics(out)
+
+            # Return dict with text and metrics
+            final_results.append({
+                "text": processed_text,
+                "metrics": metrics
+            })
+
         return final_results
+
+    def _extract_metrics(self, request_output) -> Dict[str, Any]:
+        """Extract detailed metrics from vLLM RequestOutput object."""
+        metrics = {}
+
+        # Token counts
+        prompt_tokens = len(request_output.prompt_token_ids)
+        output_tokens = len(request_output.outputs[0].token_ids)
+        metrics["prompt_tokens"] = prompt_tokens
+        metrics["output_tokens"] = output_tokens
+        metrics["total_tokens"] = prompt_tokens + output_tokens
+
+        # Timing metrics (if available in vLLM version)
+        if hasattr(request_output, 'metrics') and request_output.metrics:
+            vllm_metrics = request_output.metrics
+
+            # Time to First Token (TTFT) in milliseconds
+            if hasattr(vllm_metrics, 'first_token_time') and hasattr(vllm_metrics, 'first_scheduled_time'):
+                if vllm_metrics.first_token_time and vllm_metrics.first_scheduled_time:
+                    ttft_s = vllm_metrics.first_token_time - vllm_metrics.first_scheduled_time
+                    metrics["ttft_ms"] = ttft_s * 1000
+
+            # End-to-end latency in milliseconds
+            if hasattr(vllm_metrics, 'finished_time') and hasattr(vllm_metrics, 'first_scheduled_time'):
+                if vllm_metrics.finished_time and vllm_metrics.first_scheduled_time:
+                    e2e_s = vllm_metrics.finished_time - vllm_metrics.first_scheduled_time
+                    metrics["latency_ms"] = e2e_s * 1000
+
+                    # Calculate tokens per second
+                    if e2e_s > 0:
+                        metrics["tokens_per_second"] = output_tokens / e2e_s
+
+            # Time in queue
+            if hasattr(vllm_metrics, 'time_in_queue'):
+                if vllm_metrics.time_in_queue:
+                    metrics["queue_time_ms"] = vllm_metrics.time_in_queue * 1000
+
+        return metrics
 
 def limo():
     """

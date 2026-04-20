@@ -30,4 +30,6 @@ python scripts/evaluate.py \
     --inference-fn limo \
     --benchmarks gsm8k \
     --limit $LIMIT \
-    --offset $OFFSET
+    --offset $OFFSET \
+    --job-id $SLURM_ARRAY_JOB_ID \
+    --array-task-id $SLURM_ARRAY_TASK_ID
