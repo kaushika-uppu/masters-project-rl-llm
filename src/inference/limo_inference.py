@@ -71,7 +71,8 @@ def limo():
         tensor_parallel_size=2,
         dtype="bfloat16",
         gpu_memory_utilization=0.95,
-        max_model_len=8192
+        max_model_len=8192,
+        max_num_seqs=16
     )
 
     limo_instance = LIMO(model=llm, tokenizer=None, config=config)
