@@ -46,7 +46,14 @@ def parse_args():
         "--limit",
         type=int,
         default=None,
-        help="Limit the number of benchmark problems to run (great for quick testing!)"
+        help="Limit the number of benchmark problems to run"
+    )
+
+    parser.add_argument(
+        "--offset",
+        type=int,
+        default=0,
+        help="Start index for the dataset (used for parallel array jobs)"
     )
 
     return parser.parse_args()
@@ -84,7 +91,8 @@ def main():
         benchmarks=benchmarks,
         output_dir=output_dir,
         verbose=args.verbose,
-        limit=args.limit
+        limit=args.limit,
+        offset=args.offset
     )
 
     # Run evaluation
