@@ -8,7 +8,9 @@
 # This script merges all array job results into a single summary
 # Usage: sbatch --dependency=afterok:<JOB_ID> scripts/merge_results.sh <JOB_ID>
 
-source v_env/bin/activate
+# Initialize conda for bash shell
+eval "$(conda shell.bash hook)"
+conda activate v_env
 
 export PYTHONPATH="$PWD:$PYTHONPATH"
 

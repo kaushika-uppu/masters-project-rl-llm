@@ -7,7 +7,9 @@
 #SBATCH --mem=32G
 #SBATCH --time=04:00:00
 
-source v_env/bin/activate
+# Initialize conda for bash shell
+eval "$(conda shell.bash hook)"
+conda activate v_env
 export MASTER_ADDR="127.0.0.1"
 export MASTER_PORT=$(shuf -n 1 -i 30000-65000)
 export VLLM_HOST_IP=$(hostname -I | awk '{print $1}')
@@ -20,7 +22,7 @@ trap "rm -rf $TMPDIR" EXIT
 
 export PYTHONPATH="$PWD:$PYTHONPATH"
 
-LIMIT=50
+LIMIT=5
 OFFSET=$(( SLURM_ARRAY_TASK_ID * LIMIT ))
 
 echo "Job $SLURM_ARRAY_TASK_ID processing from $OFFSET to $((OFFSET + LIMIT))"
