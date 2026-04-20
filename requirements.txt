@@ -1,2 +1,11 @@
 tqdm
 datasets==2.16.0
+sympy
+pylatexenc
+transformers
+torch
+pyyaml
+numpy
+pandas
+accelerate
+bitsandbytes

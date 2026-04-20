@@ -5,7 +5,7 @@ import re
 from .utils import grade_answer
 
 class MATH500(BaseBenchmark[str, str]):
-    def load_dataset(self) -> List(DataSetItem[str, str]):
+    def load_dataset(self) -> List[DataSetItem[str, str]]:
         """
         Item format:
         {
@@ -19,14 +19,14 @@ class MATH500(BaseBenchmark[str, str]):
         """
         dataset = load_dataset("HuggingFaceH4/MATH-500", num_proc=1)
         return [DataSetItem(
-            input=item["problem"], 
-            output=item["answer"], 
+            input=item["problem"],
+            output=item["answer"],
             id=item["unique_id"],
             metadata={
                 "subject": item["subject"],
                 "level": item["level"]
             })
-            for item in dataset["train"]]
+            for item in dataset["test"]]
 
     def get_user_prompt(self, input: str) -> str:
         # prompt comes from https://www.vals.ai/benchmarks/math500 which defines a way to prompt the LLM rather than fine-tune for LaTeX
@@ -44,9 +44,9 @@ class MATH500(BaseBenchmark[str, str]):
     def parse_output(self, output: str) -> str:
         answer_match = re.search(r'\\boxed{\s*(.*?)\s*}', output, re.IGNORECASE | re.DOTALL)
         if answer_match:
-            return answer_match(1), strip()
+            return answer_match.group(1).strip()
         return ""
     
     def score(self, item: DataSetItem[str, str], at_output: str) -> float:
-        return grade_answer(at_output, item["answer"]) ? 1.0 : 0.0
+        return 1.0 if grade_answer(at_output, item.output) else 0.0
 
