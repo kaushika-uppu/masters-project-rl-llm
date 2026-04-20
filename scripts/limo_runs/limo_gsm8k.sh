@@ -1,11 +1,13 @@
 #!/bin/bash
 #SBATCH --job-name=limo_gsm8k
-#SBATCH --output=results/limo_gsm8k_%A_%a.out
-#SBATCH --array=0-9
+#SBATCH --output=logs/limo_gsm8k_%A_%a.out
+#SBATCH --array=0-13
 #SBATCH --partition=gpuqm
 #SBATCH --gres=gpu:2
 #SBATCH --mem=32G
 #SBATCH --time=04:00:00
+#SBATCH --mail-user=kaushika.uppu@sjsu.edu
+#SBATCH --mail-type=END
 
 source v_env/bin/activate
 export MASTER_ADDR="127.0.0.1"
@@ -20,7 +22,7 @@ trap "rm -rf $TMPDIR" EXIT
 
 export PYTHONPATH="$PWD:$PYTHONPATH"
 
-LIMIT=50
+LIMIT=100
 OFFSET=$(( SLURM_ARRAY_TASK_ID * LIMIT ))
 
 echo "Job $SLURM_ARRAY_TASK_ID processing from $OFFSET to $((OFFSET + LIMIT))"
