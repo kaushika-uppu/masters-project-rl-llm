@@ -1,0 +1,32 @@
+Meeting Type: Team-Only
+Date: 2026-04-20
+Start–End Time: 6:00-6:30PM
+Location/Mode: In-Person
+
+Attendees:
+- Kaushika Uppu
+- Miranda Billawala
+- Kalyani Chitre
+
+1) Accomplished Since Last Meeting
+- Ran initial benchmark for LIMO; found problems that we need to fix
+
+2) Accomplished During This Meeting
+- Discuss how to solve eval problem
+- Talk about what we need to get down before the end of the semester
+- Plan for what to present for advisor
+
+3) Issues / Blockers
+- For LIMO, sometimes puts answers in boxed{}, but not always
+- Setting up HPC
+
+4) Action Items
+- Action: Work on architecture diagram | Owner: Miranda | Due: 4/22
+- Action: Get full eval scores for LIMO | Owner: Kaushika | Due: 4/22
+- Action: Fix evalulator to use boxed{} instead of answer tags | Owner: Kaushika | Due: 4/21
+- Action: Get full eval scores for CoT | Owner: Kalyani | Due: 4/22
+- Action: Start HyperTree implementation | Owner: Kalyani | Due: 4/24
+
+5) Plans / Goals for Next Meeting
+- Get baselines evaluated
+- Have everyone be set up with HPC
