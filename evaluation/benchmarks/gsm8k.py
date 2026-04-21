@@ -31,13 +31,13 @@ class GSM8K(BaseBenchmark[str, str]):
         <reasoning>
         [Write your step-by-step reasoning and mathematical calculations here]
         </reasoning>
-        <answer>
-        [Write only your final numeric answer here.]
-        </answer>
+        Place your final numeric answer strictly within \\boxed{{}}.
+        For example: \\boxed{{42}}
         """
     
     def parse_output(self, output: str) -> str:
-        answer_match = re.search(r'<answer>\s*(.*?)\s*</answer>', output, re.IGNORECASE | re.DOTALL)
+        answer_match = re.search(r'\\boxed\{([^}]+)\}', output)
+
         if answer_match:
             return answer_match.group(1).strip()
         return ""

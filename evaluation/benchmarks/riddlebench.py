@@ -24,13 +24,13 @@ class RiddleBench(BaseBenchmark[str, str]):
         <reasoning>
         [Your step-by-step reasoning here]
         </reasoning>
-        <answer>
-        [Your final answer here as specified in the question]
-        </answer>
+        Place your final numeric answer strictly within \\boxed{{}}.
+        For example: \\boxed{{42}}
         """
 
     def parse_output(self, output: str) -> str:
-        answer_match = re.search(r'<answer>\s*(.*?)\s*</answer>', output, re.IGNORECASE | re.DOTALL)
+        answer_match = re.search(r'\\boxed\{([^}]+)\}', output)
+        
         if answer_match:
             return answer_match.group(1).strip()
         return ""
