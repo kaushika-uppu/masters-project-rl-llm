@@ -1,0 +1,31 @@
+Meeting Type: Advisor
+Date: 2026-04-22
+Start–End Time: 12:15-12:45 PM
+Location/Mode: Google Meet
+
+Attendees:
+- Kaushika Uppu
+- Kalyani Chitre
+- Miranda Billawala
+- Dr. Magdalini Eirinaki
+
+1) Accomplished Since Last Meeting
+- Ran full evaluations for GSM8K and RiddleBench with LIMO and CoT
+- Prepared first draft of architecture diagram with more detail on RL
+
+2) Accomplished During This Meeting
+- Discussed evaluation results obtained so far and architecture diagram draft
+- Talked about remaining deliverables and what "prototype" will be
+
+3) Issues / Blockers
+- Need to streamline evaluation pipeline so it's more solid and get subset of benchmarks for easier iteration
+
+4) Action Items
+- Action: Work on report | Owner: All | Due: 5/8
+- Action: Run eval on Hypertree | Owner: Kalyani | Due: 4/25
+- Action: Work on subsetting benchmarks | Owner: Kaushika | Due: 4/25
+- Action: Work on streamlining evaluation | Owner: Miranda | Due: 4/25
+
+5) Plans / Goals for Next Meeting
+- Complete baseline evaluations for RiddleBench and GSM8K
+- Have prototype to show advisor
