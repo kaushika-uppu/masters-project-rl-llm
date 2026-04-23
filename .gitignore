@@ -21,6 +21,7 @@ build/
 data/
 checkpoints/
 evaluation/results/
+sh_scripts/
 *.log
 
 # OS

@@ -151,7 +151,7 @@ class Evaluator:
                 "total_correct": sum(1 for s in scores if s == 1.0),
                 "accuracy": sum(1 for s in scores if s == 1.0) / len(scores) if scores else 0.0
             },
-            "results": results[:100] 
+            "results": results
         }
     
     def _evaluate_item(self, benchmark, item: DataSetItem) -> Dict[str, Any]:
@@ -175,8 +175,16 @@ class Evaluator:
     
     def _save_results(self, results: Dict[str, Any]) -> None:
         """Save results to JSON file."""
+        import os
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"eval_results_{timestamp}.json"
+
+        # Get SLURM array task ID if running in SLURM array job
+        array_id = os.environ.get('SLURM_ARRAY_TASK_ID', '')
+        if array_id:
+            filename = f"eval_results_{timestamp}_array{array_id}.json"
+        else:
+            filename = f"eval_results_{timestamp}.json"
+
         filepath = self.output_dir / filename
 
         # Custom JSON encoder to handle dataclasses and other non-serializable objects
