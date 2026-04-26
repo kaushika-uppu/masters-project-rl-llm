@@ -3,6 +3,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict, Any, Callable, Optional
 from tqdm import tqdm
 import json
+import time
+import statistics
 from datetime import datetime
 from pathlib import Path
 
@@ -87,8 +89,21 @@ class Evaluator:
 
             if self.verbose:
                 print(f"\n{benchmark_name} Results:")
-                for metric, value in results.get("metrics", {}).items():
-                    print(f"  {metric}: {value:.4f}")
+                metrics = results.get("metrics", {})
+
+                print("  Accuracy Metrics:")
+                for metric in ["average_score", "total_correct", "accuracy"]:
+                    if metric in metrics:
+                        value = metrics[metric]
+                        if isinstance(value, float):
+                            print(f"    {metric}: {value:.4f}")
+                        else:
+                            print(f"    {metric}: {value}")
+
+                print("  Latency Metrics:")
+                for metric, value in metrics.items():
+                    if metric.startswith("latency") or metric == "throughput_items_per_sec":
+                        print(f"    {metric}: {value:.4f}")
             
         # Save results to file
         self._save_results(all_results)
@@ -104,22 +119,30 @@ class Evaluator:
         # with batching
         if getattr(self.inference_fn, "is_batch", False):
             print(f"\n[vLLM Engine] Running batch inference on {len(dataset)} items...")
-            
+
             # format all prompts and send to vLLM at once
             prompts = [benchmark.get_user_prompt(item.input) for item in dataset]
+
+            batch_start_time = time.perf_counter()
             batch_outputs = self.inference_fn(prompts)
-            
+            batch_end_time = time.perf_counter()
+            batch_latency = batch_end_time - batch_start_time
+
+            # calculate per-item latency (approximate for batch)
+            per_item_latency = batch_latency / len(dataset) if dataset else 0.0
+
             # temporarily trick _evaluate_item into pulling from batch_outputs
             original_fn = self.inference_fn
             output_iterator = iter(batch_outputs)
             self.inference_fn = lambda p: next(output_iterator)
-            
+
             # run sequentially to calculate scores
-            results = [
-                self._evaluate_item(benchmark, item)
-                for item in tqdm(dataset, desc=f"{benchmark_name} (Scoring)")
-            ]
-            
+            results = []
+            for item in tqdm(dataset, desc=f"{benchmark_name} (Scoring)"):
+                result = self._evaluate_item(benchmark, item)
+                result["latency_seconds"] = per_item_latency
+                results.append(result)
+
             # restore original function
             self.inference_fn = original_fn
 
@@ -144,12 +167,18 @@ class Evaluator:
         
         scores = [r["score"] for r in results]
         avg_score = sum(scores) / len(scores) if scores else 0.0
+
+        # Calculate latency metrics
+        latencies = [r.get("latency_seconds", 0.0) for r in results]
+        latency_metrics = self._calculate_latency_metrics(latencies)
+
         return {
             "num_samples": len(dataset),
             "metrics": {
                 "average_score": avg_score,
                 "total_correct": sum(1 for s in scores if s == 1.0),
-                "accuracy": sum(1 for s in scores if s == 1.0) / len(scores) if scores else 0.0
+                "accuracy": sum(1 for s in scores if s == 1.0) / len(scores) if scores else 0.0,
+                **latency_metrics
             },
             "results": results
         }
@@ -159,10 +188,15 @@ class Evaluator:
         input_data = item.input
 
         prompt = benchmark.get_user_prompt(input_data)
+
+        start_time = time.perf_counter()
         at_output = self.inference_fn(prompt)
+        end_time = time.perf_counter()
+        latency = end_time - start_time
+
         parsed_at_output = benchmark.parse_output(at_output)
         score = benchmark.score(item, parsed_at_output)
-        
+
         return {
             "id": item.id,
             "input": input_data,
@@ -170,9 +204,27 @@ class Evaluator:
             "prediction": parsed_at_output,
             "expected": item.output,
             "metadata": item.metadata,
-            "score": score
+            "score": score,
+            "latency_seconds": latency
         }
-    
+
+    def _calculate_latency_metrics(self, latencies: List[float]) -> Dict[str, float]:
+        """Calculate aggregate latency statistics."""
+        if not latencies:
+            return {
+                "latency_mean": 0.0,
+                "latency_std": 0.0,
+                "total_latency": 0.0,
+            }
+
+        total_latency = sum(latencies)
+
+        return {
+            "latency_mean": statistics.mean(latencies),
+            "latency_std": statistics.stdev(latencies) if len(latencies) > 1 else 0.0,
+            "total_latency": total_latency,
+        }
+
     def _save_results(self, results: Dict[str, Any]) -> None:
         """Save results to JSON file."""
         import os
