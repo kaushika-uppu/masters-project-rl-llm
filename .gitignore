@@ -22,8 +22,8 @@ data/
 checkpoints/
 evaluation/results/
 *.log
+logs/
 
 # OS
 .DS_Store
 Thumbs.db
-
