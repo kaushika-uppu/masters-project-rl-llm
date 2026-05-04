@@ -23,8 +23,8 @@ checkpoints/
 evaluation/results/
 sh_scripts/
 *.log
+logs/
 
 # OS
 .DS_Store
 Thumbs.db
-

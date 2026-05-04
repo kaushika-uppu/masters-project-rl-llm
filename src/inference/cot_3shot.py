@@ -1,13 +1,15 @@
 """
-Runs 3-shot Chain-of-Thought prompting with Qwen2.5-7B-Instruct.
-Loads fixed examples from a JSON file, builds the final prompt, runs inference,
-and returns the model's generated answer text.
+Runs strict 3-shot Chain-of-Thought prompting with Qwen2.5-32B-Instruct.
+Loads the shared prompt once, keeps benchmark questions intact, runs one
+greedy batched generation pass, and trims echoed text so outputs stay in
+the required <reasoning>/<answer> format without changing inference speed.
 """
 
 from __future__ import annotations
 
 import json
 import re
+import time
 from pathlib import Path
 from typing import Any, Optional
 
@@ -18,38 +20,39 @@ from src.models.qwen_wrapper import load_qwen_model
 
 PROMPT_FILE = Path(__file__).resolve().parents[2] / "prompts" / "cot_3shot" / "general_prompts.json"
 
-# If bitsandbytes is already working on the machine, change this to "4bit".
-QUANTIZATION = "none"
-
+QUANTIZATION = "4bit"
 MODEL_NAME = "Qwen/Qwen2.5-32B-Instruct"
-MAX_NEW_TOKENS = 512
+MAX_NEW_TOKENS = 1024
+BATCH_SIZE = 8
 
 _model = None
 _tokenizer = None
 _prompt_data: Optional[dict[str, Any]] = None
 
 
-class StopOnSequence(StoppingCriteria):
-    """Stops once the chosen closing tag has been emitted."""
-
-    def __init__(self, stop_ids: list[int]) -> None:
-        self.stop_ids = stop_ids
+class StopOnAnswerTag(StoppingCriteria):
+    def __init__(self, stop_token_ids: list[int]):
+        self.stop_token_ids = stop_token_ids
 
     def __call__(
         self,
         input_ids: torch.LongTensor,
         scores: torch.FloatTensor,
-        **kwargs: Any,
+        **kwargs,
     ) -> bool:
-        if not self.stop_ids or input_ids.shape[1] < len(self.stop_ids):
+        stop_len = len(self.stop_token_ids)
+
+        if input_ids.shape[1] < stop_len:
             return False
 
-        tail = input_ids[0, -len(self.stop_ids):].tolist()
-        return tail == self.stop_ids
+        for row in input_ids:
+            if row[-stop_len:].tolist() != self.stop_token_ids:
+                return False
+
+        return True
 
 
 def _load_prompt_data() -> dict[str, Any]:
-    """Loads the shared reasoning prompt once."""
     global _prompt_data
 
     if _prompt_data is not None:
@@ -62,7 +65,6 @@ def _load_prompt_data() -> dict[str, Any]:
 
 
 def _load_model_and_tokenizer():
-    """Loads the model through the shared wrapper once."""
     global _model, _tokenizer
 
     if _model is not None and _tokenizer is not None:
@@ -72,100 +74,79 @@ def _load_model_and_tokenizer():
         "model": {
             "name": MODEL_NAME,
             "torch_dtype": "float16",
-            "device_map": "auto",
+            "device_map": "balanced",
             "quantization": QUANTIZATION,
         }
     }
 
     _model, _tokenizer = load_qwen_model(config)
+
+    _tokenizer.padding_side = "left"
     _model.eval()
+    _model.generation_config.do_sample = False
+    _model.generation_config.temperature = None
+    _model.generation_config.top_p = None
+    _model.generation_config.top_k = None
 
     return _model, _tokenizer
 
 
+def _strip_placeholder_text(user_prompt: str) -> str:
+    text = user_prompt.strip()
+
+    text = re.sub(
+        r"(<reasoning>\s*)\[[^\]]*?\](\s*</reasoning>)",
+        r"\1\2",
+        text,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    text = re.sub(
+        r"(<answer>\s*)\[[^\]]*?\](\s*</answer>)",
+        r"\1\2",
+        text,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+
+    text = re.sub(
+        r"Please provide your response.*?<answer>\s*\[.*?\]\s*</answer>\s*",
+        "",
+        text,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+
+    return text.strip()
+
+
 def _build_prompt(user_prompt: str) -> str:
-    """Combines the shared reasoning prompt with the benchmark prompt."""
     prompt_data = _load_prompt_data()
     base_prompt = prompt_data["prompt"].strip()
-
-    return f"{base_prompt}\n\n{user_prompt.strip()}\n"
-
-
-def _detect_tags(user_prompt: str) -> tuple[Optional[str], Optional[str]]:
-    """Finds the output schema requested by the benchmark prompt."""
-    if "</python>" in user_prompt:
-        return "<python>", "</python>"
-
-    if "</answer>" in user_prompt:
-        return "<answer>", "</answer>"
-
-    return None, None
+    cleaned_user_prompt = _strip_placeholder_text(user_prompt)
+    return f"{base_prompt}\n\n{cleaned_user_prompt}\n"
 
 
-def _extract_payload(output: str, user_prompt: str) -> str:
-    """Pulls out the answer block the benchmark actually scores."""
-    open_tag, close_tag = _detect_tags(user_prompt)
+def _minimal_format_cleanup(output: str) -> str:
+    text = output.strip()
+    text = re.sub(r"^\s*assistant\s*", "", text, flags=re.IGNORECASE).strip()
 
-    if open_tag and close_tag:
-        match = re.search(
-            rf"{re.escape(open_tag)}\s*(.*?)\s*{re.escape(close_tag)}",
-            output,
-            re.IGNORECASE | re.DOTALL,
-        )
-        if match:
-            return match.group(1).strip()
-        return ""
+    first_reasoning = text.find("<reasoning>")
+    first_answer = text.find("<answer>")
+    tag_positions = [pos for pos in (first_reasoning, first_answer) if pos != -1]
 
-    return output.strip()
+    if tag_positions:
+        text = text[min(tag_positions):].strip()
+
+    return text
 
 
-def _normalize_vote_key(payload: str, user_prompt: str) -> str:
-    """Normalizes answers for voting."""
-    cleaned = re.sub(r"\s+", " ", payload).strip()
-
-    if "</python>" in user_prompt:
-        return cleaned
-
-    cleaned_no_commas = cleaned.replace(",", "")
-    number_match = re.fullmatch(r"-?\d+(?:\.\d+)?", cleaned_no_commas)
-    if number_match:
-        return cleaned_no_commas
-
-    return cleaned.lower()
-
-
-def _build_stopping_criteria(user_prompt: str, tokenizer) -> Optional[StoppingCriteriaList]:
-    """Stops when the benchmark's closing tag is generated."""
-    _, close_tag = _detect_tags(user_prompt)
-    if not close_tag:
-        return None
-
-    stop_ids = tokenizer.encode(close_tag, add_special_tokens=False)
-    if not stop_ids:
-        return None
-
-    return StoppingCriteriaList([StopOnSequence(stop_ids)])
-
-
-def _generate_one(
-    prompt_text: str,
-    user_prompt: str,
-    *,
-    do_sample: bool,
-    temperature: Optional[float],
-    top_p: Optional[float],
-    max_new_tokens: int,
-) -> str:
-    """Runs one generation pass."""
-    model, tokenizer = _load_model_and_tokenizer()
-
-    messages = [
+def _build_messages(prompt_text: str) -> list[dict[str, str]]:
+    return [
         {
             "role": "system",
             "content": (
-                "You are a careful reasoning assistant. "
-                "Think step by step, verify the result, "
-                "and follow the output format requested in the user's problem exactly."
+                "Return your response in exactly this format:\n"
+                "<reasoning>\n...\n</reasoning>\n"
+                "<answer>\n...\n</answer>\n"
+                "Do not add any extra text outside these tags."
             ),
         },
         {
@@ -174,48 +155,99 @@ def _generate_one(
         },
     ]
 
-    text = tokenizer.apply_chat_template(
-        messages,
-        tokenize=False,
-        add_generation_prompt=True,
-    )
 
-    inputs = tokenizer([text], return_tensors="pt")
+def _generate_batch(
+    prompt_texts: list[str],
+    *,
+    max_new_tokens: int,
+) -> list[str]:
+    model, tokenizer = _load_model_and_tokenizer()
+
+    stop_token_ids = tokenizer.encode("</answer>", add_special_tokens=False)
+    stopping_criteria = StoppingCriteriaList([StopOnAnswerTag(stop_token_ids)])
+
+    messages_list = [_build_messages(prompt_text) for prompt_text in prompt_texts]
+
+    texts = [
+        tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+        for messages in messages_list
+    ]
+
+    inputs = tokenizer(
+        texts,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+    )
     inputs = {key: value.to(model.device) for key, value in inputs.items()}
+
+    prompt_length = inputs["input_ids"].shape[1]
 
     generate_kwargs: dict[str, Any] = {
         "max_new_tokens": max_new_tokens,
-        "do_sample": do_sample,
+        "do_sample": False,
         "pad_token_id": tokenizer.pad_token_id,
         "eos_token_id": tokenizer.eos_token_id,
+        "use_cache": True,
+        "stopping_criteria": stopping_criteria,
     }
-
-    stopping_criteria = _build_stopping_criteria(user_prompt, tokenizer)
-    if stopping_criteria is not None:
-        generate_kwargs["stopping_criteria"] = stopping_criteria
-
-    if do_sample:
-        generate_kwargs["temperature"] = temperature if temperature is not None else 0.6
-        generate_kwargs["top_p"] = top_p if top_p is not None else 0.9
 
     with torch.no_grad():
         outputs = model.generate(**inputs, **generate_kwargs)
 
-    generated_ids = outputs[0][inputs["input_ids"].shape[1]:]
-    decoded = tokenizer.decode(generated_ids, skip_special_tokens=True)
+    decoded_outputs: list[str] = []
+    for i in range(outputs.shape[0]):
+        generated_ids = outputs[i, prompt_length:]
+        decoded_text = tokenizer.decode(generated_ids, skip_special_tokens=True)
+        decoded_outputs.append(_minimal_format_cleanup(decoded_text))
 
-    return decoded.strip()
+    return decoded_outputs
 
 
-def cot_3shot(user_prompt: str) -> str:
-    """Runs pure shared CoT prompting with a single generation pass."""
+def cot_3shot(user_prompt: str | list[str]) -> str | list[str]:
+    if isinstance(user_prompt, list):
+        all_outputs: list[str] = []
+        total_start = time.time()
+
+        for start in range(0, len(user_prompt), BATCH_SIZE):
+            end = min(start + BATCH_SIZE, len(user_prompt))
+            batch_num = start // BATCH_SIZE + 1
+            batch_start = time.time()
+
+            print(
+                f"Processing batch {batch_num}: prompts {start + 1}-{end} of {len(user_prompt)}",
+                flush=True,
+            )
+
+            prompt_chunk = user_prompt[start:end]
+            full_prompts = [_build_prompt(prompt) for prompt in prompt_chunk]
+
+            chunk_outputs = _generate_batch(
+                full_prompts,
+                max_new_tokens=MAX_NEW_TOKENS,
+            )
+            all_outputs.extend(chunk_outputs)
+
+            batch_elapsed = time.time() - batch_start
+            total_elapsed = time.time() - total_start
+            print(
+                f"Finished batch {batch_num} in {batch_elapsed:.1f}s | total elapsed: {total_elapsed/60:.1f} min",
+                flush=True,
+            )
+
+        total_elapsed = time.time() - total_start
+        print(f"Total inference time: {total_elapsed/60:.2f} minutes", flush=True)
+        return all_outputs
+
     full_prompt = _build_prompt(user_prompt)
-
-    return _generate_one(
-        full_prompt,
-        user_prompt,
-        do_sample=False,
-        temperature=None,
-        top_p=None,
+    return _generate_batch(
+        [full_prompt],
         max_new_tokens=MAX_NEW_TOKENS,
-    )
+    )[0]
+
+
+cot_3shot.is_batch = True
