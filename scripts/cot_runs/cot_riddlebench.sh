@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=cot_riddlebench
 #SBATCH --output=logs/cot_riddlebench/cot_riddlebench_%A_%a.out
-#SBATCH --array=34-34%2
+#SBATCH --array=0-34%2
 #SBATCH --partition=gpuqs
 #SBATCH --nodes=1
 #SBATCH --nodelist=cs001,cs002,cs003,cs004
