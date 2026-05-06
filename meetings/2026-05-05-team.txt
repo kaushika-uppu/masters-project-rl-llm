@@ -1,0 +1,33 @@
+Meeting Type: Team-Only
+Date: 2026-05-05
+Start–End Time: 7:00-7:30PM
+Location/Mode: Zoom
+
+Attendees:
+- Kaushika Uppu
+- Miranda Billawala
+- Kalyani Chitre
+
+1) Accomplished Since Last Meeting
+- Worked on project report
+- Updated Gantt chart
+
+2) Accomplished During This Meeting
+- Figured out what is left to do before presenting work to advisor
+- Split up work for the rest of the semester
+- Defined baselines
+
+3) Issues / Blockers
+- Realized one of our original baselines was not feasible for the project
+
+4) Action Items
+- Action: Look into rStar-Math | Owner: Miranda | Due: 5/8
+- Action: RiddleBench subset/script | Owner: Miranda | Due: 5/8
+- Action: Run baseline eval on DeepSeek R1 | Owner: Kalyani | Due: 5/8
+- Action: Run baseline eval on DeepSeek R0 | Owner: Kaushika | Due: 5/8
+- Action: Compile RiddleBench eval results | Owner: Kaushika/Kalyani | Due: 5/8
+- Action: Work on project report | Owner: All | Due: 5/8
+
+5) Plans / Goals for Next Meeting
+- Have all baselines fully evaluated
+- Finish project report
