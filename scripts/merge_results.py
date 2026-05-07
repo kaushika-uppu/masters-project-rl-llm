@@ -3,6 +3,8 @@ import json
 import glob
 import os
 import csv
+import re
+import datetime
 
 # function to combine all the json files from different jobs (created when benchmark evaluation run on HPC)
 def merge_benchmark_results(input_pattern, output_filename, benchmark_name, model_name):
@@ -13,6 +15,24 @@ def merge_benchmark_results(input_pattern, output_filename, benchmark_name, mode
         return
     
     print(f"Found {len(file_list)} JSON files matching '{input_pattern}'.")
+
+    # adding timestamp to output files
+    run_timestamp = None
+    match = re.search(r'(\d{8}_\d{6})', file_list[0])
+
+    if match:
+        run_timestamp = match.group(1)
+        print(f"Detected run timestamp: {run_timestamp}")
+    else:
+        run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        print(f"No timestamp found in filename. Using current time: {run_timestamp}")
+
+    base_name, ext = os.path.splitext(output_filename)
+    if not ext:
+        ext = ".json"
+        
+    final_json_filename = f"{base_name}_{run_timestamp}{ext}"
+    final_csv_filename = f"{base_name}_{run_timestamp}_analytics.csv"
 
     global_total_samples = 0
     global_total_correct = 0
@@ -60,14 +80,10 @@ def merge_benchmark_results(input_pattern, output_filename, benchmark_name, mode
         }
     }
     
-    with open(output_filename, 'w', encoding='utf-8') as f:
+    with open(final_json_filename, 'w', encoding='utf-8') as f:
         json.dump(final_output, f, indent=2)
 
-    # adding analytics csv
-    base_name = os.path.splitext(output_filename)[0]
-    csv_filename = f"{base_name}_analytics.csv"
-
-    with open(csv_filename, 'w', newline='', encoding='utf-8') as csvfile:
+    with open(final_csv_filename, 'w', newline='', encoding='utf-8') as csvfile:
         csv_writer = csv.writer(csvfile)
         
         csv_writer.writerow(["Question_ID", "Score", "Word_Count", "Benchmark", "Model"])
@@ -88,8 +104,8 @@ def merge_benchmark_results(input_pattern, output_filename, benchmark_name, mode
     print(f"Total Correct:             {global_total_correct}")
     print(f"FINAL ACCURACY:            {final_accuracy * 100:.2f}%")
     print("-" * 70)
-    print(f"Saved JSON to: {output_filename}")
-    print(f"Saved Analytics CSV to: {csv_filename}")
+    print(f"Saved JSON to: {final_json_filename}")
+    print(f"Saved Analytics CSV to: {final_csv_filename}")
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Merge distributed evaluation JSON files.")
