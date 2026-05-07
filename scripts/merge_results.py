@@ -2,9 +2,10 @@ import argparse
 import json
 import glob
 import os
+import csv
 
 # function to combine all the json files from different jobs (created when benchmark evaluation run on HPC)
-def merge_benchmark_results(input_pattern, output_filename, benchmark_name):
+def merge_benchmark_results(input_pattern, output_filename, benchmark_name, model_name):
     file_list = glob.glob(input_pattern)
 
     if not file_list:
@@ -62,6 +63,24 @@ def merge_benchmark_results(input_pattern, output_filename, benchmark_name):
     with open(output_filename, 'w', encoding='utf-8') as f:
         json.dump(final_output, f, indent=2)
 
+    # adding analytics csv
+    base_name = os.path.splitext(output_filename)[0]
+    csv_filename = f"{base_name}_analytics.csv"
+
+    with open(csv_filename, 'w', newline='', encoding='utf-8') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        
+        csv_writer.writerow(["Question_ID", "Score", "Word_Count", "Benchmark", "Model"])
+
+        for item in merged_results_list:
+            q_id = item.get("id", "N/A")
+            score = item.get("score", 0)
+            answer_text = str(item.get("full_output", item.get("generated_text", "")))
+            word_count = len(answer_text.split())
+            
+            csv_writer.writerow([q_id, score, word_count, benchmark_name, model_name])
+
+
     print("=" * 70)
     print("EVALUATION SUMMARY:")
     print(f"Benchmark:                 {benchmark_name}")
@@ -69,7 +88,8 @@ def merge_benchmark_results(input_pattern, output_filename, benchmark_name):
     print(f"Total Correct:             {global_total_correct}")
     print(f"FINAL ACCURACY:            {final_accuracy * 100:.2f}%")
     print("-" * 70)
-    print(f"Saved to: {output_filename}")
+    print(f"Saved JSON to: {output_filename}")
+    print(f"Saved Analytics CSV to: {csv_filename}")
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Merge distributed evaluation JSON files.")
@@ -95,8 +115,15 @@ def parse_args():
         help="Name of the benchmark inside the JSON structure"
     )
 
+    parser.add_argument(
+        "--model", 
+        type=str, 
+        required=True,
+        help="Name of the model evaluated"
+    )
+
     return parser.parse_args()
 
 if __name__ == "__main__":
     args = parse_args()
-    merge_benchmark_results(args.input, args.output, args.benchmark)
+    merge_benchmark_results(args.input, args.output, args.benchmark, args.model)
