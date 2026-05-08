@@ -56,6 +56,22 @@ def parse_args():
         help="Start index for the dataset (used for parallel array jobs)"
     )
 
+    parser.add_argument(
+        "--trimmed",
+        action="store_true",
+        help="Restrict each benchmark to ids listed in "
+             "<trimmed-ids-dir>/<benchmark_name>.txt (one id per line). "
+             "If the file is missing the benchmark runs in full."
+    )
+
+    parser.add_argument(
+        "--trimmed-ids-dir",
+        type=str,
+        default="evaluation/trimmed_ids",
+        help="Directory holding per-benchmark trimmed id files "
+             "(default: evaluation/trimmed_ids)"
+    )
+
     return parser.parse_args()
 
 def print_summary(results: dict):
@@ -92,7 +108,9 @@ def main():
         output_dir=output_dir,
         verbose=args.verbose,
         limit=args.limit,
-        offset=args.offset
+        offset=args.offset,
+        trimmed=args.trimmed,
+        trimmed_ids_dir=args.trimmed_ids_dir,
     )
 
     # Run evaluation

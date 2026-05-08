@@ -21,7 +21,9 @@ class Evaluator:
             output_dir: str = "./results",
             verbose: bool = False,
             limit: int = None,
-            offset: int = 0
+            offset: int = 0,
+            trimmed: bool = False,
+            trimmed_ids_dir: str = "evaluation/trimmed_ids"
         ):
         """
         Docstring for __init__
@@ -33,6 +35,10 @@ class Evaluator:
         :type workers: int
         :param benchmarks: List of benchmark names to evaluate (if None, all available benchmarks are used)
         :type benchmarks: List[str]
+        :param trimmed: If True, restrict each benchmark to ids listed in
+            ``<trimmed_ids_dir>/<benchmark_name>.txt`` (one id per line).
+            Falls back to the full dataset with a warning if the file is missing.
+        :param trimmed_ids_dir: Directory holding per-benchmark id files.
         """
         self.inference_fn = inference_fn
         self.workers = workers
@@ -40,6 +46,8 @@ class Evaluator:
         self.verbose = verbose
         self.limit = limit
         self.offset = offset
+        self.trimmed = trimmed
+        self.trimmed_ids_dir = Path(trimmed_ids_dir)
 
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -62,6 +70,7 @@ class Evaluator:
                 "timestamp": datetime.now().isoformat(),
                 "workers": self.workers,
                 "benchmarks": self.benchmarks,
+                "trimmed": self.trimmed,
             },
             "results": {}
         }
@@ -73,6 +82,10 @@ class Evaluator:
                 print(f"{'='*60}")
             benchmark = create_benchmark(benchmark_name)
             dataset = benchmark.load_dataset()
+
+            if self.trimmed:
+                dataset = self._apply_trimmed_filter(benchmark_name, dataset)
+
             if self.limit is not None:
                 start = self.offset
                 end = min(self.offset + self.limit, len(dataset))
@@ -183,6 +196,35 @@ class Evaluator:
             "results": results
         }
     
+    def _apply_trimmed_filter(self, benchmark_name: str, dataset: List[DataSetItem]) -> List[DataSetItem]:
+        """Filter dataset to ids listed in the per-benchmark trimmed-ids file."""
+        ids_path = self.trimmed_ids_dir / f"{benchmark_name}.txt"
+        if not ids_path.exists():
+            print(f"[trimmed] No id file at {ids_path} - running full benchmark.")
+            return dataset
+
+        with open(ids_path, "r") as f:
+            allowed = {
+                line.strip()
+                for line in f
+                if line.strip() and not line.strip().startswith("#")
+            }
+
+        if not allowed:
+            print(f"[trimmed] {ids_path} is empty - running full benchmark.")
+            return dataset
+
+        filtered = [item for item in dataset if str(item.id) in allowed]
+        missing = allowed - {str(item.id) for item in filtered}
+
+        print(f"[trimmed] {benchmark_name}: {len(filtered)}/{len(dataset)} items kept "
+              f"(from {ids_path}).")
+        if missing:
+            print(f"[trimmed] WARNING: {len(missing)} id(s) in the file were not "
+                  f"found in the dataset (e.g. {sorted(missing)[:5]}).")
+
+        return filtered
+
     def _evaluate_item(self, benchmark, item: DataSetItem) -> Dict[str, Any]:
         """Evaluate a single item (can run in parallel)."""
         input_data = item.input
