@@ -1,0 +1,14 @@
+model:
+  name: "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+  is_instruct: true
+  dtype: "bfloat16"
+  device_map: "auto"
+  quantization: "4bit"
+
+inference:
+  max_new_tokens: 8192
+  temperature: 0.2
+  do_sample: true
+  batch_size: 1
+  top_k: 30
+  top_p: 0.9
