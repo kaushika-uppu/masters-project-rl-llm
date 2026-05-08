@@ -4,11 +4,13 @@
 from typing import Dict, Callable
 from src.inference import dummy_inference, cot_3shot
 from src.inference.limo_inference import limo
+from src.inference.deepseek_r1_inference import deepseek_r1
 
 INFER_FUNCTION_REGISTRY: Dict[str, Callable[[str], str]] = {
     "dummy": dummy_inference,
     "cot_3shot": cot_3shot,
-    "limo": limo
+    "limo": limo,
+    "deepseek_r1": deepseek_r1
 }
 
 def get_available_functions() -> list[str]:
@@ -21,5 +23,8 @@ def get_inference_function(name: str) -> Callable[[str], str]:
         raise ValueError(f"Unknown inference function '{name}'. Available: {available}")
     if name == 'limo':
         return limo()
+        
+    if name == 'deepseek_r1':
+        return deepseek_r1()
     
     return INFER_FUNCTION_REGISTRY[name]

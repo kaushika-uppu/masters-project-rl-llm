@@ -24,6 +24,8 @@ evaluation/results/
 sh_scripts/
 *.log
 logs/
+scripts/cot_runs
+scripts/deepseek_r1_runs
 
 # OS
 .DS_Store
