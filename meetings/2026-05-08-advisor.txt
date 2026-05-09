@@ -1,0 +1,32 @@
+Meeting Type: Advisor
+Date: 2026-05-08
+Start–End Time: 4:00-4:35 PM
+Location/Mode: Google Meet
+
+Attendees:
+- Kaushika Uppu
+- Kalyani Chitre
+- Miranda Billawala
+- Dr. Magdalini Eirinaki
+
+1) Accomplished Since Last Meeting
+- Ran full evaluations for GSM8K and RiddleBench with DeepSeek-R1
+- Did a proof of concept for the tree-building
+
+2) Accomplished During This Meeting
+- Showed advisor code repo and initial prototype
+
+3) Issues / Blockers
+- DeepSeek-R1 RiddleBench eval not fully complete, need to compile results
+
+4) Action Items
+- Action: Work on report | Owner: All | Due: 5/8
+- Action: Implement DeepSeek-R1 with VLLM | Owner: Kalyani | Due: 5/10
+- Action: SFT setup and flesh out RL training step | Owner: Miranda | Due: 6/5
+- Action: Research LIMO and how to curate training dataset | Owner: Kaushika | Due: 6/5
+- Action: Look into DeepTheorem and potentially how to verify | Owner: Kalyani | Due: 6/5
+- Action: Figure out meeting availablity for summer | Owner: All | Due: 6/1
+
+5) Plans / Goals for Next Meeting
+- Finish report
+- Start individual research before summer session begins
