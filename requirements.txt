@@ -10,3 +10,4 @@ pandas
 accelerate
 bitsandbytes
 vllm
+trl
