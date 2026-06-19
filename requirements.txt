@@ -11,3 +11,4 @@ accelerate
 bitsandbytes
 vllm
 trl
+peft

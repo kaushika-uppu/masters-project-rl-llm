@@ -1,0 +1,24 @@
+# SFT followed by RL training pipeline
+# SFT runs first, then RL automatically loads the SFT checkpoint
+
+model:
+  name: "Qwen/Qwen2.5-7B-Instruct"
+  torch_dtype: "bfloat16"
+  device_map: "auto"
+
+lora:
+  r: 16
+  alpha: 32
+  target_modules: ["q_proj", "v_proj", "k_proj", "o_proj"]
+  dropout: 0.05
+
+sft:
+  dataset: "deeptheorem"
+  output_dir: "checkpoints/pipeline_sft_deeptheorem"
+  num_train_epochs: 2
+
+rl:
+  dataset: "deeptheorem"
+  output_dir: "checkpoints/pipeline_rl_deeptheorem"
+  algorithm: "dpo"
+  # NOTE: RL not yet implemented

@@ -1,0 +1,15 @@
+# Simplest possible config - SFT with LoRA using all defaults
+
+model:
+  name: "Qwen/Qwen2.5-7B-Instruct"
+  torch_dtype: "bfloat16"
+  device_map: "auto"
+
+lora:
+  r: 16
+  alpha: 32
+  target_modules: ["q_proj", "v_proj", "k_proj", "o_proj"]
+
+sft:
+  dataset: "deeptheorem"
+  output_dir: "checkpoints/simple_deeptheorem"
