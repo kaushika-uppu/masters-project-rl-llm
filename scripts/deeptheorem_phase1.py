@@ -46,7 +46,7 @@ def extract_variant(val, default_truth):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", type=str, default="dt_stratified_30k.jsonl")
+    parser.add_argument("--input", type=str, required=True)
     parser.add_argument("--chunk-id", type=int, required=True)
     parser.add_argument("--chunk-size", type=int, default=1000)
     args = parser.parse_args()
