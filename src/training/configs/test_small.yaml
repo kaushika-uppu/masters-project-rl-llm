@@ -1,0 +1,28 @@
+# Quick test config - trains on only 100 examples for fast testing
+# Use this to verify setup before running full training
+
+model:
+  name: "Qwen/Qwen2.5-7B-Instruct"
+  torch_dtype: "auto"  # Let PyTorch auto-detect best dtype
+  device_map: "auto"
+
+lora:
+  r: 16
+  alpha: 32
+  target_modules: ["q_proj", "v_proj", "k_proj", "o_proj"]
+
+sft:
+  dataset: "deeptheorem"
+  output_dir: "checkpoints/test_small"
+
+  # Limit to 100 examples for fast testing
+  max_samples: 1
+
+  # Reduce epochs and increase logging frequency for testing
+  num_train_epochs: 1
+  logging_steps: 10
+  save_steps: 50
+
+  # Use fp16 instead of bf16 for wider GPU compatibility
+  bf16: false
+  fp16: true

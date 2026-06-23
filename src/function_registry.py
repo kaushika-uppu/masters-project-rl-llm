@@ -2,29 +2,40 @@
 # keeps track of all functions that can be used for inference
 
 from typing import Dict, Callable
-from src.inference import dummy_inference, cot_3shot
-from src.inference.limo_inference import limo
-from src.inference.deepseek_r1_inference import deepseek_r1
 
-INFER_FUNCTION_REGISTRY: Dict[str, Callable[[str], str]] = {
-    "dummy": dummy_inference,
-    "cot_3shot": cot_3shot,
-    "limo": limo,
-    "deepseek_r1": deepseek_r1
-}
+# Lazy imports - only import when functions are actually requested
+def _get_registry() -> Dict[str, Callable[[str], str]]:
+    """Lazy load inference functions to avoid importing heavy dependencies."""
+    from src.inference import dummy_inference, cot_3shot
+    from src.inference.limo_inference import limo
+    from src.inference.deepseek_r1_inference import deepseek_r1
+
+    return {
+        "dummy": dummy_inference,
+        "cot_3shot": cot_3shot,
+        "limo": limo,
+        "deepseek_r1": deepseek_r1
+    }
 
 def get_available_functions() -> list[str]:
     """Return list of available inference function names."""
-    return list(INFER_FUNCTION_REGISTRY.keys())
+    return ["dummy", "cot_3shot", "limo", "deepseek_r1"]
 
 def get_inference_function(name: str) -> Callable[[str], str]:
-    if name not in INFER_FUNCTION_REGISTRY:
-        available = get_available_functions()
+    """Get an inference function by name. Uses lazy imports to avoid loading heavy dependencies."""
+    available = get_available_functions()
+    if name not in available:
         raise ValueError(f"Unknown inference function '{name}'. Available: {available}")
+
+    # Lazy load the registry
+    registry = _get_registry()
+
     if name == 'limo':
+        from src.inference.limo_inference import limo
         return limo()
-        
+
     if name == 'deepseek_r1':
+        from src.inference.deepseek_r1_inference import deepseek_r1
         return deepseek_r1()
-    
-    return INFER_FUNCTION_REGISTRY[name]
+
+    return registry[name]
