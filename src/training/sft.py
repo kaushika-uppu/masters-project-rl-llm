@@ -1,4 +1,5 @@
 from .datasets import get_dataset, DatasetName
+from .constants import DEEPTHEOREM_SYSTEM_PROMPT
 from transformers import PreTrainedModel, AutoTokenizer
 from datasets import Dataset
 from trl import SFTTrainer, SFTConfig
@@ -77,8 +78,6 @@ def format_dataset(ds: Dataset, dataset: DatasetName) -> Dataset:
     return ds  # default: no filtering
 
 
-DEEPTHEOREM_SYSTEM_PROMPT = "You are a mathematical reasoning assistant. Provide step-by-step proofs for mathematical theorems. Break down your reasoning into clear, logical steps."
-
 def get_deeptheorem(ds: Dataset) -> Dataset:
     # filter to easy examples
     ds = ds.filter(lambda x: x["difficulty"] <= 7.0)
@@ -93,7 +92,7 @@ def get_deeptheorem(ds: Dataset) -> Dataset:
             "messages": [
                 {
                     "role": "system",
-                    "content": "You are a mathematical reasoning assistant. Work through proofs step by step.",
+                    "content": DEEPTHEOREM_SYSTEM_PROMPT,
                 },
                 {
                     "role": "user",
