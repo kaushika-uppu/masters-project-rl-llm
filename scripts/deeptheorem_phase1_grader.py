@@ -3,6 +3,7 @@ import glob
 import re
 import pandas as pd
 import os
+import argparse
 
 def extract_boxed_truth(text):
     """
@@ -14,8 +15,20 @@ def extract_boxed_truth(text):
     return None
 
 def main():
-    print("Loading Phase 1 Rollouts")
-    file_list = glob.glob("results/dt_phase1/*.json")
+    parser = argparse.ArgumentParser(description="Grade Phase 1 Rollouts")
+    parser.add_argument("--sft", action="store_true", help="Run grader for SFT pipeline")
+    args = parser.parse_args()
+
+    if args.sft:
+        print("Loading SFT Phase 1 Rollouts...")
+        input_pattern = "results/sft_phase1_results/*.json"
+        output_name = "./src/training/dt_sft_phase1_survivors.jsonl"
+    else:
+        print("Loading RL Phase 1 Rollouts...")
+        input_pattern = "results/dt_phase1/*.json"
+        output_name = "./src/training/dt_phase1_survivors.jsonl"
+
+    file_list = glob.glob(input_pattern)
     
     if not file_list:
         print("No JSON files found in 'results/dt_phase1/'.")
@@ -43,13 +56,13 @@ def main():
                 # compare extracted prediction against native truth value
                 if model_prediction == ground_truth:
                     correct_count += 1
-                    
-            # if 7B model got it right even once, it is too easy
+
+            # keep question if model didn't get it right at all
             if correct_count > 0:
-                total_purged += 1
+                total_purged += 1 # purge >0 correct (too easy)
             else:
-                # 0/4 Correct: hard question
                 survivors.append(item)
+                    
 
     print("\n" + "=" * 50)
     print("PHASE 1 PURGE COMPLETE")
@@ -62,12 +75,12 @@ def main():
     if survivors:
         df_survivors = pd.DataFrame(survivors)
         df_survivors = df_survivors.drop(columns=['rollouts'], errors='ignore')
-        
-        output_name = "./src/training/dt_phase1_survivors.jsonl"
+
         os.makedirs(os.path.dirname(output_name), exist_ok=True)
-        
         df_survivors.to_json(output_name, orient="records", lines=True)
+
         print(f"Saved surviving dataset to: {output_name}")
+        
     else:
         print("No questions survived the purge.")
 

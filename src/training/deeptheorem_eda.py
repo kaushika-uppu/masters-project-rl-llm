@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from datasets import load_dataset
 import ast
+import argparse
 
 # topics are in lists in "domain" column, need to extract overall topic from it
 def extract_root_topic(topic_data):
@@ -74,9 +75,7 @@ def main():
     # stratified sampling dataset reduction
     target_size = 30000
     print(f"\n--- Reducing dataset to {target_size} samples ---")
-    # only using questions with level 7.0 difficulty or above
-    df = df[df['difficulty'] >= 7.0].copy()
-    
+
     # makes sure topics with low numbers have at least 1 question
     def safe_stratified_sample(x):
         n_samples = int(round(len(x) / len(df) * target_size))
@@ -85,6 +84,36 @@ def main():
         n_samples = min(n_samples, len(x))
         
         return x.sample(n=n_samples, random_state=42)
+    
+
+    # getting the SFT dataset
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--sft", action="store_true", help="Extract SFT dataset and exit")
+    args = parser.parse_args()
+
+    if args.sft:
+        print(f"\n--- Generating SFT Dataset (Difficulty < 7.0) ---")
+        df = df[df['difficulty'] < 7.0].copy()
+        
+        reduced_df = df.groupby(['root_topic', 'difficulty'], group_keys=False).apply(safe_stratified_sample)
+        
+        remaining_needed = target_size - len(reduced_df)
+        
+        if remaining_needed > 0:
+            leftovers = df[~df.index.isin(reduced_df.index)].sample(n=remaining_needed, random_state=42)
+            reduced_df = pd.concat([reduced_df, leftovers])
+        elif remaining_needed < 0:
+            reduced_df = reduced_df.sample(n=target_size, random_state=42)
+            
+        reduced_df = reduced_df.sample(frac=1, random_state=42).reset_index(drop=True)
+        
+        sft_output_file = "src/training/dt_sft_stratified_30k.jsonl"
+        reduced_df.to_json(sft_output_file, orient="records", lines=True)
+        print(f"\nSuccessfully saved {len(reduced_df)} stratified SFT questions to {sft_output_file}")
+        return
+
+    # only using questions with level 7.0 difficulty or above for main training set
+    df = df[df['difficulty'] >= 7.0].copy()
 
     reduced_df = df.groupby(['root_topic', 'difficulty'], group_keys=False).apply(safe_stratified_sample)
     
