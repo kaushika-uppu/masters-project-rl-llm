@@ -2,14 +2,15 @@
 # keeps track of all available benchmarks
 
 from typing import Dict, List, Type
-from evaluation.benchmarks import BaseBenchmark, TestBenchmark, RiddleBench, LiveCodeBench, GSM8K, MATH500
+from evaluation.benchmarks import BaseBenchmark, TestBenchmark, RiddleBench, LiveCodeBench, GSM8K, MATH500, DeepTheoremEval
 
 BENCHMARK_REGISTRY: Dict[str, Type[BaseBenchmark]]= {
     "test": TestBenchmark,
     "riddlebench": RiddleBench,
     "livecodebench": LiveCodeBench,
     "gsm8k": GSM8K,
-    "math500": MATH500
+    "math500": MATH500,
+    "deeptheorem": DeepTheoremEval
 }
 
 # Dataset sizes for each benchmark (used for SLURM job array sizing)
@@ -18,7 +19,8 @@ BENCHMARK_DATASET_SIZES: Dict[str, int] = {
     "riddlebench": 1737,
     "livecodebench": 511,
     "gsm8k": 1319,
-    "math500": 500
+    "math500": 500,
+    "deeptheorem": 1000
 }
 
 def get_benchmarks() -> List[str]:

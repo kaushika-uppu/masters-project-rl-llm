@@ -1,0 +1,29 @@
+# Baseline GRPO: trajectory-level, endpoint (verdict) reward. Proves the RL infra.
+# Runs on a PROVIDED jsonl of examples (question selection is external).
+# Run: python -m src.training.run src/training/configs/rl_baseline.yaml
+
+model:
+  from_checkpoint: "checkpoints/simple_deeptheorem"   # the realigned SFT checkpoint
+  is_peft_checkpoint: true
+  torch_dtype: "bfloat16"
+  # Single-GPU: pin the whole model to the assigned GPU ("auto" can silently CPU-offload).
+  # For multi-GPU DDP via `accelerate launch`, set this to null and let the launcher place
+  # the model (a fixed device_map fights accelerate's sharding).
+  device_map: {"": 0}
+
+rl:
+  method: "grpo_baseline"
+  output_dir: "checkpoints/rl_baseline"
+  problems_path: "data/rl_problems.jsonl"   # provided externally: {id, statement, label}
+  max_problems: null
+
+  num_generations: 8
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 1
+  learning_rate: 1.0e-6
+  num_train_epochs: 1
+  max_completion_length: 512
+
+  # Standard cluster throughput path (TRL-native). Set false if your TRL lacks it.
+  use_vllm: true
+  vllm_gpu_memory_utilization: 0.3
