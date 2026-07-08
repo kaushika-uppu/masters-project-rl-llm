@@ -1,0 +1,17 @@
+# config for SFT with subset of 1-2 rollouts correct
+
+model:
+  name: "Qwen/Qwen2.5-7B-Instruct"
+  torch_dtype: "bfloat16"
+  device_map: "auto"
+
+lora:
+  r: 16
+  alpha: 32
+  target_modules: ["q_proj", "v_proj", "k_proj", "o_proj"]
+  dropout: 0.05
+  bias: "none"
+
+sft:
+  dataset: "src/training/dt_sft_subset_1_2.jsonl" 
+  output_dir: "checkpoints/sft_run_subset_1_2"
