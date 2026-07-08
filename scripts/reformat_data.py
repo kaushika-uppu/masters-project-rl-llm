@@ -32,6 +32,8 @@ def process_file_pair(stratified_file, input_file, output_file):
     print(f"Injecting proofs and informal theorems into {input_file}...")
     matched = 0
     missed = 0
+    duplicates_skipped = 0
+    seen_questions = set()
     
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
@@ -40,6 +42,13 @@ def process_file_pair(stratified_file, input_file, output_file):
             for line in infile:
                 row = json.loads(line)
                 ori_q = row.get("ori_question")
+
+                # make sure it's not a duplicate question
+                if ori_q in seen_questions:
+                    duplicates_skipped += 1
+                    continue
+
+                seen_questions.add(ori_q)
                 
                 # map both proof and informal_theorem
                 if ori_q in data_map:
@@ -68,6 +77,8 @@ def process_file_pair(stratified_file, input_file, output_file):
     print(f"Successfully matched: {matched}")
     if missed > 0:
         print(f"WARNING: Missed {missed} rows (no matching data found)")
+    if duplicates_skipped > 0:
+        print(f"DEDUPLICATION: Skipped {duplicates_skipped} duplicate rows based on 'ori_question'")
     print(f"Saved new dataset to: {output_file}")
 
 
