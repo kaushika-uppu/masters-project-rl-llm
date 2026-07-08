@@ -1,14 +1,14 @@
 from .datasets import get_dataset, DatasetName
 from .constants import DEEPTHEOREM_SYSTEM_PROMPT
 from transformers import PreTrainedModel, AutoTokenizer
-from datasets import Dataset
+from datasets import Dataset, load_dataset
 from trl import SFTTrainer, SFTConfig
 
 
 def run_sft(
     model: PreTrainedModel,
     tokenizer: AutoTokenizer,
-    dataset: DatasetName,
+    dataset: str,
     output_dir: str,
     sft_config: dict = None
 ) -> None:
@@ -23,7 +23,16 @@ def run_sft(
             Special parameters:
             - max_samples: Limit number of training examples (for testing)
     """
-    ds = get_dataset(dataset)
+    # ds = get_dataset(dataset)
+    # filt_ds = format_dataset(ds, dataset)
+
+    # getting dataset from file path
+    if dataset.endswith('.jsonl'):
+        print(f"Loading local dataset from {dataset}")
+        ds = load_dataset('json', data_files=dataset)['train']
+    else:
+        ds = get_dataset(dataset)
+        
     filt_ds = format_dataset(ds, dataset)
 
     # Get config with defaults
@@ -67,8 +76,10 @@ def run_sft(
     trainer.save_model(output_dir)
 
 
-def format_dataset(ds: Dataset, dataset: DatasetName) -> Dataset:
+def format_dataset(ds: Dataset, dataset: str) -> Dataset:
     """Get subset of dataset and format for use in SFT. Default is unchanged."""
+    if dataset.endswith('.jsonl'):
+        return format_local_dataset(ds)
     if dataset == "deeptheorem":
         return get_deeptheorem(ds)
 
@@ -77,6 +88,31 @@ def format_dataset(ds: Dataset, dataset: DatasetName) -> Dataset:
 
     return ds  # default: no filtering
 
+def format_local_dataset(ds: Dataset) -> Dataset:
+    """Format local JSONL reasoning rollouts for use in SFT."""
+    def format_example(row):
+        raw_proof = str(row.get("proof", ""))
+        # split proof into paragraphs and wrap each in <step> tags
+        paragraphs = raw_proof.split("\n\n")
+        proof_steps = "\n".join([f"<step>{p}</step>" for p in paragraphs])
+
+        return {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": DEEPTHEOREM_SYSTEM_PROMPT,
+                },
+                {
+                    "role": "user",
+                    "content": f"Prove the following:\n{row['informal_theorem']}",
+                },
+                {
+                    "role": "assistant", "content": proof_steps
+                },
+            ]
+        }
+
+    return ds.map(format_example)
 
 def get_deeptheorem(ds: Dataset) -> Dataset:
     # filter to easy examples
