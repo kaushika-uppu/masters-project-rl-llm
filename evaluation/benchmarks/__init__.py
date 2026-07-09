@@ -6,6 +6,7 @@ from evaluation.benchmarks.riddlebench import RiddleBench
 from evaluation.benchmarks.livecodebench.livecodebench import LiveCodeBench
 from evaluation.benchmarks.gsm8k import GSM8K
 from evaluation.benchmarks.math_500.math_500 import MATH500
+from evaluation.benchmarks.deeptheorem_eval import DeepTheoremEval
 
 # Export base class
-__all__ = ["BaseBenchmark", "DataSetItem", "TestBenchmark", "RiddleBench", "LiveCodeBench", "GSM8K", "MATH500"]
+__all__ = ["BaseBenchmark", "DataSetItem", "TestBenchmark", "RiddleBench", "LiveCodeBench", "GSM8K", "MATH500", "DeepTheoremEval"]

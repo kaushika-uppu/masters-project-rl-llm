@@ -1,0 +1,43 @@
+# Tree-GRPO: step-by-step rollouts, in-process judge, per-step MC advantages + novelty.
+# NO servers — policy = the model being trained, judge = a second in-process model.
+# Runs on a PROVIDED jsonl of examples (question selection is external).
+# Run: python -m src.training.run src/training/configs/rl_tree.yaml
+
+model:
+  from_checkpoint: "checkpoints/simple_deeptheorem"   # realigned SFT checkpoint (the policy being trained)
+  is_peft_checkpoint: true
+  torch_dtype: "bfloat16"
+  # Pin the WHOLE trained policy to the local GPU. "auto" can silently shard/CPU-offload,
+  # which breaks backprop for this hand-rolled single-process trainer. SLURM sets
+  # CUDA_VISIBLE_DEVICES so index 0 == the assigned GPU. (The judge stays device_map=auto.)
+  device_map: {"": 0}
+
+rl:
+  method: "grpo_tree"
+  output_dir: "checkpoints/rl_tree"
+  problems_path: "data/rl_problems.jsonl"   # provided externally: {id, statement, label, reference?}
+  max_problems: null
+  temperature: 0.8
+  save_every: 50          # checkpoint every N updates (survives SLURM wall-time/preemption)
+
+  judge_model: "Qwen/Qwen2.5-7B-Instruct"   # in-process judge; swap/fine-tune later
+  judge_load_in_4bit: true                  # fit policy + judge on one GPU
+
+  # Node merging: semantic (embedding cosine) so states phrased differently still merge.
+  merge:
+    semantic: true
+    embed_model: "sentence-transformers/all-MiniLM-L6-v2"   # small in-process embedder
+    cosine_threshold: 0.9   # >= this cosine => same state (raise to under-merge)
+    # semantic: false  -> exact canonical-text matching (deterministic fallback)
+
+  tree:
+    group_size: 8
+    max_depth: 8
+    retry_budget: 2
+    kl_coef: 0.05
+    lr: 1.0e-6
+    epochs: 1
+    batch_problems: 4
+    base_weight: 0.1
+    num_workers: 1     # >1 parallelizes trees across problems; safe only with a
+                       # served/replicated backend or one model per worker (see grpo_tree.py)

@@ -7,6 +7,7 @@ import yaml
 import argparse
 
 from src.training.sft import run_sft
+from src.training.rl.run_rl import run_rl
 
 def load_config(config_path: str) -> dict:
     with open(config_path, "r") as f:
@@ -136,11 +137,8 @@ def run_training(config: dict, model: PreTrainedModel, tokenizer: PreTrainedToke
         print("Starting RL Training")
         print("="*50)
 
-        rl_config = config['rl']
-        # TODO: Implement RL training
-        print(f"RL training not yet implemented")
-        print(f"Would train on dataset: {rl_config['dataset']}")
-        print(f"Would save to: {rl_config['output_dir']}")
+        run_rl(config, model, tokenizer)
+        print(f"RL complete! Model saved to {config['rl']['output_dir']}")
 
 def main():
     parser = argparse.ArgumentParser(description="Run project training pipeline from config.")
