@@ -234,17 +234,20 @@ def run_grpo_tree(model, tokenizer, rl_cfg: dict):
     """Entry from run.py. In-process policy (the trained model) + in-process judge."""
     _assert_single_process(rl_cfg["output_dir"])
 
+    from .embedder import build_state_matcher
+
     policy = TransformersPolicy(
         model, tokenizer, temperature=rl_cfg.get("temperature", 0.8)
     )
     jm, jt = _load_judge_model(rl_cfg)
     judge = TransformersJudge(jm, jt)
+    matcher = build_state_matcher(rl_cfg.get("merge", {}))  # semantic merging by default
 
     problems = load_problems_jsonl(
         rl_cfg["problems_path"], limit=rl_cfg.get("max_problems")
     )
     cfg = TreeGRPOConfig(**rl_cfg.get("tree", {}))
-    trainer = GRPOTreeTrainer(model, tokenizer, policy, judge, cfg=cfg)
+    trainer = GRPOTreeTrainer(model, tokenizer, policy, judge, cfg=cfg, matcher=matcher)
     stats = trainer.train(
         problems,
         output_dir=rl_cfg["output_dir"],

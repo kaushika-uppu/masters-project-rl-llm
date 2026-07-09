@@ -13,7 +13,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from typing import Optional
 
-from .merge import StateMatcher
+from .merge import StateMatcher, cosine
 
 
 @dataclass
@@ -48,27 +48,46 @@ class ProofTree:
     def __init__(self, root_summary: str, matcher: Optional[StateMatcher] = None):
         self.matcher = matcher or StateMatcher()
         self.nodes: dict[str, Node] = {}
+        self._emb: dict[str, list[float]] = {}   # node.key -> cached state embedding
+        self._alias: dict[str, str] = {}         # canonical text key -> representative node.key
         self.root_key = self._intern(root_summary, depth=0).key
 
     # -- structure ---------------------------------------------------------------
+    def _update_flags(self, node: Node, depth: int, kw: dict) -> Node:
+        node.is_terminal = node.is_terminal or kw.get("is_terminal", False)
+        node.failed = node.failed or kw.get("failed", False)
+        node.verdict = node.verdict or kw.get("verdict")
+        node.depth = min(node.depth, depth)
+        return node
+
     def _intern(self, summary: str, depth: int, **kw) -> Node:
-        key = self.matcher.key(summary)
-        node = self.nodes.get(key)
-        if node is None and self.matcher.embed_fn is not None:
-            # semantic merge: scan existing nodes for an equivalent state
-            for n in self.nodes.values():
-                if self.matcher.equivalent(summary, n.summary):
-                    node = n
-                    break
-        if node is None:
-            node = Node(key=key, summary=summary, depth=depth, **kw)
-            self.nodes[key] = node
-        else:
-            # keep terminal/verdict/failed info if any path discovered it
-            node.is_terminal = node.is_terminal or kw.get("is_terminal", False)
-            node.failed = node.failed or kw.get("failed", False)
-            node.verdict = node.verdict or kw.get("verdict")
-            node.depth = min(node.depth, depth)
+        ck = self.matcher.key(summary)
+
+        # 1. exact / previously-seen text -> same node (fast path)
+        nk = self._alias.get(ck)
+        if nk is not None:
+            return self._update_flags(self.nodes[nk], depth, kw)
+
+        # 2. semantic nearest-neighbour merge (embedding cosine >= threshold)
+        vec = None
+        if self.matcher.has_embedder and self.nodes:
+            vec = self.matcher.embed(summary)
+            best_key, best_sim = None, -1.0
+            for k, ev in self._emb.items():
+                sim = cosine(vec, ev)
+                if sim > best_sim:
+                    best_sim, best_key = sim, k
+            if (best_key is not None and best_sim >= self.matcher.cosine_threshold
+                    and self.matcher.confirm(summary, self.nodes[best_key].summary)):
+                self._alias[ck] = best_key       # cache so identical text short-circuits
+                return self._update_flags(self.nodes[best_key], depth, kw)
+
+        # 3. new node
+        node = Node(key=ck, summary=summary, depth=depth, **kw)
+        self.nodes[ck] = node
+        self._alias[ck] = ck
+        if self.matcher.has_embedder:
+            self._emb[ck] = vec if vec is not None else self.matcher.embed(summary)
         return node
 
     @property

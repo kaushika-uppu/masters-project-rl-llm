@@ -88,6 +88,41 @@ def test_fallback_without_batch_methods():
     assert abs(tree.root.value - 2 / 3) < 1e-9
 
 
+def test_semantic_merge():
+    # differently-worded states with the same meaning should merge; distinct ones shouldn't
+    from src.training.rl.merge import StateMatcher
+    from src.training.rl.tree import ProofTree
+
+    def fake_embed(texts):
+        out = []
+        for t in texts:
+            tl = t.lower()
+            out.append([1.0 if "continuous" in tl else 0.0,
+                        1.0 if "bounded" in tl else 0.0,
+                        1.0])  # shared component so root stays distinct
+        return out
+
+    m = StateMatcher(embed_fn=fake_embed, cosine_threshold=0.9)
+    tree = ProofTree("goal: prove or disprove", m)
+    a = tree.add_transition(tree.root, "s1", "f is continuous on the interval")
+    b = tree.add_transition(tree.root, "s2", "the function f is continuous there")
+    c = tree.add_transition(tree.root, "s3", "f is bounded")
+    assert a.key == b.key, "paraphrases of the same state must merge"
+    assert c.key != a.key, "a genuinely different state must not merge"
+    # the merged node pooled both visits' worth of structure (one node, one edge each move)
+    assert tree.edge_count(tree.root, a) >= 1
+
+
+def test_exact_fallback_without_embedder():
+    # no embed_fn => exact canonical-key matching (deterministic)
+    from src.training.rl.merge import StateMatcher
+    from src.training.rl.tree import ProofTree
+    tree = ProofTree("goal", StateMatcher())
+    a = tree.add_transition(tree.root, "s", "State: X established.")
+    b = tree.add_transition(tree.root, "s", "state   x established")  # canonicalizes equal
+    assert a.key == b.key
+
+
 def test_novelty_gated_on_correctness():
     assert novelty_bonus(edge_count=1, correct=True) > novelty_bonus(edge_count=4, correct=True)
     assert novelty_bonus(edge_count=1, correct=False) == 0.0  # gated off when wrong
