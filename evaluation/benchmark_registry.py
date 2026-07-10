@@ -1,8 +1,8 @@
-"""Registry for available benchmarks."""
+# evaluation/benchmark_registry.py
+# keeps track of all available benchmarks
 
 from importlib import import_module
 from typing import Dict, List
-
 from evaluation.benchmarks.base_benchmark import BaseBenchmark
 
 BENCHMARK_REGISTRY: Dict[str, str] = {
