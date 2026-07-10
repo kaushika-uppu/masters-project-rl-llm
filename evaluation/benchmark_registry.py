@@ -1,16 +1,18 @@
-# evaluation/benchmark_registry.py
-# keeps track of all available benchmarks
+"""Registry for available benchmarks."""
 
-from typing import Dict, List, Type
-from evaluation.benchmarks import BaseBenchmark, TestBenchmark, RiddleBench, LiveCodeBench, GSM8K, MATH500, DeepTheoremEval
+from importlib import import_module
+from typing import Dict, List
 
-BENCHMARK_REGISTRY: Dict[str, Type[BaseBenchmark]]= {
-    "test": TestBenchmark,
-    "riddlebench": RiddleBench,
-    "livecodebench": LiveCodeBench,
-    "gsm8k": GSM8K,
-    "math500": MATH500,
-    "deeptheorem": DeepTheoremEval
+from evaluation.benchmarks.base_benchmark import BaseBenchmark
+
+BENCHMARK_REGISTRY: Dict[str, str] = {
+    "test": "evaluation.benchmarks.test_benchmark:TestBenchmark",
+    "riddlebench": "evaluation.benchmarks.riddlebench:RiddleBench",
+    "livecodebench": "evaluation.benchmarks.livecodebench.livecodebench:LiveCodeBench",
+    "gsm8k": "evaluation.benchmarks.gsm8k:GSM8K",
+    "math500": "evaluation.benchmarks.math_500.math_500:MATH500",
+    "deeptheorem": "evaluation.benchmarks.deeptheorem_eval:DeepTheoremEval",
+    "deeptheorem_judge": "evaluation.benchmarks.deeptheorem_judge:DeepTheoremJudgeEval",
 }
 
 # Dataset sizes for each benchmark (used for SLURM job array sizing)
@@ -20,7 +22,8 @@ BENCHMARK_DATASET_SIZES: Dict[str, int] = {
     "livecodebench": 511,
     "gsm8k": 1319,
     "math500": 500,
-    "deeptheorem": 1000
+    "deeptheorem": 1000,
+    "deeptheorem_judge": 1000,
 }
 
 def get_benchmarks() -> List[str]:
@@ -39,4 +42,6 @@ def create_benchmark(name: str) -> BaseBenchmark:
     if name not in BENCHMARK_REGISTRY:
         available = get_benchmarks()
         raise ValueError(f"Unknown benchmark '{name}'. Available: {available}")
-    return BENCHMARK_REGISTRY[name]()
+    module_name, class_name = BENCHMARK_REGISTRY[name].split(":")
+    module = import_module(module_name)
+    return getattr(module, class_name)()
