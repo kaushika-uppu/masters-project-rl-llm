@@ -15,12 +15,16 @@ def process_file_pair(stratified_file, input_file, output_file):
                 proof = row.get("proof")
                 informal_theorem = row.get("informal_theorem")
                 informal_theorem_qa = row.get("informal_theorem_qa")
+                pos = row.get("pos")
+                neg = row.get("neg")
                 
-                if ori_q and proof is not None and informal_theorem is not None and informal_theorem_qa is not None:
+                if ori_q and proof is not None and informal_theorem is not None and informal_theorem_qa is not None and pos is not None and neg is not None:
                     data_map[ori_q] = {
                         "proof": proof,
                         "informal_theorem": informal_theorem,
-                        "informal_theorem_qa": informal_theorem_qa
+                        "informal_theorem_qa": informal_theorem_qa,
+                        "pos": pos,
+                        "neg": neg
                     }
     except FileNotFoundError:
         print(f"ERROR: Could not find {stratified_file}. Skipping...")
@@ -55,11 +59,15 @@ def process_file_pair(stratified_file, input_file, output_file):
                     row["proof"] = data_map[ori_q]["proof"]
                     row["informal_theorem"] = data_map[ori_q]["informal_theorem"]
                     row["informal_theorem_qa"] = data_map[ori_q]["informal_theorem_qa"]
+                    row["pos"] = data_map[ori_q]["pos"]
+                    row["neg"] = data_map[ori_q]["neg"]
                     matched += 1
                 else:
                     row["proof"] = ""
                     row["informal_theorem"] = ""
                     row["informal_theorem_qa"] = ""
+                    row["pos"] = ""
+                    row["neg"] = ""
                     missed += 1
                     
                 # drop rollouts columns from data curation step

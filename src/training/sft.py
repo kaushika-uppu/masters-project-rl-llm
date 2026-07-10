@@ -5,7 +5,7 @@ from trl import SFTConfig, SFTTrainer
 from src.data.deeptheorem import build_sft_examples, split_by_difficulty
 
 from .constants import DEEPTHEOREM_SYSTEM_PROMPT
-from .datasets import get_dataset
+from .rl_datasets import get_dataset
 
 
 def run_sft(
@@ -95,29 +95,55 @@ def format_dataset(ds: Dataset, dataset: str) -> Dataset:
 
 
 def format_local_dataset(ds: Dataset) -> Dataset:
-    """Format local JSONL reasoning rollouts for use in SFT."""
+    """Format local JSONL reasoning rollouts for use in SFT. Expands into pos/neg columns"""
 
-    def format_example(row):
-        raw_proof = str(row.get("proof", ""))
-        # split proof into paragraphs and wrap each in <step> tags
-        paragraphs = raw_proof.split("\n\n")
-        proof_steps = "\n".join([f"<step>{p}</step>" for p in paragraphs])
+    examples = []
 
-        return {
-            "messages": [
-                {
-                    "role": "system",
-                    "content": DEEPTHEOREM_SYSTEM_PROMPT,
-                },
-                {
-                    "role": "user",
-                    "content": f"Prove the following:\n{row['informal_theorem']}",
-                },
-                {"role": "assistant", "content": proof_steps},
-            ]
-        }
+    for row in ds:
+        def process_variant(variant_dict):
+            if not variant_dict or "question" not in variant_dict or "response" not in variant_dict:
+                return None
+            
+            # get raw response for variant
+            raw_response = str(variant_dict.get("response", ""))
+            
+            # split into paragraphs and wrap in <step> tags
+            paragraphs = raw_response.split("\n\n")
+            proof_steps = "\n".join([f"<step>{p}</step>" for p in paragraphs])
 
-    return ds.map(format_example)
+            return {
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": DEEPTHEOREM_SYSTEM_PROMPT,
+                    },
+                    {
+                        "role": "user",
+                        "content": variant_dict["question"],
+                    },
+                    {
+                        "role": "assistant", 
+                        "content": proof_steps
+                    },
+                ]
+            }
+
+        # extract and format pos variant
+        if "pos" in row and row["pos"]:
+            pos_example = process_variant(row["pos"])
+            if pos_example:
+                examples.append(pos_example)
+                
+        # extract and format neg variant
+        if "neg" in row and row["neg"]:
+            neg_example = process_variant(row["neg"])
+            if neg_example:
+                examples.append(neg_example)
+
+    if not examples:
+        raise ValueError("Formatting produced 0 examples. Check that the dataset has valid 'pos' and 'neg' columns.")
+        
+    return Dataset.from_list(examples)
 
 
 def get_deeptheorem(ds: Dataset, config: dict = None) -> Dataset:
