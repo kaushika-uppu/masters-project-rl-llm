@@ -1,10 +1,11 @@
-"""In-domain DeepTheorem eval: prove-or-disprove verdict accuracy.
+"""DeepTheorem binary verdict-accuracy benchmark.
 
 Runs on a PROVIDED jsonl of examples (question selection / train-eval disjointness is
 external). Point it at the file via env var DEEPTHEOREM_EVAL_PATH (default
 data/deeptheorem_eval.jsonl). Each line: {"id","statement","label"} where label is a
 bool (True=PROVED). "input"/"output" accepted as aliases.
 """
+
 from __future__ import annotations
 
 import json

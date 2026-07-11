@@ -8,12 +8,14 @@ Training and evaluating LLMs using Reinforcement Learning (RL) and Supervised Fi
 ├── src/                   # Core source code
 │   ├── models/            # Model wrappers and loading
 │   ├── inference/         # Inference and CoT prompting
+│   ├── judge/             # Step judge prompts and verifier helpers
 │   ├── training/          # SFT and RL training
 │   └── utils/             # Shared utilities
 ├── evaluation/            # Evaluation framework
 │   ├── benchmarks/        # Benchmark implementations
-│   ├── metrics/           # Evaluation metrics
-│   └── results/           # Evaluation results (gitignored)
+│   ├── deeptheorem/       # DeepTheorem eval utilities
+│   ├── results/           # Evaluation results (gitignored)
+│   └── trimmed_ids/       # Benchmark subset id lists
 ├── configs/               # Configuration files
 ├── scripts/               # Executable scripts
 ├── tests/                 # Unit tests
@@ -57,3 +59,4 @@ python scripts/evaluate.py --inference-fn dummy --benchmarks test --verbose
 - `--workers`: Number of parallel workers (default: 1)
 - `--output-dir`: Results directory (default: `evaluation/results`)
 - `--verbose`: Show progress bars and detailed output
+- `--limit`: Running only a select number of examples
