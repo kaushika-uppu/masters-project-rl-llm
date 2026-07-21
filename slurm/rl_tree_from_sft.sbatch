@@ -12,7 +12,7 @@
 
 set -euo pipefail
 
-CONFIG="src/training/configs/rl_from_sft.yaml"
+CONFIG="src/training/configs/rl_tree_from_sft.yaml"
 
 source /home/018230446/miniconda3/etc/profile.d/conda.sh
 conda activate v_env

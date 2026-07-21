@@ -9,6 +9,7 @@ numpy
 pandas
 accelerate
 bitsandbytes
-vllm
+vllm==0.25.1
 trl
 peft
+liger-kernel>=0.7.0
