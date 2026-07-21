@@ -29,7 +29,7 @@ rl:
     semantic: true
     embed_model: "sentence-transformers/all-MiniLM-L6-v2"   # small in-process embedder
     cosine_threshold: 0.9   # >= this cosine => same state (raise to under-merge)
-    # semantic: false  -> exact canonical-text matching (deterministic fallback)
+    device: "cpu"  # Keep embedder on CPU to avoid GPU device conflicts
 
   tree:
     group_size: 8
