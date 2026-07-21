@@ -52,36 +52,45 @@ def load_model_and_tokenizer(model_config: dict) -> Tuple[PreTrainedModel, PreTr
         if model_config.get('is_peft_checkpoint', False):
             import torch
             import os
+            from peft import PeftModel
+            import json
 
-            # Set CUDA_LAUNCH_BLOCKING for better error reporting and to avoid race conditions
+            # Set CUDA_LAUNCH_BLOCKING for better error reporting
             os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
-            print("Loading PEFT model with sequential CUDA operations...")
+            print("Loading PEFT model in two stages to avoid CUDA errors...")
 
-            # Force adapter weights to load on CPU first by monkey-patching
-            from peft.utils import save_and_load
-            original_load_peft_weights = save_and_load.load_peft_weights
+            # Read adapter config to find base model
+            adapter_config_path = os.path.join(checkpoint_path, "adapter_config.json")
+            with open(adapter_config_path) as f:
+                adapter_config = json.load(f)
+            base_model_name = adapter_config.get("base_model_name_or_path")
 
-            def load_peft_weights_cpu(*args, **kwargs):
-                # Force device to CPU for loading
-                kwargs['device'] = 'cpu'
-                return original_load_peft_weights(*args, **kwargs)
+            print(f"Step 1: Loading base model {base_model_name} on CPU...")
+            # Load base model on CPU first
+            base_model = AutoModelForCausalLM.from_pretrained(
+                base_model_name,
+                torch_dtype=model_config.get('torch_dtype', 'auto'),
+                device_map="cpu"
+            )
 
-            save_and_load.load_peft_weights = load_peft_weights_cpu
+            print("Step 2: Loading LoRA adapters on CPU...")
+            # Load adapters on CPU
+            model = PeftModel.from_pretrained(
+                base_model,
+                checkpoint_path,
+                is_trainable=True,
+                device_map="cpu"
+            )
 
-            try:
-                model = AutoPeftModelForCausalLM.from_pretrained(
-                    checkpoint_path,
-                    is_trainable=True,
-                    torch_dtype=model_config.get('torch_dtype', 'auto'),
-                    device_map=model_config.get('device_map', 'auto'),
-                    low_cpu_mem_usage=False
-                )
-            finally:
-                # Restore original function
-                save_and_load.load_peft_weights = original_load_peft_weights
+            print("Step 3: Moving model to GPU...")
+            # Now move to target device
+            target_device = model_config.get('device_map', 'auto')
+            if target_device != "cpu":
+                model = model.to(target_device if target_device != "auto" else "cuda")
 
             torch.cuda.empty_cache()
+            print("Model loaded successfully!")
         else:
             model = AutoModelForCausalLM.from_pretrained(
                 checkpoint_path,
