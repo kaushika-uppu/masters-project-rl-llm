@@ -27,4 +27,4 @@ rl:
   max_completion_length: 512
 
   use_vllm: true
-  vllm_gpu_memory_utilization: 0.3
+  vllm_gpu_memory_utilization: 0.5  # Increased from 0.3 to allow more memory for KV cache
