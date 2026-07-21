@@ -75,13 +75,27 @@ def load_model_and_tokenizer(model_config: dict) -> Tuple[PreTrainedModel, PreTr
             )
 
             print("Step 2: Loading LoRA adapters on CPU...")
-            # Load adapters on CPU
-            model = PeftModel.from_pretrained(
-                base_model,
-                checkpoint_path,
-                is_trainable=True,
-                device_map="cpu"
-            )
+
+            # Monkey-patch safetensors to force CPU loading
+            from safetensors import torch as safetensors_torch
+            original_load_file = safetensors_torch.load_file
+
+            def load_file_cpu(filename, device="cpu"):
+                """Force all safetensor loads to CPU"""
+                return original_load_file(filename, device="cpu")
+
+            safetensors_torch.load_file = load_file_cpu
+
+            try:
+                # Load adapters on CPU
+                model = PeftModel.from_pretrained(
+                    base_model,
+                    checkpoint_path,
+                    is_trainable=True
+                )
+            finally:
+                # Restore original function
+                safetensors_torch.load_file = original_load_file
 
             print("Step 3: Moving model to GPU...")
             # Now move to target device
