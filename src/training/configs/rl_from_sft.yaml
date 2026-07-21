@@ -7,8 +7,8 @@ model:
   from_checkpoint: "checkpoints/sft_run_subset_1_2/checkpoint-280"
   is_peft_checkpoint: true          # the SFT run trained LoRA adapters (see configs/sft.yaml)
   torch_dtype: "bfloat16"
-  # Pin the whole policy to the assigned GPU (see rl_from_base.yaml for rationale).
-  device_map: {"": 0}
+  # Use auto device mapping - let transformers figure out GPU placement
+  device_map: "auto"
 
 # NOTE: no `lora` section here. When loading a PEFT checkpoint, run.py keeps the
 # existing adapters trainable instead of attaching new ones.
