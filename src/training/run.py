@@ -1,4 +1,5 @@
 from typing import Tuple
+import os
 
 from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedModel, PreTrainedTokenizerBase
 from peft import LoraConfig, get_peft_model, AutoPeftModelForCausalLM
@@ -8,6 +9,9 @@ import argparse
 
 from src.training.sft import run_sft
 from src.training.rl.run_rl import run_rl
+
+# Disable CUDA caching allocator warmup to avoid "device busy" errors on HPC
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
 def load_config(config_path: str) -> dict:
     with open(config_path, "r") as f:

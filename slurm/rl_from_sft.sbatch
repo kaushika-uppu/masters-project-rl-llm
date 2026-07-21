@@ -31,5 +31,28 @@ mkdir -p "$TMPDIR"
 trap 'rm -rf "$TMPDIR"' EXIT
 
 echo "[$(date)] Starting RL-from-SFT on $(hostname), GPUs: ${CUDA_VISIBLE_DEVICES:-unset}"
+
+# Verify GPU access and show memory
+echo "=== GPU Status ==="
+nvidia-smi || echo "WARNING: nvidia-smi failed"
+
+# Kill any zombie Python processes on assigned GPUs
+echo "=== Checking for zombie processes ==="
+for gpu in $(echo ${CUDA_VISIBLE_DEVICES} | tr ',' ' '); do
+    echo "Checking GPU $gpu for processes..."
+    nvidia-smi -i $gpu --query-compute-apps=pid --format=csv,noheader | while read pid; do
+        if [ ! -z "$pid" ]; then
+            echo "WARNING: Found process $pid on GPU $gpu"
+            ps -p $pid -o user,cmd || true
+        fi
+    done
+done
+
+# Set environment to avoid CUDA issues
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export CUDA_LAUNCH_BLOCKING=0
+# Disable caching allocator warmup that's causing the error
+export PYTORCH_NO_CUDA_MEMORY_CACHING=0
+
 python -m src.training.run "$CONFIG"
 echo "[$(date)] Done. Checkpoint in checkpoints/rl_from_sft"
