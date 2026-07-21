@@ -1,0 +1,30 @@
+# RL from an SFT checkpoint: GRPO starting from the pushed SFT model.
+# Run: python -m src.training.run src/training/configs/rl_from_sft.yaml
+#  or: sbatch slurm/rl_from_sft.sbatch
+
+model:
+  # Pushed SFT checkpoint (output of the sft.yaml run, subset 1-2 rollouts correct).
+  from_checkpoint: "checkpoints/sft_run_subset_1_2/checkpoint-280"
+  is_peft_checkpoint: true          # the SFT run trained LoRA adapters (see configs/sft.yaml)
+  torch_dtype: "bfloat16"
+  # Pin the whole policy to the assigned GPU (see rl_from_base.yaml for rationale).
+  device_map: {"": 0}
+
+# NOTE: no `lora` section here. When loading a PEFT checkpoint, run.py keeps the
+# existing adapters trainable instead of attaching new ones.
+
+rl:
+  method: "grpo_baseline"
+  output_dir: "checkpoints/rl_from_sft"
+  problems_path: "data/rl_problems.jsonl"   # external, provide this: {id, statement, label}
+  max_problems: null
+
+  num_generations: 8
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 1
+  learning_rate: 1.0e-6
+  num_train_epochs: 1
+  max_completion_length: 512
+
+  use_vllm: true
+  vllm_gpu_memory_utilization: 0.3

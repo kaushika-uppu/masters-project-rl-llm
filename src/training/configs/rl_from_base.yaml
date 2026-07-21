@@ -1,0 +1,38 @@
+# RL from BASE (no SFT): GRPO applied directly to the base instruct model.
+# Proves you can RL a fresh policy end-to-end without an SFT warm start.
+# Run: python -m src.training.run src/training/configs/rl_from_base.yaml
+#  or: sbatch slurm/rl_from_base.sbatch
+
+model:
+  name: "Qwen/Qwen2.5-7B-Instruct"    # base policy, NO SFT checkpoint
+  torch_dtype: "bfloat16"
+  # Pin the whole policy to the assigned GPU. SLURM sets CUDA_VISIBLE_DEVICES so
+  # index 0 == the GPU this job was granted. "auto" can silently CPU-offload and
+  # break backprop, so keep it fixed for single-GPU runs.
+  device_map: {"": 0}
+
+# Fresh base model -> attach LoRA adapters here (run.py applies this automatically
+# because there is no `is_peft_checkpoint`).
+lora:
+  r: 16
+  alpha: 32
+  target_modules: ["q_proj", "v_proj", "k_proj", "o_proj"]
+  dropout: 0.05
+  bias: "none"
+
+rl:
+  method: "grpo_baseline"
+  output_dir: "checkpoints/rl_from_base"
+  problems_path: "data/rl_problems.jsonl"   # external, provide this: {id, statement, label}
+  max_problems: null
+
+  num_generations: 8
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 1
+  learning_rate: 1.0e-6
+  num_train_epochs: 1
+  max_completion_length: 512
+
+  # TRL-native vLLM throughput path (colocated on the same GPU as training).
+  use_vllm: true
+  vllm_gpu_memory_utilization: 0.3
