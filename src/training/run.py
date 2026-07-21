@@ -29,11 +29,25 @@ def validate_config(config: dict) -> None:
 
 def load_model_and_tokenizer(model_config: dict) -> Tuple[PreTrainedModel, PreTrainedTokenizerBase]:
     """Load model and tokenizer from config."""
+    # Monkey-patch to disable caching_allocator_warmup that causes intermittent CUDA errors on HPC
+    import torch
+    from transformers import modeling_utils
+    original_warmup = getattr(modeling_utils, 'caching_allocator_warmup', None)
+    if original_warmup:
+        modeling_utils.caching_allocator_warmup = lambda *args, **kwargs: None
+
+    # Initialize CUDA context early to avoid race conditions
+    if torch.cuda.is_available():
+        torch.cuda.init()
+        torch.cuda.empty_cache()
+        # Synchronize to ensure GPU is ready
+        torch.cuda.synchronize()
+
     # option 1: load from saved checkpoint
     if model_config.get("from_checkpoint"):
         checkpoint_path = model_config["from_checkpoint"]
         print(f"Loading model from checkpoint: {checkpoint_path}")
-        
+
         # Check if it's a PEFT model
         if model_config.get('is_peft_checkpoint', False):
             model = AutoPeftModelForCausalLM.from_pretrained(
