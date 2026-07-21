@@ -50,21 +50,37 @@ def load_model_and_tokenizer(model_config: dict) -> Tuple[PreTrainedModel, PreTr
 
         # Check if it's a PEFT model
         if model_config.get('is_peft_checkpoint', False):
-            # Try loading with offload_folder to avoid direct CUDA allocation
-            import tempfile
             import torch
+            import os
 
-            print("Loading PEFT model with CPU offload to avoid CUDA errors...")
-            with tempfile.TemporaryDirectory() as offload_dir:
+            # Set CUDA_LAUNCH_BLOCKING for better error reporting and to avoid race conditions
+            os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+
+            print("Loading PEFT model with sequential CUDA operations...")
+
+            # Force adapter weights to load on CPU first by monkey-patching
+            from peft.utils import save_and_load
+            original_load_peft_weights = save_and_load.load_peft_weights
+
+            def load_peft_weights_cpu(*args, **kwargs):
+                # Force device to CPU for loading
+                kwargs['device'] = 'cpu'
+                return original_load_peft_weights(*args, **kwargs)
+
+            save_and_load.load_peft_weights = load_peft_weights_cpu
+
+            try:
                 model = AutoPeftModelForCausalLM.from_pretrained(
                     checkpoint_path,
                     is_trainable=True,
                     torch_dtype=model_config.get('torch_dtype', 'auto'),
                     device_map=model_config.get('device_map', 'auto'),
-                    low_cpu_mem_usage=False,
-                    offload_folder=offload_dir,
-                    offload_state_dict=True
+                    low_cpu_mem_usage=False
                 )
+            finally:
+                # Restore original function
+                save_and_load.load_peft_weights = original_load_peft_weights
+
             torch.cuda.empty_cache()
         else:
             model = AutoModelForCausalLM.from_pretrained(
