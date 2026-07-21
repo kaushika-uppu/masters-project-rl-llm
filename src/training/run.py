@@ -1,5 +1,4 @@
 from typing import Tuple
-import os
 
 from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedModel, PreTrainedTokenizerBase
 from peft import LoraConfig, get_peft_model, AutoPeftModelForCausalLM
@@ -9,9 +8,6 @@ import argparse
 
 from src.training.sft import run_sft
 from src.training.rl.run_rl import run_rl
-
-# Disable CUDA caching allocator warmup to avoid "device busy" errors on HPC
-os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
 def load_config(config_path: str) -> dict:
     with open(config_path, "r") as f:
@@ -29,20 +25,6 @@ def validate_config(config: dict) -> None:
 
 def load_model_and_tokenizer(model_config: dict) -> Tuple[PreTrainedModel, PreTrainedTokenizerBase]:
     """Load model and tokenizer from config."""
-    # Monkey-patch to disable caching_allocator_warmup that causes intermittent CUDA errors on HPC
-    import torch
-    from transformers import modeling_utils
-    original_warmup = getattr(modeling_utils, 'caching_allocator_warmup', None)
-    if original_warmup:
-        modeling_utils.caching_allocator_warmup = lambda *args, **kwargs: None
-
-    # Initialize CUDA context early to avoid race conditions
-    if torch.cuda.is_available():
-        torch.cuda.init()
-        torch.cuda.empty_cache()
-        # Synchronize to ensure GPU is ready
-        torch.cuda.synchronize()
-
     # option 1: load from saved checkpoint
     if model_config.get("from_checkpoint"):
         checkpoint_path = model_config["from_checkpoint"]
@@ -50,61 +32,12 @@ def load_model_and_tokenizer(model_config: dict) -> Tuple[PreTrainedModel, PreTr
 
         # Check if it's a PEFT model
         if model_config.get('is_peft_checkpoint', False):
-            import torch
-            import os
-            from peft import PeftModel
-            import json
-
-            # Set CUDA_LAUNCH_BLOCKING for better error reporting
-            os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
-
-            print("Loading PEFT model in two stages to avoid CUDA errors...")
-
-            # Read adapter config to find base model
-            adapter_config_path = os.path.join(checkpoint_path, "adapter_config.json")
-            with open(adapter_config_path) as f:
-                adapter_config = json.load(f)
-            base_model_name = adapter_config.get("base_model_name_or_path")
-
-            print(f"Step 1: Loading base model {base_model_name} on CPU...")
-            # Load base model on CPU first
-            base_model = AutoModelForCausalLM.from_pretrained(
-                base_model_name,
+            model = AutoPeftModelForCausalLM.from_pretrained(
+                checkpoint_path,
+                is_trainable=True,
                 torch_dtype=model_config.get('torch_dtype', 'auto'),
-                device_map="cpu"
+                device_map=model_config.get('device_map', 'auto')
             )
-
-            print("Step 2: Loading LoRA adapters on CPU...")
-
-            # Monkey-patch safetensors to force CPU loading
-            from safetensors import torch as safetensors_torch
-            original_load_file = safetensors_torch.load_file
-
-            def load_file_cpu(filename, device="cpu"):
-                """Force all safetensor loads to CPU"""
-                return original_load_file(filename, device="cpu")
-
-            safetensors_torch.load_file = load_file_cpu
-
-            try:
-                # Load adapters on CPU
-                model = PeftModel.from_pretrained(
-                    base_model,
-                    checkpoint_path,
-                    is_trainable=True
-                )
-            finally:
-                # Restore original function
-                safetensors_torch.load_file = original_load_file
-
-            print("Step 3: Moving model to GPU...")
-            # Now move to target device
-            target_device = model_config.get('device_map', 'auto')
-            if target_device != "cpu":
-                model = model.to(target_device if target_device != "auto" else "cuda")
-
-            torch.cuda.empty_cache()
-            print("Model loaded successfully!")
         else:
             model = AutoModelForCausalLM.from_pretrained(
                 checkpoint_path,

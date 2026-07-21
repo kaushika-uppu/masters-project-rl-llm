@@ -9,6 +9,7 @@
 #SBATCH --mem=80G
 #SBATCH --time=12:00:00
 #SBATCH --mail-type=END,FAIL
+#SBATCH --exclude=cs002  # Exclude node cs002 because GPU 0 has ECC errors
 
 set -euo pipefail
 
@@ -31,6 +32,13 @@ mkdir -p "$TMPDIR"
 trap 'rm -rf "$TMPDIR"' EXIT
 
 echo "[$(date)] Starting RL-from-SFT on $(hostname), GPUs: ${CUDA_VISIBLE_DEVICES:-unset}"
+
+# GPU 0 on cs002 has ECC errors (199 uncorrectable), so exclude it
+# Force use of GPUs 1,2,3 if we're on cs002
+if [ "$(hostname)" == "cs002.hpc.coe" ] || [ "$(hostname)" == "cs002" ]; then
+    echo "WARNING: cs002 GPU 0 has ECC errors, restricting to GPUs 1-3"
+    export CUDA_VISIBLE_DEVICES="1,2,3"
+fi
 
 # Verify GPU access and show memory
 echo "=== GPU Status ==="
