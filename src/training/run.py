@@ -50,13 +50,22 @@ def load_model_and_tokenizer(model_config: dict) -> Tuple[PreTrainedModel, PreTr
 
         # Check if it's a PEFT model
         if model_config.get('is_peft_checkpoint', False):
-            model = AutoPeftModelForCausalLM.from_pretrained(
-                checkpoint_path,
-                is_trainable=True,
-                torch_dtype=model_config.get('torch_dtype', 'auto'),
-                device_map=model_config.get('device_map', 'auto'),
-                low_cpu_mem_usage=False  # Disable caching allocator warmup that causes CUDA errors on HPC
-            )
+            # Try loading with offload_folder to avoid direct CUDA allocation
+            import tempfile
+            import torch
+
+            print("Loading PEFT model with CPU offload to avoid CUDA errors...")
+            with tempfile.TemporaryDirectory() as offload_dir:
+                model = AutoPeftModelForCausalLM.from_pretrained(
+                    checkpoint_path,
+                    is_trainable=True,
+                    torch_dtype=model_config.get('torch_dtype', 'auto'),
+                    device_map=model_config.get('device_map', 'auto'),
+                    low_cpu_mem_usage=False,
+                    offload_folder=offload_dir,
+                    offload_state_dict=True
+                )
+            torch.cuda.empty_cache()
         else:
             model = AutoModelForCausalLM.from_pretrained(
                 checkpoint_path,
