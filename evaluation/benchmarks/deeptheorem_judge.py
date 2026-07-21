@@ -20,6 +20,38 @@ _VERDICT_RE = re.compile(r"verdict\s*:?\s*(proved|disproved)", re.IGNORECASE)
 _STEP_PREFIX_RE = re.compile(r"^\s*(?:[-*]\s+|\d+[.)]\s+|step\s*\d+\s*[:.)-]\s*)", re.IGNORECASE)
 
 
+def _env_flag(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "y"}
+
+
+def _load_transformers_verifier(
+    model_name: str,
+    *,
+    load_in_4bit: bool = False,
+    torch_dtype: str = "auto",
+    device_map: str = "auto",
+    max_new_tokens: int = 512,
+):
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    from src.training.rl.inproc import TransformersJudge
+
+    kwargs: dict[str, Any] = {
+        "torch_dtype": torch_dtype,
+        "device_map": device_map,
+    }
+    if load_in_4bit:
+        from transformers import BitsAndBytesConfig
+
+        kwargs["quantization_config"] = BitsAndBytesConfig(load_in_4bit=True)
+
+    model = AutoModelForCausalLM.from_pretrained(model_name, **kwargs)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    return TransformersJudge(model, tokenizer, max_new_tokens=max_new_tokens)
+
+
 def _decode_quoted(raw: str) -> str:
     try:
         return str(json.loads(f'"{raw}"')).strip()
@@ -40,8 +72,33 @@ def _line_steps(text: str) -> list[str]:
 
 
 class DeepTheoremJudgeEval(BaseBenchmark[str, dict[str, Any]]):
-    def __init__(self, verifier=None):
-        self.verifier = verifier or DeterministicJudge()
+    def __init__(
+        self,
+        verifier=None,
+        judge_model: str | None = None,
+        judge_load_in_4bit: bool = False,
+        judge_torch_dtype: str = "auto",
+        judge_device_map: str = "auto",
+        judge_max_new_tokens: int = 512,
+    ):
+        judge_model = judge_model or os.environ.get("DEEPTHEOREM_JUDGE_MODEL")
+        judge_load_in_4bit = judge_load_in_4bit or _env_flag("DEEPTHEOREM_JUDGE_LOAD_IN_4BIT")
+        judge_torch_dtype = os.environ.get("DEEPTHEOREM_JUDGE_TORCH_DTYPE", judge_torch_dtype)
+        judge_device_map = os.environ.get("DEEPTHEOREM_JUDGE_DEVICE_MAP", judge_device_map)
+        judge_max_new_tokens = int(os.environ.get("DEEPTHEOREM_JUDGE_MAX_NEW_TOKENS", judge_max_new_tokens))
+
+        if verifier is not None:
+            self.verifier = verifier
+        elif judge_model:
+            self.verifier = _load_transformers_verifier(
+                judge_model,
+                load_in_4bit=judge_load_in_4bit,
+                torch_dtype=judge_torch_dtype,
+                device_map=judge_device_map,
+                max_new_tokens=judge_max_new_tokens,
+            )
+        else:
+            self.verifier = DeterministicJudge()
 
     def load_dataset(self) -> list[DataSetItem[str, bool]]:
         path = os.environ.get("DEEPTHEOREM_JUDGE_EVAL_PATH", _DEFAULT_PATH)

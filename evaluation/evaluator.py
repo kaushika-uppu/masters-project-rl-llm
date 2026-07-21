@@ -8,7 +8,7 @@ import statistics
 from datetime import datetime
 from pathlib import Path
 
-from evaluation.benchmarks import BaseBenchmark, DataSetItem
+from evaluation.benchmarks.base_benchmark import BaseBenchmark, DataSetItem
 from evaluation.benchmark_registry import create_benchmark, get_benchmarks
 
 

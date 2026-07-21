@@ -15,7 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .tree import Node
-from .types import Problem
+from .types import Problem, StepJudgement
 
 
 @dataclass
@@ -36,6 +36,22 @@ def endpoint_reward(
         return w.fail
     truth = "PROVED" if problem.label else "DISPROVED"
     return w.correct if node.verdict.upper() == truth else w.incorrect
+
+
+def verifier_score(judgements: list[StepJudgement]) -> float:
+    if not judgements:
+        return 0.0
+    valid = sum(1 for j in judgements if j.valid)
+    return valid / len(judgements)
+
+
+def proof_reward(
+    problem: Problem,
+    node: Node,
+    judgements: list[StepJudgement],
+    w: RewardWeights = RewardWeights(),
+) -> float:
+    return endpoint_reward(problem, node, w) * verifier_score(judgements)
 
 
 def step_validity_reward(valid: bool, w: RewardWeights = RewardWeights()) -> float:
