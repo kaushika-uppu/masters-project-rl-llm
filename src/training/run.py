@@ -40,7 +40,8 @@ def load_model_and_tokenizer(model_config: dict) -> Tuple[PreTrainedModel, PreTr
                 checkpoint_path,
                 is_trainable=True,
                 torch_dtype=model_config.get('torch_dtype', 'auto'),
-                device_map=model_config.get('device_map', 'auto')
+                device_map=model_config.get('device_map', 'auto'),
+                low_cpu_mem_usage=False  # Disable caching allocator warmup that causes CUDA errors on HPC
             )
         else:
             model = AutoModelForCausalLM.from_pretrained(
