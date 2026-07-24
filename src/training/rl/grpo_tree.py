@@ -85,18 +85,36 @@ class GRPOTreeTrainer:
 
     # -- pure: build weighted samples (testable without torch) -------------------
     def _tree_samples(self, problem: Problem) -> list[TrainingSample]:
+        import time
+        print(f"[grpo_tree._tree_samples] Starting tree build for problem {problem.id}...", flush=True)
+        t0 = time.time()
         tree, trajs = self.engine.build_tree(problem, self.cfg.group_size, self.weights)
-        return build_samples(
+        t1 = time.time()
+        print(f"[grpo_tree._tree_samples] Tree built in {t1 - t0:.2f}s for problem {problem.id}. "
+              f"Got {len(trajs)} trajectories.", flush=True)
+
+        print(f"[grpo_tree._tree_samples] Building samples from tree...", flush=True)
+        samples = build_samples(
             tree, trajs, problem, self.weights, base_weight=self.cfg.base_weight
         )
+        t2 = time.time()
+        print(f"[grpo_tree._tree_samples] Built {len(samples)} samples in {t2 - t1:.2f}s. "
+              f"Total time: {t2 - t0:.2f}s", flush=True)
+        return samples
 
     def build_batch(self, problems: list[Problem]) -> list[TrainingSample]:
+        print(f"[grpo_tree.build_batch] Building batch for {len(problems)} problem(s)...", flush=True)
         if self.cfg.num_workers and self.cfg.num_workers > 1:
+            print(f"[grpo_tree.build_batch] Using {self.cfg.num_workers} workers.", flush=True)
             with ThreadPoolExecutor(max_workers=self.cfg.num_workers) as ex:
                 groups = list(ex.map(self._tree_samples, problems))
         else:
+            print(f"[grpo_tree.build_batch] Processing problems sequentially...", flush=True)
             groups = [self._tree_samples(p) for p in problems]
-        return [s for g in groups for s in g]
+
+        all_samples = [s for g in groups for s in g]
+        print(f"[grpo_tree.build_batch] Batch complete. Total samples: {len(all_samples)}", flush=True)
+        return all_samples
 
     # -- torch update (cluster) --------------------------------------------------
     def _seq_logprob(self, model, messages: list, continuation: str):
@@ -179,23 +197,50 @@ class GRPOTreeTrainer:
         """Run training. If output_dir + save_every>0 are given, write a checkpoint every
         `save_every` updates so a SLURM wall-time kill / preemption does not lose the run
         (resume by pointing the config's from_checkpoint at the latest checkpoint dir)."""
+        import time
+
         # eval() mode: disable dropout (incl. LoRA dropout) so both generation and the
         # policy-gradient log-probs are deterministic given the sampled tokens. Autograd
         # still works in eval mode; we only sample via temperature, not dropout.
+        print("[grpo_tree.train] Setting models to eval mode...", flush=True)
         self.model.eval()
         if self.ref_model is not None:
             self.ref_model.eval()
+        print("[grpo_tree.train] Models set to eval mode.", flush=True)
+
         stats = []
         bp = self.cfg.batch_problems
         step = 0
-        for _ in range(self.cfg.epochs):
+        print(f"[grpo_tree.train] Starting {self.cfg.epochs} epoch(s) with {len(problems)} problems, "
+              f"batch_problems={bp}", flush=True)
+
+        for epoch in range(self.cfg.epochs):
+            print(f"[grpo_tree.train] === Epoch {epoch + 1}/{self.cfg.epochs} ===", flush=True)
             for i in range(0, len(problems), bp):
-                samples = self.build_batch(problems[i : i + bp])
+                batch_end = min(i + bp, len(problems))
+                batch_problems = problems[i:batch_end]
+                print(f"[grpo_tree.train] Step {step + 1}: Processing problems {i + 1}-{batch_end}/{len(problems)}...", flush=True)
+
+                t0 = time.time()
+                print(f"[grpo_tree.train]   Building batch (rollouts + samples)...", flush=True)
+                samples = self.build_batch(batch_problems)
+                t1 = time.time()
+                print(f"[grpo_tree.train]   Batch built in {t1 - t0:.2f}s, got {len(samples)} samples.", flush=True)
+
                 if samples:
-                    stats.append(self._update(samples))
+                    print(f"[grpo_tree.train]   Running gradient update...", flush=True)
+                    update_stats = self._update(samples)
+                    t2 = time.time()
+                    print(f"[grpo_tree.train]   Update completed in {t2 - t1:.2f}s. Loss: {update_stats.get('loss', 'N/A')}", flush=True)
+                    stats.append(update_stats)
                     step += 1
                     if save_every and output_dir and step % save_every == 0:
+                        print(f"[grpo_tree.train]   Saving checkpoint at step {step}...", flush=True)
                         self._save(output_dir, f"checkpoint-{step}")
+                else:
+                    print(f"[grpo_tree.train]   WARNING: No samples generated for this batch!", flush=True)
+
+        print(f"[grpo_tree.train] Training loop completed. Total steps: {step}", flush=True)
         return stats
 
 
@@ -232,27 +277,56 @@ def _assert_single_process(output_dir: str) -> None:
 
 def run_grpo_tree(model, tokenizer, rl_cfg: dict):
     """Entry from run.py. In-process policy (the trained model) + in-process judge."""
+    import time
+
+    print("[grpo_tree] Starting run_grpo_tree...", flush=True)
     _assert_single_process(rl_cfg["output_dir"])
 
     from .embedder import build_state_matcher
 
+    print("[grpo_tree] Creating TransformersPolicy...", flush=True)
     policy = TransformersPolicy(
         model, tokenizer, temperature=rl_cfg.get("temperature", 0.8)
     )
-    jm, jt = _load_judge_model(rl_cfg)
-    judge = TransformersJudge(jm, jt)
-    matcher = build_state_matcher(rl_cfg.get("merge", {}))  # semantic merging by default
+    print("[grpo_tree] Policy created successfully.", flush=True)
 
+    print(f"[grpo_tree] Loading judge model: {rl_cfg.get('judge_model', 'Qwen/Qwen2.5-7B-Instruct')}...", flush=True)
+    jm, jt = _load_judge_model(rl_cfg)
+    print("[grpo_tree] Judge model loaded successfully.", flush=True)
+
+    print("[grpo_tree] Creating TransformersJudge...", flush=True)
+    judge = TransformersJudge(jm, jt)
+    print("[grpo_tree] Judge created successfully.", flush=True)
+
+    print("[grpo_tree] Building state matcher...", flush=True)
+    matcher = build_state_matcher(rl_cfg.get("merge", {}))  # semantic merging by default
+    print("[grpo_tree] State matcher built successfully.", flush=True)
+
+    print(f"[grpo_tree] Loading problems from {rl_cfg['problems_path']}...", flush=True)
     problems = load_problems_jsonl(
         rl_cfg["problems_path"], limit=rl_cfg.get("max_problems")
     )
+    print(f"[grpo_tree] Loaded {len(problems)} problems.", flush=True)
+
     cfg = TreeGRPOConfig(**rl_cfg.get("tree", {}))
+    print(f"[grpo_tree] Config: group_size={cfg.group_size}, max_depth={cfg.max_depth}, "
+          f"batch_problems={cfg.batch_problems}, epochs={cfg.epochs}", flush=True)
+
+    print("[grpo_tree] Creating GRPOTreeTrainer...", flush=True)
     trainer = GRPOTreeTrainer(model, tokenizer, policy, judge, cfg=cfg, matcher=matcher)
+    print("[grpo_tree] Trainer created successfully.", flush=True)
+
+    print("[grpo_tree] Starting training...", flush=True)
+    start_time = time.time()
     stats = trainer.train(
         problems,
         output_dir=rl_cfg["output_dir"],
         save_every=rl_cfg.get("save_every", 0),
     )
+    elapsed = time.time() - start_time
+    print(f"[grpo_tree] Training completed in {elapsed:.2f}s", flush=True)
+
+    print("[grpo_tree] Saving final model...", flush=True)
     model.save_pretrained(rl_cfg["output_dir"])
     tokenizer.save_pretrained(rl_cfg["output_dir"])
     print(
