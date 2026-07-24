@@ -51,6 +51,9 @@ class ProofTree:
         self._emb: dict[str, list[float]] = {}   # node.key -> cached state embedding
         self._alias: dict[str, str] = {}         # canonical text key -> representative node.key
         self.root_key = self._intern(root_summary, depth=0).key
+        # Merge tracking
+        self.merge_count = 0  # number of times states were merged
+        self.state_count = 0  # total number of states added (including merged ones)
 
     # -- structure ---------------------------------------------------------------
     def _update_flags(self, node: Node, depth: int, kw: dict) -> Node:
@@ -62,10 +65,12 @@ class ProofTree:
 
     def _intern(self, summary: str, depth: int, **kw) -> Node:
         ck = self.matcher.key(summary)
+        self.state_count += 1
 
         # 1. exact / previously-seen text -> same node (fast path)
         nk = self._alias.get(ck)
         if nk is not None:
+            self.merge_count += 1
             return self._update_flags(self.nodes[nk], depth, kw)
 
         # 2. semantic nearest-neighbour merge (embedding cosine >= threshold)
@@ -80,6 +85,7 @@ class ProofTree:
             if (best_key is not None and best_sim >= self.matcher.cosine_threshold
                     and self.matcher.confirm(summary, self.nodes[best_key].summary)):
                 self._alias[ck] = best_key       # cache so identical text short-circuits
+                self.merge_count += 1
                 return self._update_flags(self.nodes[best_key], depth, kw)
 
         # 3. new node
