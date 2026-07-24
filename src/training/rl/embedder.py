@@ -26,19 +26,13 @@ class TransformersEmbedder:
 
     def _lazy(self):
         if self._model is None:
-            import time
             from transformers import AutoModel, AutoTokenizer
 
-            print(f"[TransformersEmbedder._lazy] Loading embedder model {self.model_name}...", flush=True)
-            t0 = time.time()
             self._tok = AutoTokenizer.from_pretrained(self.model_name)
             self._model = AutoModel.from_pretrained(self.model_name)
             if self.device:
-                print(f"[TransformersEmbedder._lazy] Moving model to device {self.device}...", flush=True)
                 self._model.to(self.device)
             self._model.eval()
-            t1 = time.time()
-            print(f"[TransformersEmbedder._lazy] Embedder loaded in {t1 - t0:.2f}s", flush=True)
 
     def encode(self, texts: list[str]) -> list[list[float]]:
         import torch
