@@ -26,18 +26,28 @@ class TransformersEmbedder:
 
     def _lazy(self):
         if self._model is None:
+            import time
             from transformers import AutoModel, AutoTokenizer
 
+            print(f"[TransformersEmbedder._lazy] Loading embedder model {self.model_name}...", flush=True)
+            t0 = time.time()
             self._tok = AutoTokenizer.from_pretrained(self.model_name)
             self._model = AutoModel.from_pretrained(self.model_name)
             if self.device:
+                print(f"[TransformersEmbedder._lazy] Moving model to device {self.device}...", flush=True)
                 self._model.to(self.device)
             self._model.eval()
+            t1 = time.time()
+            print(f"[TransformersEmbedder._lazy] Embedder loaded in {t1 - t0:.2f}s", flush=True)
 
     def encode(self, texts: list[str]) -> list[list[float]]:
         import torch
+        import time
 
+        t0 = time.time()
         self._lazy()
+        print(f"[TransformersEmbedder.encode] Encoding {len(texts)} texts...", flush=True)
+
         enc = self._tok(
             texts,
             padding=True,
@@ -45,13 +55,21 @@ class TransformersEmbedder:
             max_length=self.max_length,
             return_tensors="pt",
         ).to(self._model.device)
+
+        t1 = time.time()
+        print(f"[TransformersEmbedder.encode] Tokenized in {t1 - t0:.2f}s. Computing embeddings...", flush=True)
+
         with torch.no_grad():
             hidden = self._model(**enc).last_hidden_state  # (B, T, H)
         mask = enc["attention_mask"].unsqueeze(-1).to(hidden.dtype)  # (B, T, 1)
         summed = (hidden * mask).sum(dim=1)
         counts = mask.sum(dim=1).clamp(min=1e-9)
         emb = torch.nn.functional.normalize(summed / counts, p=2, dim=1)
-        return emb.cpu().float().tolist()
+        result = emb.cpu().float().tolist()
+
+        t2 = time.time()
+        print(f"[TransformersEmbedder.encode] Encoded {len(result)} embeddings in {t2 - t0:.2f}s", flush=True)
+        return result
 
     __call__ = encode
 
