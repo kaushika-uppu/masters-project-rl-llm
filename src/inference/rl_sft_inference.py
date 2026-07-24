@@ -2,12 +2,13 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from typing import Dict, Any
 from src.inference.base_inference import BaseInference
+from .constants import RIDDLEBENCH_SYSTEM_PROMPT
 
 class RLWithSFTInference(BaseInference):
 
     def format_prompt(self, prompt: str) -> str:
         messages = [
-            {"role": "system", "content": "You are a mathematical reasoning assistant. Provide step-by-step proofs for mathematical theorems. Break down your reasoning into clear, logical steps."},
+            {"role": "system", "content": RIDDLEBENCH_SYSTEM_PROMPT},
             {"role": "user", "content": prompt}
         ]
         return self.tokenizer.apply_chat_template(

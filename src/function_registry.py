@@ -30,4 +30,15 @@ def get_inference_function(name: str) -> Callable[[str], str]:
         raise ValueError(f"Unknown inference function '{name}'. Available: {available}")
 
     registry = _get_registry()
+
+    if name == 'limo':
+        from src.inference.limo_inference import limo
+        return limo()
+    if name == 'deepseek_r1':
+        from src.inference.deepseek_r1_inference import deepseek_r1
+        return deepseek_r1()
+    if name == 'rl_sft_merged':
+        from src.inference.rl_sft_inference import rl_sft_merged
+        return rl_sft_merged()
+        
     return registry[name]
