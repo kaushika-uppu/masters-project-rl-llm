@@ -183,7 +183,10 @@ class GRPOTreeTrainer:
         self._opt.zero_grad()
         n = max(len(samples), 1)
         running = 0.0
-        for s in samples:
+
+        # Process samples in micro-batches to avoid OOM
+        micro_batch_size = 8  # Process 8 samples at a time
+        for i, s in enumerate(samples):
             adv = (s.advantage - mean) / std
             lp = self._seq_logprob(self.model, s.messages, s.continuation)
             loss_s = -(adv * s.weight) * lp
@@ -197,7 +200,13 @@ class GRPOTreeTrainer:
             # sequences on one GPU. Dividing by n keeps the gradient == mean-loss gradient.
             (loss_s / n).backward()
             running += float(loss_s.detach())
+
+            # Clear cache every micro_batch_size samples to free fragmented memory
+            if (i + 1) % micro_batch_size == 0:
+                torch.cuda.empty_cache()
+
         self._opt.step()
+        torch.cuda.empty_cache()  # Clear cache after optimizer step
         return {"loss": running / n, "n_samples": len(samples)}
 
     def _save(self, output_dir: str, tag: str) -> None:

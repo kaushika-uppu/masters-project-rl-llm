@@ -59,7 +59,13 @@ def _generate_batch(model, tokenizer, batch_messages: list, temperature: float, 
             pad_token_id=tokenizer.pad_token_id or tokenizer.eos_token_id,
         )
     gen = out[:, enc["input_ids"].shape[1]:]
-    return [tokenizer.decode(g, skip_special_tokens=True) for g in gen]
+    decoded = [tokenizer.decode(g, skip_special_tokens=True) for g in gen]
+
+    # Clear CUDA cache to free memory after generation
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    return decoded
 
 
 class TransformersPolicy:
