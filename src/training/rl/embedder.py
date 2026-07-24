@@ -36,12 +36,8 @@ class TransformersEmbedder:
 
     def encode(self, texts: list[str]) -> list[list[float]]:
         import torch
-        import time
 
-        t0 = time.time()
         self._lazy()
-        print(f"[TransformersEmbedder.encode] Encoding {len(texts)} texts...", flush=True)
-
         enc = self._tok(
             texts,
             padding=True,
@@ -49,21 +45,13 @@ class TransformersEmbedder:
             max_length=self.max_length,
             return_tensors="pt",
         ).to(self._model.device)
-
-        t1 = time.time()
-        print(f"[TransformersEmbedder.encode] Tokenized in {t1 - t0:.2f}s. Computing embeddings...", flush=True)
-
         with torch.no_grad():
             hidden = self._model(**enc).last_hidden_state  # (B, T, H)
         mask = enc["attention_mask"].unsqueeze(-1).to(hidden.dtype)  # (B, T, 1)
         summed = (hidden * mask).sum(dim=1)
         counts = mask.sum(dim=1).clamp(min=1e-9)
         emb = torch.nn.functional.normalize(summed / counts, p=2, dim=1)
-        result = emb.cpu().float().tolist()
-
-        t2 = time.time()
-        print(f"[TransformersEmbedder.encode] Encoded {len(result)} embeddings in {t2 - t0:.2f}s", flush=True)
-        return result
+        return emb.cpu().float().tolist()
 
     __call__ = encode
 
