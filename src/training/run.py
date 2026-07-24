@@ -29,7 +29,7 @@ def load_model_and_tokenizer(model_config: dict) -> Tuple[PreTrainedModel, PreTr
     if model_config.get("from_checkpoint"):
         checkpoint_path = model_config["from_checkpoint"]
         print(f"Loading model from checkpoint: {checkpoint_path}")
-        
+
         # Check if it's a PEFT model
         if model_config.get('is_peft_checkpoint', False):
             model = AutoPeftModelForCausalLM.from_pretrained(

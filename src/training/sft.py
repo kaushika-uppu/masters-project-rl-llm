@@ -2,7 +2,8 @@ from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, PreTrainedModel
 from trl import SFTConfig, SFTTrainer
 
-from src.data.deeptheorem import build_sft_examples, split_by_difficulty
+# Lazy import to avoid missing module errors when not using deeptheorem dataset
+# from src.data.deeptheorem import build_sft_examples, split_by_difficulty
 
 from .constants import DEEPTHEOREM_SYSTEM_PROMPT
 from .rl_datasets import get_dataset
@@ -155,6 +156,9 @@ def get_deeptheorem(ds: Dataset, config: dict = None) -> Dataset:
           RL init so there is no train->RL distribution shift.
       "prove_only" (legacy) - original behaviour: prove the always-true statement.
     """
+    # Lazy import - only needed when using deeptheorem dataset
+    from src.data.deeptheorem import build_sft_examples, split_by_difficulty
+
     config = config or {}
     threshold = config.get("difficulty_threshold", 7.0)
     task_format = config.get("task_format", "prove_or_disprove")
