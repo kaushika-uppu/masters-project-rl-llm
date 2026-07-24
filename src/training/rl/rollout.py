@@ -87,42 +87,24 @@ class RolloutEngine:
         group_size: int = 8,
         weights: RewardWeights = RewardWeights(),
     ) -> tuple[ProofTree, list[Trajectory]]:
-        import time
-
-        print(f"[rollout.build_tree] Starting tree build: problem={problem.id}, "
-              f"group_size={group_size}, max_depth={self.max_depth}", flush=True)
         tree = ProofTree(f"GOAL: prove or disprove: {problem.statement}", self.matcher)
         states = [_RState(node=tree.root, path=[tree.root.key]) for _ in range(group_size)]
 
-        for depth in range(self.max_depth):
+        for _ in range(self.max_depth):
             active = [s for s in states if not s.done]
             if not active:
-                print(f"[rollout.build_tree] Depth {depth}: All rollouts done. Breaking.", flush=True)
                 break
 
-            print(f"[rollout.build_tree] Depth {depth}: {len(active)}/{group_size} active rollouts. Proposing steps...", flush=True)
-            t0 = time.time()
             steps = self._propose(problem, [s.history for s in active])
-            t1 = time.time()
-            print(f"[rollout.build_tree] Depth {depth}: Steps proposed in {t1 - t0:.2f}s. Judging...", flush=True)
-
             judged = self._judge(problem, [(s.history, st) for s, st in zip(active, steps)])
-            t2 = time.time()
-            print(f"[rollout.build_tree] Depth {depth}: Steps judged in {t2 - t1:.2f}s.", flush=True)
-
             tries = [0] * len(active)
             last_fail: dict[int, Node] = {}
 
             # batched bounded retry: re-generate only the still-invalid rollouts
-            retry_round = 0
             while True:
                 invalid = [i for i, s in enumerate(active) if not s.done and not judged[i].valid]
                 if not invalid:
-                    print(f"[rollout.build_tree] Depth {depth}: All steps valid.", flush=True)
                     break
-
-                print(f"[rollout.build_tree] Depth {depth}, retry round {retry_round}: "
-                      f"{len(invalid)} invalid steps. Recording failures...", flush=True)
                 for i in invalid:  # record each bad move as a merged dead-end leaf
                     last_fail[i] = tree.add_transition(
                         active[i].node, steps[i], f"FAILED::{steps[i]}", failed=True
@@ -136,37 +118,19 @@ class RolloutEngine:
                         s.done = True
                     else:
                         still.append(i)
-
-                print(f"[rollout.build_tree] Depth {depth}, retry round {retry_round}: "
-                      f"{len(still)} rollouts still retrying (budget not exhausted).", flush=True)
                 if not still:
                     break
-
-                print(f"[rollout.build_tree] Depth {depth}, retry round {retry_round}: Revising {len(still)} steps...", flush=True)
-                t_rev0 = time.time()
                 revised = self._revise(
                     problem, [(active[i].history, steps[i], judged[i].reason) for i in still]
                 )
-                t_rev1 = time.time()
-                print(f"[rollout.build_tree] Depth {depth}, retry round {retry_round}: "
-                      f"Steps revised in {t_rev1 - t_rev0:.2f}s. Re-judging...", flush=True)
-
                 for k, i in enumerate(still):
                     steps[i] = revised[k]
                     tries[i] += 1
-
                 rej = self._judge(problem, [(active[i].history, steps[i]) for i in still])
-                t_rev2 = time.time()
-                print(f"[rollout.build_tree] Depth {depth}, retry round {retry_round}: "
-                      f"Re-judged in {t_rev2 - t_rev1:.2f}s.", flush=True)
-
                 for k, i in enumerate(still):
                     judged[i] = rej[k]
-                retry_round += 1
 
             # apply the valid step for each rollout that didn't exhaust its retries
-            applied = 0
-            terminal_count = 0
             for i, s in enumerate(active):
                 if s.done or not judged[i].valid:
                     continue
@@ -178,20 +142,13 @@ class RolloutEngine:
                 s.steps.append(st)
                 s.path.append(child.key)
                 s.node = child
-                applied += 1
                 if j.is_terminal:
                     s.terminal = child
                     s.done = True
-                    terminal_count += 1
-
-            print(f"[rollout.build_tree] Depth {depth}: Applied {applied} valid steps. "
-                  f"{terminal_count} reached terminal states.", flush=True)
 
         # finalize trajectories + pool terminal rewards into MC node values
-        print(f"[rollout.build_tree] Finalizing {group_size} trajectories...", flush=True)
         truth = "PROVED" if problem.label else "DISPROVED"
         trajectories: list[Trajectory] = []
-        success_count = 0
         for s in states:
             terminal = s.terminal if s.terminal is not None else s.node
             traj = Trajectory(s.path, terminal, s.steps)
@@ -201,10 +158,6 @@ class RolloutEngine:
                 and terminal.verdict is not None
                 and terminal.verdict.upper() == truth
             )
-            if traj.success:
-                success_count += 1
             tree.record_rollout(traj.path_keys, traj.reward)
             trajectories.append(traj)
-
-        print(f"[rollout.build_tree] Tree build complete. {success_count}/{group_size} successful trajectories.", flush=True)
         return tree, trajectories
