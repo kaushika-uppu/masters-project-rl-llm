@@ -50,10 +50,10 @@ class ProofTree:
         self.nodes: dict[str, Node] = {}
         self._emb: dict[str, list[float]] = {}   # node.key -> cached state embedding
         self._alias: dict[str, str] = {}         # canonical text key -> representative node.key
-        self.root_key = self._intern(root_summary, depth=0).key
-        # Merge tracking
+        # Merge tracking (must be initialized before _intern is called)
         self.merge_count = 0  # number of times states were merged
         self.state_count = 0  # total number of states added (including merged ones)
+        self.root_key = self._intern(root_summary, depth=0).key
 
     # -- structure ---------------------------------------------------------------
     def _update_flags(self, node: Node, depth: int, kw: dict) -> Node:
