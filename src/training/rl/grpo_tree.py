@@ -101,9 +101,13 @@ class GRPOTreeTrainer:
         if hasattr(self, '_current_problem_idx') and hasattr(self, '_total_problems_in_batch'):
             progress_str = f"[{self._current_problem_idx + 1}/{self._total_problems_in_batch}] "
 
+        # Calculate merge statistics
+        merge_pct = (tree.merge_count / tree.state_count * 100) if tree.state_count > 0 else 0
+
         print(f"{progress_str}Problem {problem.id}: {elapsed:.1f}s | "
               f"{success_count}/{len(trajs)} success | {len(samples)} samples | "
-              f"{len(tree.nodes)} tree nodes", flush=True)
+              f"{len(tree.nodes)} nodes ({tree.state_count} states, {tree.merge_count} merged = {merge_pct:.0f}%)",
+              flush=True)
         return samples
 
     def build_batch(self, problems: list[Problem]) -> list[TrainingSample]:
