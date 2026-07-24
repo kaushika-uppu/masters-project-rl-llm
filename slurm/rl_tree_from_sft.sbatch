@@ -5,7 +5,7 @@
 #SBATCH --job-name=rl_tree_from_sft
 #SBATCH --output=logs/rl_tree_from_sft_%j.out
 #SBATCH --partition=gpuqm
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:1
 #SBATCH --mem=80G
 #SBATCH --time=12:00:00
 #SBATCH --mail-type=END,FAIL

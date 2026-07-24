@@ -22,7 +22,7 @@ BENCHMARK_DATASET_SIZES: Dict[str, int] = {
     "livecodebench": 511,
     "gsm8k": 1319,
     "math500": 500,
-    "deeptheorem": 1000,
+    "deeptheorem": 1500,
     "deeptheorem_judge": 1000,
 }
 
