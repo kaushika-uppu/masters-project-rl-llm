@@ -41,13 +41,8 @@ def _generate_batch(model, tokenizer, batch_messages: list, temperature: float, 
     whole GRPO group (and any retries) go through the model together instead of serially.
     """
     import torch
-    import time
-
     if not batch_messages:
         return []
-
-    print(f"[_generate_batch] Preparing {len(batch_messages)} messages for generation...", flush=True)
-    t0 = time.time()
     texts = [tokenizer.apply_chat_template(m, tokenize=False, add_generation_prompt=True) for m in batch_messages]
     prev_side = tokenizer.padding_side
     tokenizer.padding_side = "left"
@@ -55,11 +50,6 @@ def _generate_batch(model, tokenizer, batch_messages: list, temperature: float, 
         enc = tokenizer(texts, return_tensors="pt", padding=True, add_special_tokens=False).to(model.device)
     finally:
         tokenizer.padding_side = prev_side
-
-    t1 = time.time()
-    print(f"[_generate_batch] Tokenized in {t1 - t0:.2f}s. Input shape: {enc['input_ids'].shape}. "
-          f"Starting generation (max_new_tokens={max_new_tokens}, temp={temperature})...", flush=True)
-
     do_sample = bool(temperature and temperature > 0)
     with torch.no_grad():
         out = model.generate(
@@ -68,16 +58,8 @@ def _generate_batch(model, tokenizer, batch_messages: list, temperature: float, 
             max_new_tokens=max_new_tokens,
             pad_token_id=tokenizer.pad_token_id or tokenizer.eos_token_id,
         )
-
-    t2 = time.time()
-    print(f"[_generate_batch] Generation completed in {t2 - t1:.2f}s. Decoding...", flush=True)
-
     gen = out[:, enc["input_ids"].shape[1]:]
-    decoded = [tokenizer.decode(g, skip_special_tokens=True) for g in gen]
-
-    t3 = time.time()
-    print(f"[_generate_batch] Decoding completed in {t3 - t2:.2f}s. Total: {t3 - t0:.2f}s", flush=True)
-    return decoded
+    return [tokenizer.decode(g, skip_special_tokens=True) for g in gen]
 
 
 class TransformersPolicy:
@@ -106,26 +88,16 @@ class TransformersPolicy:
 
     def propose_steps_batch(self, problem: Problem, histories: list[list[str]]) -> list[str]:
         """One next step per history, generated in a single batched forward."""
-        import time
-        print(f"[TransformersPolicy.propose_steps_batch] Generating {len(histories)} steps...", flush=True)
-        t0 = time.time()
         batch = [self._messages(problem, h) for h in histories]
         outs = _generate_batch(self.model, self.tokenizer, batch,
                                temperature=self.temperature, max_new_tokens=self.max_new_tokens)
-        t1 = time.time()
-        print(f"[TransformersPolicy.propose_steps_batch] Generated {len(outs)} steps in {t1 - t0:.2f}s", flush=True)
         return [_extract_step(o) for o in outs]
 
     def revise_steps_batch(self, problem: Problem, items: list) -> list[str]:
         """items: (history, failed_step, reason). One revised step per item, batched."""
-        import time
-        print(f"[TransformersPolicy.revise_steps_batch] Revising {len(items)} steps...", flush=True)
-        t0 = time.time()
         batch = [self._messages(problem, h, self._revise_extra(fs, r)) for (h, fs, r) in items]
         outs = _generate_batch(self.model, self.tokenizer, batch,
                                temperature=self.temperature, max_new_tokens=self.max_new_tokens)
-        t1 = time.time()
-        print(f"[TransformersPolicy.revise_steps_batch] Revised {len(outs)} steps in {t1 - t0:.2f}s", flush=True)
         return [_extract_step(o) for o in outs]
 
 
@@ -140,9 +112,6 @@ class TransformersJudge:
 
     def judge_steps_batch(self, problem: Problem, items: list) -> list[StepJudgement]:
         """items: (history, step). All steps judged in a single batched forward."""
-        import time
-        print(f"[TransformersJudge.judge_steps_batch] Judging {len(items)} steps...", flush=True)
-        t0 = time.time()
         batch = [
             [
                 {"role": "system", "content": JUDGE_SYSTEM_PROMPT},
@@ -152,8 +121,6 @@ class TransformersJudge:
         ]
         raws = _generate_batch(self.model, self.tokenizer, batch,
                                temperature=0.0, max_new_tokens=self.max_new_tokens)
-        t1 = time.time()
-        print(f"[TransformersJudge.judge_steps_batch] Judged {len(raws)} steps in {t1 - t0:.2f}s", flush=True)
         return [
             parse_step_judgement(raw, history=h, step=s)
             for raw, (h, s) in zip(raws, items)
