@@ -19,7 +19,7 @@ build/
 *.swo
 
 # Project specific
-data/
+/data/
 checkpoints/
 evaluation/results/
 sh_scripts/

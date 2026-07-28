@@ -9,17 +9,19 @@ def _get_registry() -> Dict[str, Callable[[str], str]]:
     from src.inference import dummy_inference, cot_3shot
     from src.inference.limo_inference import limo
     from src.inference.deepseek_r1_inference import deepseek_r1
+    from src.inference.rl_sft_inference import rl_sft_merged
 
     return {
         "dummy": dummy_inference,
         "cot_3shot": cot_3shot,
         "limo": limo,
-        "deepseek_r1": deepseek_r1
+        "deepseek_r1": deepseek_r1,
+        "rl_sft_merged": rl_sft_merged
     }
 
 def get_available_functions() -> list[str]:
     """Return list of available inference function names."""
-    return ["dummy", "cot_3shot", "limo", "deepseek_r1"]
+    return ["dummy", "cot_3shot", "limo", "deepseek_r1", "rl_sft_merged"]
 
 def get_inference_function(name: str) -> Callable[[str], str]:
     """Get an inference function by name. Uses lazy imports to avoid loading heavy dependencies."""
@@ -27,15 +29,16 @@ def get_inference_function(name: str) -> Callable[[str], str]:
     if name not in available:
         raise ValueError(f"Unknown inference function '{name}'. Available: {available}")
 
-    # Lazy load the registry
     registry = _get_registry()
 
     if name == 'limo':
         from src.inference.limo_inference import limo
         return limo()
-
     if name == 'deepseek_r1':
         from src.inference.deepseek_r1_inference import deepseek_r1
         return deepseek_r1()
-
+    if name == 'rl_sft_merged':
+        from src.inference.rl_sft_inference import rl_sft_merged
+        return rl_sft_merged()
+        
     return registry[name]

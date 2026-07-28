@@ -1,24 +1,43 @@
-# SFT followed by RL training pipeline
-# SFT runs first, then RL automatically loads the SFT checkpoint
+# SFT -> RL in one run. SFT trains first; run.py then reloads the SFT LoRA
+# checkpoint and continues with GRPO. Single job, no manual hand-off.
+# Run: python -m src.training.run src/training/configs/sft_then_rl.yaml
+#  or: sbatch slurm/sft_then_rl.sbatch
 
 model:
-  name: "Qwen/Qwen2.5-7B-Instruct"
+  name: "Qwen/Qwen2.5-7B-Instruct"    # fresh base; SFT provides the warm start
   torch_dtype: "bfloat16"
-  device_map: "auto"
+  # Kept fixed (not "auto") because the same device_map is reused when run.py
+  # reloads the SFT checkpoint for the RL phase, where CPU-offload breaks backprop.
+  device_map: {"": 0}
 
 lora:
   r: 16
   alpha: 32
   target_modules: ["q_proj", "v_proj", "k_proj", "o_proj"]
   dropout: 0.05
+  bias: "none"
 
+# ---- Phase 1: SFT ----
+# Same SFT data as the standalone SFT run (configs/sft.yaml): the local
+# subset-of-1-2-correct-rollouts jsonl, NOT the raw deeptheorem HF dataset.
 sft:
-  dataset: "deeptheorem"
-  output_dir: "checkpoints/pipeline_sft_deeptheorem"
+  dataset: "src/training/dt_sft_subset_1_2.jsonl"   # matches configs/sft.yaml
+  output_dir: "checkpoints/pipeline_sft"            # RL phase auto-loads this as a PEFT checkpoint
   num_train_epochs: 2
 
+# ---- Phase 2: RL (auto-loads checkpoints/pipeline_sft) ----
 rl:
-  dataset: "deeptheorem"
-  output_dir: "checkpoints/pipeline_rl_deeptheorem"
-  algorithm: "dpo"
-  # NOTE: RL not yet implemented
+  method: "grpo_baseline"
+  output_dir: "checkpoints/pipeline_rl"
+  problems_path: "data/rl_problems.jsonl"      # external, provide this: {id, statement, label}
+  max_problems: null
+
+  num_generations: 8
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 1
+  learning_rate: 1.0e-6
+  num_train_epochs: 1
+  max_completion_length: 512
+
+  use_vllm: true
+  vllm_gpu_memory_utilization: 0.3
