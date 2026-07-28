@@ -5,7 +5,7 @@
 #SBATCH --job-name=rl_tree_from_sft
 #SBATCH --output=logs/rl_tree_from_sft_%j.out
 #SBATCH --partition=gpuqm
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:2   # GPU 0 = policy (trained), GPU 1 = judge + embedder (offloaded)
 #SBATCH --mem=80G
 #SBATCH --time=12:00:00
 #SBATCH --mail-type=END,FAIL
@@ -30,6 +30,9 @@ export VLLM_USE_V1=0
 export TMPDIR="/tmp/$USER-rl-$SLURM_JOB_ID"
 mkdir -p "$TMPDIR"
 trap 'rm -rf "$TMPDIR"' EXIT
+
+# Reduce CUDA allocator fragmentation (the OOM report showed ~2GB reserved-but-unallocated).
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 # GPU 0 on cs002 has ECC errors (199 uncorrectable), so exclude it
 # Force use of GPUs 1,2,3 if we're on cs002
