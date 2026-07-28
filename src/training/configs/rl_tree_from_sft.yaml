@@ -7,8 +7,10 @@ model:
   from_checkpoint: "checkpoints/sft_run_subset_1_2/checkpoint-280"
   is_peft_checkpoint: true          # the SFT run trained LoRA adapters (see configs/sft.yaml)
   torch_dtype: "bfloat16"
-  # Use auto device mapping to avoid CUDA errors on HPC
-  device_map: "auto"
+  # Pin the WHOLE policy to GPU 0. With --gres=gpu:2, "auto" would shard the policy across
+  # BOTH cards and collide with the judge on cuda:1 (and "auto" can break backprop for this
+  # hand-rolled single-process trainer). Judge + embedder go to GPU 1 (see rl section).
+  device_map: {"": 0}
 
 # NOTE: no `lora` section here. When loading a PEFT checkpoint, run.py keeps the
 # existing adapters trainable instead of attaching new ones.
@@ -22,14 +24,15 @@ rl:
   save_every: 50          # checkpoint every N updates (survives SLURM wall-time/preemption)
 
   judge_model: "Qwen/Qwen2.5-7B-Instruct"   # in-process judge; swap/fine-tune later
-  judge_load_in_4bit: true                  # fit policy + judge on one GPU
+  judge_load_in_4bit: true                  # 4-bit keeps the judge small (~5GB)
+  judge_device: "cuda:1"                    # judge on the 2nd GPU, off the policy's card
 
   # Node merging: semantic (embedding cosine) so states phrased differently still merge.
   merge:
     semantic: true
     embed_model: "sentence-transformers/all-MiniLM-L6-v2"   # small in-process embedder
     cosine_threshold: 0.9   # >= this cosine => same state (raise to under-merge)
-    device: "cpu"  # Keep embedder on CPU to avoid GPU device conflicts
+    device: "cuda:1"  # embedder on GPU 1 too (off the policy card); use "cpu" if preferred
 
   tree:
     group_size: 8
@@ -42,3 +45,5 @@ rl:
     base_weight: 0.1
     num_workers: 1     # >1 parallelizes trees across problems; safe only with a
                        # served/replicated backend or one model per worker (see grpo_tree.py)
+    grad_checkpointing: true   # recompute activations in backward; big memory saving in _update
+    max_score_tokens: 4096     # skip scoring sequences longer than this (0 = disabled)

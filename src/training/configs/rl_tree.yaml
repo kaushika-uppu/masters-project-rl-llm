@@ -21,13 +21,17 @@ rl:
   save_every: 50          # checkpoint every N updates (survives SLURM wall-time/preemption)
 
   judge_model: "Qwen/Qwen2.5-7B-Instruct"   # in-process judge; swap/fine-tune later
-  judge_load_in_4bit: true                  # fit policy + judge on one GPU
+  judge_load_in_4bit: true                  # 4-bit keeps the judge small (~5GB)
+  judge_device: "cuda:1"                    # put the judge on the 2nd GPU so it does NOT
+                                            # share the policy's card. Needs --gres=gpu:2.
+                                            # Set to "cuda:0" to co-locate on one GPU.
 
   # Node merging: semantic (embedding cosine) so states phrased differently still merge.
   merge:
     semantic: true
     embed_model: "sentence-transformers/all-MiniLM-L6-v2"   # small in-process embedder
     cosine_threshold: 0.9   # >= this cosine => same state (raise to under-merge)
+    device: "cuda:1"        # keep the embedder off the policy card too (small, but free win)
     # semantic: false  -> exact canonical-text matching (deterministic fallback)
 
   tree:
@@ -41,3 +45,6 @@ rl:
     base_weight: 0.1
     num_workers: 1     # >1 parallelizes trees across problems; safe only with a
                        # served/replicated backend or one model per worker (see grpo_tree.py)
+    grad_checkpointing: true   # recompute activations in backward; big memory saving in _update
+    max_score_tokens: 4096     # skip scoring sequences longer than this (0 = disabled).
+                               # Raise if you have headroom; a single long rollout is what OOMs.

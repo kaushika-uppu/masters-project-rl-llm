@@ -60,6 +60,14 @@ class TreeGRPOConfig:
     batch_problems: int = 4
     base_weight: float = 0.1
     num_workers: int = 1  # parallel trees across problems (see module note)
+    # Skip scoring any sample whose rendered (prompt+continuation) token length exceeds
+    # this, to cap peak per-sequence memory in _update. 0 = disabled (score everything).
+    # A single very long tree rollout is what tips a marginal GPU into OOM mid-run.
+    max_score_tokens: int = 0
+    # Toggle activation checkpointing on the policy during the update pass. Trades ~30%
+    # compute for a large activation-memory saving across the decoder layers. Rollouts
+    # (generation) keep use_cache=True and are unaffected because we only toggle in _update.
+    grad_checkpointing: bool = True
 
 
 class GRPOTreeTrainer:
@@ -86,6 +94,7 @@ class GRPOTreeTrainer:
     # -- pure: build weighted samples (testable without torch) -------------------
     def _tree_samples(self, problem: Problem) -> list[TrainingSample]:
         import time
+
         t0 = time.time()
         tree, trajs = self.engine.build_tree(problem, self.cfg.group_size, self.weights)
         samples = build_samples(
@@ -98,16 +107,24 @@ class GRPOTreeTrainer:
 
         # Get progress info if available (set by build_batch)
         progress_str = ""
-        if hasattr(self, '_current_problem_idx') and hasattr(self, '_total_problems_in_batch'):
-            progress_str = f"[{self._current_problem_idx + 1}/{self._total_problems_in_batch}] "
+        if hasattr(self, "_current_problem_idx") and hasattr(
+            self, "_total_problems_in_batch"
+        ):
+            progress_str = (
+                f"[{self._current_problem_idx + 1}/{self._total_problems_in_batch}] "
+            )
 
         # Calculate merge statistics
-        merge_pct = (tree.merge_count / tree.state_count * 100) if tree.state_count > 0 else 0
+        merge_pct = (
+            (tree.merge_count / tree.state_count * 100) if tree.state_count > 0 else 0
+        )
 
-        print(f"{progress_str}Problem {problem.id}: {elapsed:.1f}s | "
-              f"{success_count}/{len(trajs)} success | {len(samples)} samples | "
-              f"{len(tree.nodes)} nodes ({tree.state_count} states, {tree.merge_count} merged = {merge_pct:.0f}%)",
-              flush=True)
+        print(
+            f"{progress_str}Problem {problem.id}: {elapsed:.1f}s | "
+            f"{success_count}/{len(trajs)} success | {len(samples)} samples | "
+            f"{len(tree.nodes)} nodes ({tree.state_count} states, {tree.merge_count} merged = {merge_pct:.0f}%)",
+            flush=True,
+        )
         return samples
 
     def build_batch(self, problems: list[Problem]) -> list[TrainingSample]:
@@ -129,7 +146,10 @@ class GRPOTreeTrainer:
                 if idx == 0:
                     avg_time = time.time() - t_batch_start
                     eta = avg_time * (len(problems) - 1)
-                    print(f"  → Batch ETA: {eta:.0f}s ({avg_time:.1f}s/problem)", flush=True)
+                    print(
+                        f"  → Batch ETA: {eta:.0f}s ({avg_time:.1f}s/problem)",
+                        flush=True,
+                    )
 
         all_samples = [s for g in groups for s in g]
         return all_samples
@@ -155,17 +175,24 @@ class GRPOTreeTrainer:
         )
         f_ids = tok(
             prompt_text + continuation, return_tensors="pt", add_special_tokens=False
-        ).input_ids.to(model.device)
+        ).input_ids
+        max_tok = getattr(self.cfg, "max_score_tokens", 0)
+        if max_tok and f_ids.shape[1] > max_tok:
+            # Too long to score safely on this GPU; signal the caller to skip it.
+            return None
+        f_ids = f_ids.to(model.device)
         p_len = _common_prefix_len(p_ids, f_ids[0].tolist())
         if f_ids.shape[1] <= p_len:  # nothing to score
             return torch.zeros((), device=model.device)
         logits = model(f_ids).logits[:, :-1, :]
         targets = f_ids[:, 1:]
-        tok_logp = (
-            torch.log_softmax(logits, dim=-1)
-            .gather(-1, targets.unsqueeze(-1))
-            .squeeze(-1)[0]
-        )
+        # Memory-efficient token log-probs: log p(t) = logit_t - logsumexp(logits).
+        # logsumexp reduces over the vocab dim, so we never materialize a second
+        # full [1, L, vocab] tensor the way torch.log_softmax(logits) would (Qwen2.5
+        # vocab ~152k -> that copy is several GB on a long rollout and was the OOM).
+        sel = logits.gather(-1, targets.unsqueeze(-1)).squeeze(-1)  # [1, L-1]
+        tok_logp = (sel - torch.logsumexp(logits, dim=-1))[0]
+        del logits, sel
         return tok_logp[p_len - 1 :].sum()
 
     def _update(self, samples: list[TrainingSample]) -> dict:
@@ -180,34 +207,60 @@ class GRPOTreeTrainer:
         var = sum((a - mean) ** 2 for a in advs) / max(len(advs) - 1, 1)
         std = var**0.5 or 1.0
 
+        # Activation checkpointing: recompute layer activations during backward instead of
+        # storing them all. This is the big memory lever for a single-sequence forward
+        # through the 7B policy. Enable only for the update; generation (build_batch) ran
+        # earlier and wants use_cache=True. use_reentrant=False + enable_input_require_grads
+        # are both required for a frozen-base PEFT model, otherwise backward has no input
+        # that requires grad and the checkpointed segment errors.
+        gc_on = getattr(self.cfg, "grad_checkpointing", False)
+        if gc_on:
+            self.model.gradient_checkpointing_enable(
+                gradient_checkpointing_kwargs={"use_reentrant": False}
+            )
+            if hasattr(self.model, "enable_input_require_grads"):
+                self.model.enable_input_require_grads()
+            self.model.config.use_cache = False
+
         self._opt.zero_grad()
-        n = max(len(samples), 1)
         running = 0.0
 
-        # Process samples in micro-batches to avoid OOM
-        micro_batch_size = 8  # Process 8 samples at a time
+        # Score one sample at a time and back-prop immediately so each sample's autograd
+        # graph is freed before the next. (Accumulating loss across the batch would keep
+        # every graph alive at once -> OOM.) Skipped samples don't count toward the mean.
+        scored = 0
+        n = max(len(samples), 1)
+        empty_cache_every = 8  # release fragmented blocks periodically
         for i, s in enumerate(samples):
             adv = (s.advantage - mean) / std
             lp = self._seq_logprob(self.model, s.messages, s.continuation)
+            if lp is None:  # sequence exceeded max_score_tokens; skip it
+                continue
             loss_s = -(adv * s.weight) * lp
             if self.ref_model is not None:
                 with torch.no_grad():
                     rlp = self._seq_logprob(self.ref_model, s.messages, s.continuation)
-                loss_s = loss_s + self.cfg.kl_coef * (lp - rlp)
-            # Per-sample backward so the autograd graph for each sample is freed
-            # immediately. Accumulating `total = total + loss_s` across the whole batch
-            # keeps every sample's graph alive at once -> OOM with group_size*depth*problems
-            # sequences on one GPU. Dividing by n keeps the gradient == mean-loss gradient.
+                if rlp is not None:
+                    loss_s = loss_s + self.cfg.kl_coef * (lp - rlp)
             (loss_s / n).backward()
             running += float(loss_s.detach())
-
-            # Clear cache every micro_batch_size samples to free fragmented memory
-            if (i + 1) % micro_batch_size == 0:
+            scored += 1
+            del loss_s, lp
+            if (i + 1) % empty_cache_every == 0:
                 torch.cuda.empty_cache()
 
         self._opt.step()
-        torch.cuda.empty_cache()  # Clear cache after optimizer step
-        return {"loss": running / n, "n_samples": len(samples)}
+        torch.cuda.empty_cache()
+
+        if gc_on:
+            self.model.gradient_checkpointing_disable()
+            self.model.config.use_cache = True
+
+        return {
+            "loss": running / max(scored, 1),
+            "n_samples": scored,
+            "n_total": len(samples),
+        }
 
     def _save(self, output_dir: str, tag: str) -> None:
         path = os.path.join(output_dir, tag)
@@ -239,9 +292,11 @@ class GRPOTreeTrainer:
         total_steps = (len(problems) + bp - 1) // bp * self.cfg.epochs
 
         print(f"\n{'='*60}")
-        print(f"Starting RL Training")
+        print("Starting RL Training")
         print(f"{'='*60}")
-        print(f"Total problems: {len(problems)} | Batch size: {bp} | Epochs: {self.cfg.epochs}")
+        print(
+            f"Total problems: {len(problems)} | Batch size: {bp} | Epochs: {self.cfg.epochs}"
+        )
         print(f"Total gradient steps: {total_steps}")
         print(f"{'='*60}\n", flush=True)
 
@@ -250,7 +305,10 @@ class GRPOTreeTrainer:
                 batch_end = min(i + bp, len(problems))
                 batch_problems = problems[i:batch_end]
 
-                print(f"\n>>> Step {step + 1}/{total_steps} | Problems {i + 1}-{batch_end}/{len(problems)}", flush=True)
+                print(
+                    f"\n>>> Step {step + 1}/{total_steps} | Problems {i + 1}-{batch_end}/{len(problems)}",
+                    flush=True,
+                )
 
                 t0 = time.time()
                 samples = self.build_batch(batch_problems)
@@ -268,16 +326,22 @@ class GRPOTreeTrainer:
                     eta_seconds = avg_step_time * remaining_steps
                     eta_minutes = eta_seconds / 60
 
-                    print(f"  Rollouts: {t1 - t0:.1f}s | Update: {t2 - t1:.1f}s | "
-                          f"Loss: {update_stats.get('loss', 0):.4f} | Samples: {len(samples)}", flush=True)
-                    print(f"  ETA: {eta_minutes:.1f} min ({avg_step_time:.1f}s/step)\n", flush=True)
+                    print(
+                        f"  Rollouts: {t1 - t0:.1f}s | Update: {t2 - t1:.1f}s | "
+                        f"Loss: {update_stats.get('loss', 0):.4f} | Samples: {len(samples)}",
+                        flush=True,
+                    )
+                    print(
+                        f"  ETA: {eta_minutes:.1f} min ({avg_step_time:.1f}s/step)\n",
+                        flush=True,
+                    )
 
                     stats.append(update_stats)
                     step += 1
                     if save_every and output_dir and step % save_every == 0:
                         self._save(output_dir, f"checkpoint-{step}")
                 else:
-                    print(f"  WARNING: No samples generated!\n", flush=True)
+                    print("  WARNING: No samples generated!\n", flush=True)
 
         print(f"\n{'='*60}")
         print(f"Training Complete! {step} steps finished.")
@@ -289,11 +353,27 @@ def _load_judge_model(rl_cfg: dict):
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
     name = rl_cfg.get("judge_model", "Qwen/Qwen2.5-7B-Instruct")
-    kw = {"torch_dtype": "auto", "device_map": "auto"}
+
+    # Pin the judge to its own device so it does NOT share the policy's GPU. Default is
+    # cuda:1 (a second allocated GPU) which frees ~5GB on the policy card. Set judge_device
+    # to "cuda:0" to co-locate on one GPU again, or "cpu" if you only have a single GPU.
+    # For 4-bit (bitsandbytes) the placement must be expressed as a device_map, not .to().
+    judge_device = rl_cfg.get("judge_device", "cuda:1")
+    dev_index = judge_device
+    if isinstance(judge_device, str) and judge_device.startswith("cuda:"):
+        dev_index = int(judge_device.split(":", 1)[1])
+    elif judge_device == "cuda":
+        dev_index = 0
+
+    kw = {"torch_dtype": "auto", "device_map": {"": dev_index}}
     if rl_cfg.get("judge_load_in_4bit"):
         from transformers import BitsAndBytesConfig
 
         kw["quantization_config"] = BitsAndBytesConfig(load_in_4bit=True)
+    print(
+        f"[grpo_tree] loading judge on device {judge_device} (device_map={{'': {dev_index!r}}})",
+        flush=True,
+    )
     model = AutoModelForCausalLM.from_pretrained(name, **kw)
     tok = AutoTokenizer.from_pretrained(name)
     if tok.pad_token is None:
@@ -325,10 +405,15 @@ def run_grpo_tree(model, tokenizer, rl_cfg: dict):
     policy = TransformersPolicy(
         model, tokenizer, temperature=rl_cfg.get("temperature", 0.8)
     )
-    print(f"Loading judge model: {rl_cfg.get('judge_model', 'Qwen/Qwen2.5-7B-Instruct')}...", flush=True)
+    print(
+        f"Loading judge model: {rl_cfg.get('judge_model', 'Qwen/Qwen2.5-7B-Instruct')}...",
+        flush=True,
+    )
     jm, jt = _load_judge_model(rl_cfg)
     judge = TransformersJudge(jm, jt)
-    matcher = build_state_matcher(rl_cfg.get("merge", {}))  # semantic merging by default
+    matcher = build_state_matcher(
+        rl_cfg.get("merge", {})
+    )  # semantic merging by default
 
     problems = load_problems_jsonl(
         rl_cfg["problems_path"], limit=rl_cfg.get("max_problems")
@@ -343,4 +428,8 @@ def run_grpo_tree(model, tokenizer, rl_cfg: dict):
     )
     model.save_pretrained(rl_cfg["output_dir"])
     tokenizer.save_pretrained(rl_cfg["output_dir"])
-    print(f"\n[grpo_tree] Complete! {len(stats)} updates, final loss: {stats[-1]['loss']:.4f}" if stats else "\n[grpo_tree] Complete!")
+    print(
+        f"\n[grpo_tree] Complete! {len(stats)} updates, final loss: {stats[-1]['loss']:.4f}"
+        if stats
+        else "\n[grpo_tree] Complete!"
+    )
