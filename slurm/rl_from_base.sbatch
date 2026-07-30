@@ -12,10 +12,9 @@
 set -euo pipefail
 
 CONFIG="src/training/configs/rl_from_base.yaml"
-VENV="v_env"                 # cluster virtualenv (matches the eval scripts); change if yours differs
-
+source /home/018230446/miniconda3/etc/profile.d/conda.sh
+conda activate v_env
 mkdir -p logs
-source "${VENV}/bin/activate"
 
 # --- runtime env (vLLM + single-node) ---
 export PYTHONPATH="$PWD:${PYTHONPATH:-}"
