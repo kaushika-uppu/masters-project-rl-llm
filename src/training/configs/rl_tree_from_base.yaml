@@ -1,0 +1,54 @@
+# RL TREE from BASE (no SFT): GRPO applied directly to the base instruct model.
+# Proves you can RL a fresh policy end-to-end without an SFT warm start.
+# Run: python -m src.training.run src/training/configs/rl_tree_from_base.yaml
+#  or: sbatch slurm/rl_tree_from_base.sbatch
+
+model:
+  name: "Qwen/Qwen2.5-7B-Instruct"    # base policy, NO SFT checkpoint
+  torch_dtype: "bfloat16"
+  # Pin the whole policy to the assigned GPU. SLURM sets CUDA_VISIBLE_DEVICES so
+  # index 0 == the GPU this job was granted. "auto" can silently CPU-offload and
+  # break backprop, so keep it fixed for single-GPU runs.
+  device_map: {"": 0}
+
+# Fresh base model -> attach LoRA adapters here (run.py applies this automatically
+# because there is no `is_peft_checkpoint`).
+lora:
+  r: 16
+  alpha: 32
+  target_modules: ["q_proj", "v_proj", "k_proj", "o_proj"]
+  dropout: 0.05
+  bias: "none"
+
+rl:
+  method: "grpo_tree"
+  output_dir: "checkpoints/rl_tree_from_base"
+  problems_path: "data/rl_problems_5_6.jsonl"   # provided externally: {id, statement, label, reference?}
+  max_problems: null
+  temperature: 0.8
+  save_every: 50          # checkpoint every N updates (survives SLURM wall-time/preemption)
+
+  judge_model: "Qwen/Qwen2.5-7B-Instruct"   # in-process judge; swap/fine-tune later
+  judge_load_in_4bit: true                  # 4-bit keeps the judge small (~5GB)
+  judge_device: "cuda:1"                    # judge on the 2nd GPU, off the policy's card
+
+  # Node merging: semantic (embedding cosine) so states phrased differently still merge.
+  merge:
+    semantic: true
+    embed_model: "sentence-transformers/all-MiniLM-L6-v2"   # small in-process embedder
+    cosine_threshold: 0.9   # >= this cosine => same state (raise to under-merge)
+    device: "cuda:1"  # embedder on GPU 1 too (off the policy card); use "cpu" if preferred
+
+  tree:
+    group_size: 8
+    max_depth: 8
+    retry_budget: 2
+    kl_coef: 0.05
+    lr: 1.0e-6
+    epochs: 1
+    batch_problems: 4
+    base_weight: 0.1
+    num_workers: 1     # >1 parallelizes trees across problems; safe only with a
+                       # served/replicated backend or one model per worker (see grpo_tree.py)
+    grad_checkpointing: true   # recompute activations in backward; big memory saving in _update
+    max_score_tokens: 4096     # skip scoring sequences longer than this (0 = disabled)
