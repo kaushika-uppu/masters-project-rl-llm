@@ -18,7 +18,7 @@ model:
 rl:
   method: "grpo_tree"
   output_dir: "checkpoints/rl_tree_from_sft"
-  problems_path: "data/rl_problems.jsonl"   # provided externally: {id, statement, label, reference?}
+  problems_path: "data/rl_problems_3_5.jsonl"   # provided externally: {id, statement, label, reference?}
   max_problems: null
   temperature: 0.8
   save_every: 50          # checkpoint every N updates (survives SLURM wall-time/preemption)
