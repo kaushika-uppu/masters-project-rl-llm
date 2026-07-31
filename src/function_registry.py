@@ -9,6 +9,8 @@ def _get_registry() -> Dict[str, Callable[[str], str]]:
     from src.inference import dummy_inference, cot_3shot
     from src.inference.limo_inference import limo
     from src.inference.deepseek_r1_inference import deepseek_r1
+    from src.inference.sft_inference import sft_merged
+    from src.inference.qwen_base_inference import qwen_base
     from src.inference.rl_sft_inference import rl_sft_merged
 
     return {
@@ -16,12 +18,14 @@ def _get_registry() -> Dict[str, Callable[[str], str]]:
         "cot_3shot": cot_3shot,
         "limo": limo,
         "deepseek_r1": deepseek_r1,
+        "sft_merged": sft_merged,
+        "qwen_base": qwen_base
         "rl_sft_merged": rl_sft_merged
     }
 
 def get_available_functions() -> list[str]:
     """Return list of available inference function names."""
-    return ["dummy", "cot_3shot", "limo", "deepseek_r1", "rl_sft_merged"]
+    return ["dummy", "cot_3shot", "limo", "deepseek_r1", "sft_merged", "qwen_base", "rl_sft_merged"]
 
 def get_inference_function(name: str) -> Callable[[str], str]:
     """Get an inference function by name. Uses lazy imports to avoid loading heavy dependencies."""
@@ -37,6 +41,15 @@ def get_inference_function(name: str) -> Callable[[str], str]:
     if name == 'deepseek_r1':
         from src.inference.deepseek_r1_inference import deepseek_r1
         return deepseek_r1()
+
+    if name == 'sft_merged':
+        from src.inference.sft_inference import sft_merged
+        return sft_merged()
+
+    if name == 'qwen_base':
+        from src.inference.qwen_base_inference import qwen_base
+        return qwen_base()
+
     if name == 'rl_sft_merged':
         from src.inference.rl_sft_inference import rl_sft_merged
         return rl_sft_merged()
