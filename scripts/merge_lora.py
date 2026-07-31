@@ -1,11 +1,33 @@
+#!/usr/bin/env python3
+import argparse
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 
+def parse_args(): 
+    parser = argparse.ArgumentParser(description="Evaluate LLMs on benchmarks")
+
+    parser.add_argument(
+        "--adapter-path",
+        type=str,
+        required=True,
+        help="Path to lora checkpoint"
+    )
+    parser.add_argument(
+        "--output-path",
+        type=str,
+        required=True,
+        help="Path to output file for merged model"
+    )
+
+    return parser.parse_args()
+
 def main():
+    args = parse_args()
+
     base_model_id = "Qwen/Qwen2.5-7B-Instruct"
-    adapter_path = "./checkpoints/sft_run_subset_1_2/checkpoint-280"
-    output_path = "./checkpoints/sft_merged"
+    adapter_path = args.adapter_path
+    output_path = args.output_path
 
     print("Loading base model...")
     base_model = AutoModelForCausalLM.from_pretrained(
@@ -13,7 +35,7 @@ def main():
         torch_dtype=torch.bfloat16,
         device_map="cpu"
     )
-    
+
     print("Loading tokenizer...")
     tokenizer = AutoTokenizer.from_pretrained(adapter_path)
 

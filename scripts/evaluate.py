@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -9,6 +10,8 @@ sys.path.insert(0, str(project_root))
 
 from evaluation import Evaluator, get_benchmarks
 from src import get_inference_function, get_available_functions
+
+DEFAULT_JUDGE_MODEL = "Qwen/Qwen2.5-32B-Instruct"
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluate LLMs on benchmarks")
@@ -71,6 +74,35 @@ def parse_args():
         help="Directory holding per-benchmark trimmed id files "
              "(default: evaluation/trimmed_ids)"
     )
+    parser.add_argument(
+        "--judge-model",
+        type=str,
+        default=DEFAULT_JUDGE_MODEL,
+        help=f"Model id/path for deeptheorem_judge step verification (default: {DEFAULT_JUDGE_MODEL})."
+    )
+    parser.add_argument(
+        "--judge-load-in-4bit",
+        action="store_true",
+        help="Load the deeptheorem_judge verifier model in 4-bit mode."
+    )
+    parser.add_argument(
+        "--judge-torch-dtype",
+        type=str,
+        default="auto",
+        help="torch_dtype passed to the deeptheorem_judge verifier model."
+    )
+    parser.add_argument(
+        "--judge-device-map",
+        type=str,
+        default="auto",
+        help="device_map passed to the deeptheorem_judge verifier model."
+    )
+    parser.add_argument(
+        "--judge-max-new-tokens",
+        type=int,
+        default=512,
+        help="Max new tokens for each verifier judgement."
+    )
 
     return parser.parse_args()
 
@@ -100,6 +132,12 @@ def main():
     workers = args.workers
     output_dir = args.output_dir
     inference_fn = get_inference_function(args.inference_fn)
+    if args.judge_model:
+        os.environ["DEEPTHEOREM_JUDGE_MODEL"] = args.judge_model
+        os.environ["DEEPTHEOREM_JUDGE_LOAD_IN_4BIT"] = str(args.judge_load_in_4bit)
+        os.environ["DEEPTHEOREM_JUDGE_TORCH_DTYPE"] = args.judge_torch_dtype
+        os.environ["DEEPTHEOREM_JUDGE_DEVICE_MAP"] = args.judge_device_map
+        os.environ["DEEPTHEOREM_JUDGE_MAX_NEW_TOKENS"] = str(args.judge_max_new_tokens)
 
     evaluator = Evaluator(
         inference_fn=inference_fn,

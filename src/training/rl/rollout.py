@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from .merge import StateMatcher
-from .reward import RewardWeights, endpoint_reward
+from .reward import RewardWeights, proof_reward, verifier_score
 from .tree import Node, ProofTree
 from .types import Judge, Policy, Problem, StepJudgement
 
@@ -31,6 +31,8 @@ class Trajectory:
     steps: list[str]
     success: bool = False
     reward: float = 0.0
+    judgements: list[StepJudgement] = field(default_factory=list)
+    verifier_score: float = 0.0
 
 
 @dataclass
@@ -42,6 +44,7 @@ class _RState:
     steps: list[str] = field(default_factory=list)
     done: bool = False
     terminal: Optional[Node] = None
+    judgements: list[StepJudgement] = field(default_factory=list)
 
 
 class RolloutEngine:
@@ -97,6 +100,8 @@ class RolloutEngine:
 
             steps = self._propose(problem, [s.history for s in active])
             judged = self._judge(problem, [(s.history, st) for s, st in zip(active, steps)])
+            for s, j in zip(active, judged):
+                s.judgements.append(j)
             tries = [0] * len(active)
             last_fail: dict[int, Node] = {}
 
@@ -129,6 +134,7 @@ class RolloutEngine:
                 rej = self._judge(problem, [(active[i].history, steps[i]) for i in still])
                 for k, i in enumerate(still):
                     judged[i] = rej[k]
+                    active[i].judgements.append(rej[k])
 
             # apply the valid step for each rollout that didn't exhaust its retries
             for i, s in enumerate(active):
@@ -152,7 +158,9 @@ class RolloutEngine:
         for s in states:
             terminal = s.terminal if s.terminal is not None else s.node
             traj = Trajectory(s.path, terminal, s.steps)
-            traj.reward = endpoint_reward(problem, terminal, weights)
+            traj.judgements = list(s.judgements)
+            traj.verifier_score = verifier_score(traj.judgements)
+            traj.reward = proof_reward(problem, terminal, traj.judgements, weights)
             traj.success = (
                 not terminal.failed
                 and terminal.verdict is not None
