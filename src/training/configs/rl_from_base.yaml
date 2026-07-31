@@ -23,7 +23,7 @@ lora:
 rl:
   method: "grpo_baseline"
   output_dir: "checkpoints/rl_from_base"
-  problems_path: "data/rl_problems.jsonl"   # external, provide this: {id, statement, label}
+  problems_path: "data/rl_problems_5_7.jsonl"   # external, provide this: {id, statement, label}
   max_problems: null
 
   num_generations: 8
@@ -35,4 +35,4 @@ rl:
 
   # TRL-native vLLM throughput path (colocated on the same GPU as training).
   use_vllm: true
-  vllm_gpu_memory_utilization: 0.3
+  vllm_gpu_memory_utilization: 0.5
