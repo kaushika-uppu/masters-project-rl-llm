@@ -8,7 +8,6 @@
 #SBATCH --mem=80G
 #SBATCH --time=12:00:00
 #SBATCH --mail-type=END,FAIL
-#SBATCH --exclude=cs002  # Exclude node cs002 because GPU 0 has ECC errors
 
 set -euo pipefail
 
