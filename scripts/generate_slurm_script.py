@@ -170,7 +170,7 @@ python scripts/evaluate.py \\
     --benchmarks {benchmark} \\
     --limit $LIMIT \\
     --offset $OFFSET{trimmed_flag_line} \\
-    --output_dir {output_dir}
+    --output-dir {output_dir}
 """
 
     # Determine output path
