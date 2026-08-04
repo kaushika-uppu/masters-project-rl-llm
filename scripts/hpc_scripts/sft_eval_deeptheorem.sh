@@ -4,7 +4,7 @@
 #SBATCH --error=logs/eval_sft_dt/eval_sft_%A_%a.err
 #SBATCH --partition=gpuqm
 #SBATCH --gres=gpu:1
-#SBATCH --array=0-4
+#SBATCH --array=0-9
 #SBATCH --cpus-per-task=4
 #SBATCH --nodes=1
 #SBATCH --nodelist=cs[001,003-004]
@@ -23,9 +23,9 @@ mkdir -p $TMPDIR
 trap "rm -rf $TMPDIR" EXIT
 
 export PYTHONPATH="$PWD:$PYTHONPATH"
-export DEEPTHEOREM_EVAL_PATH="data/dt_eval_dataset.jsonl"
+export DEEPTHEOREM_EVAL_PATH="data/dt_complete_eval_dataset.jsonl"
 
-LIMIT=300
+LIMIT=100
 OFFSET=$((SLURM_ARRAY_TASK_ID * LIMIT))
 
 echo "============================================================"
