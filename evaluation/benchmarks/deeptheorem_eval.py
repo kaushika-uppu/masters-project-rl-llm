@@ -1,11 +1,10 @@
-"""DeepTheorem binary verdict-accuracy benchmark.
+"""In-domain DeepTheorem eval: prove-or-disprove verdict accuracy.
 
 Runs on a PROVIDED jsonl of examples (question selection / train-eval disjointness is
 external). Point it at the file via env var DEEPTHEOREM_EVAL_PATH (default
 data/deeptheorem_eval.jsonl). Each line: {"id","statement","label"} where label is a
 bool (True=PROVED). "input"/"output" accepted as aliases.
 """
-
 from __future__ import annotations
 
 import json
@@ -52,9 +51,16 @@ class DeepTheoremEval(BaseBenchmark[str, bool]):
                 d = json.loads(line)
                 statement = d["statement"] if "statement" in d else d["input"]
                 label = _coerce_label(d["label"] if "label" in d else d["output"])
+
+                metadata = {
+                    "domain": d.get("domain", ""), 
+                    "difficulty": d.get("difficulty"),
+                    "base_id": d.get("base_id", ""),
+                    "variant_type": d.get("variant_type", "")
+                }
                 items.append(DataSetItem(
                     input=statement, output=label, id=str(d.get("id", len(items))),
-                    metadata={"domain": d.get("domain", ""), "difficulty": d.get("difficulty")},
+                    metadata=metadata,
                 ))
         return items
 
