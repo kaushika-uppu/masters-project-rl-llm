@@ -2,13 +2,18 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from typing import Dict, Any
 from src.inference.base_inference import BaseInference
-from .constants import RIDDLEBENCH_SYSTEM_PROMPT
+from .constants import RIDDLEBENCH_SYSTEM_PROMPT, DEEPTHEOREM_SYSTEM_PROMPT
 
-class RLWithSFTInference(BaseInference):
+# only edit these values
+MODEL_PATH = "./checkpoints/rl_tree_sft_checkpoint_350_merged"
+SYSTEM_PROMPT = RIDDLEBENCH_SYSTEM_PROMPT
+# SYSTEM_PROMPT = DEEPTHEOREM_SYSTEM_PROMPT
+
+class TrainingInference(BaseInference):
 
     def format_prompt(self, prompt: str) -> str:
         messages = [
-            {"role": "system", "content": RIDDLEBENCH_SYSTEM_PROMPT},
+            {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": prompt}
         ]
         return self.tokenizer.apply_chat_template(
@@ -34,8 +39,8 @@ class RLWithSFTInference(BaseInference):
         generated_text = self.tokenizer.decode(outputs[0][input_length:], skip_special_tokens=True)
         return generated_text
 
-def rl_sft_merged():
-    model_path = "./checkpoints/rl_sft_merged"
+def training_inference():
+    model_path = MODEL_PATH
     print(f"Loading merged model from {model_path}...")
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -46,6 +51,6 @@ def rl_sft_merged():
     )
 
     config = {"model": {"is_instruct": True}}
-    inference_engine = RLWithSFTInference(model=model, tokenizer=tokenizer, config=config)
+    inference_engine = TrainingInference(model=model, tokenizer=tokenizer, config=config)
 
     return inference_engine.generate
