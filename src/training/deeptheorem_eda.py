@@ -106,8 +106,11 @@ def main():
             reduced_df = reduced_df.sample(n=target_size, random_state=42)
             
         reduced_df = reduced_df.sample(frac=1, random_state=42).reset_index(drop=True)
+
+        print("\nFinal Reduced Dataset Distribution (Root Topic vs Difficulty):")
+        print(pd.crosstab(reduced_df['root_topic'], reduced_df['difficulty']))
         
-        sft_output_file = "src/training/dt_sft_stratified_30k.jsonl"
+        sft_output_file = "src/training/TEST_SFT_DATA.jsonl"
         reduced_df.to_json(sft_output_file, orient="records", lines=True)
         print(f"\nSuccessfully saved {len(reduced_df)} stratified SFT questions to {sft_output_file}")
         return
@@ -130,7 +133,7 @@ def main():
     print("\nFinal Reduced Dataset Distribution (Root Topic vs Difficulty):")
     print(pd.crosstab(reduced_df['root_topic'], reduced_df['difficulty']))
     
-    output_file = "dt_stratified_30k.jsonl"
+    output_file = "TEST_DT_DATA.jsonl"
     reduced_df.to_json(output_file, orient="records", lines=True)
     print(f"\nSuccessfully saved reduced dataset to {output_file}")
 

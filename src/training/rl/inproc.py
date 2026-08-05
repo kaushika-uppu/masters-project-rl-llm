@@ -12,7 +12,7 @@ from __future__ import annotations
 from typing import Optional
 
 from src.judge.prompts import JUDGE_SYSTEM_PROMPT, build_judge_user_prompt
-from src.judge.step_judge import _extract_json
+from src.judge.step_judge import parse_step_judgement
 from .policy import _extract_step, build_step_messages
 from .types import Problem, StepJudgement
 
@@ -127,20 +127,7 @@ class TransformersJudge:
         ]
         raws = _generate_batch(self.model, self.tokenizer, batch,
                                temperature=0.0, max_new_tokens=self.max_new_tokens)
-        return [self._parse(raw, h, s) for raw, (h, s) in zip(raws, items)]
-
-    @staticmethod
-    def _parse(raw: str, history: list[str], step: str) -> StepJudgement:
-        obj = _extract_json(raw)
-        if obj is None:  # conservative: unparseable judge output => invalid, no state advance
-            return StepJudgement(valid=False, reason="judge parse error",
-                                 state_summary="\n".join(history))
-        verdict = obj.get("verdict")
-        verdict = verdict.upper() if isinstance(verdict, str) and verdict.upper() in ("PROVED", "DISPROVED") else None
-        return StepJudgement(
-            valid=bool(obj.get("valid", False)),
-            reason=str(obj.get("reason", "")),
-            state_summary=str(obj.get("state_summary", "") or "\n".join(history + [step])),
-            is_terminal=bool(obj.get("is_terminal", False)),
-            verdict=verdict,
-        )
+        return [
+            parse_step_judgement(raw, history=h, step=s)
+            for raw, (h, s) in zip(raws, items)
+        ]

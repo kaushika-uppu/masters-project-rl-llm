@@ -129,6 +129,10 @@ def generate_script(
 
     job_name_suffix = "_trimmed" if trimmed else ""
     trimmed_flag_line = " \\\n    --trimmed" if trimmed else ""
+    # send results to model specific results
+    output_dir = "evaluation/results"
+    if output_path:
+        output_dir += f"/{output_path}"
 
     # Generate script content
     script_content = f"""#!/bin/bash
@@ -165,7 +169,8 @@ python scripts/evaluate.py \\
     --inference-fn {inference_fn} \\
     --benchmarks {benchmark} \\
     --limit $LIMIT \\
-    --offset $OFFSET{trimmed_flag_line}
+    --offset $OFFSET{trimmed_flag_line} \\
+    --output-dir {output_dir}
 """
 
     # Determine output path
