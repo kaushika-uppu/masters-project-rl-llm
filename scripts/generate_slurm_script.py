@@ -176,6 +176,8 @@ python scripts/evaluate.py \\
     # Determine output path
     if output_path is None:
         output_path = f"sh_scripts/{inference_fn}_{benchmark}{job_name_suffix}.sh"
+    else:
+        output_path = f"sh_scripts/{output_path}.sh"
 
     # Write script to file
     output_file = Path(output_path)
