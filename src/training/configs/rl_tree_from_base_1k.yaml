@@ -22,7 +22,7 @@ lora:
 
 rl:
   method: "grpo_tree"
-  output_dir: "checkpoints/rl_tree_from_base"
+  output_dir: "checkpoints/rl_tree_from_base_1k"
   problems_path: "data/dt_rl_subset_5_7_1K.jsonl"   # provided externally: {id, statement, label, reference?}
   max_problems: null
   temperature: 0.8

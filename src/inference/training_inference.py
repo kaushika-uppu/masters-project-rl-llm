@@ -1,20 +1,33 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from typing import Dict, Any
 from src.inference.base_inference import BaseInference
-from .constants import RIDDLEBENCH_SYSTEM_PROMPT, DEEPTHEOREM_SYSTEM_PROMPT
+from .constants import (
+    RIDDLEBENCH_SYSTEM_PROMPT,
+    DEEPTHEOREM_SYSTEM_PROMPT,
+    COT_3SHOT_SYSTEM_PROMPT,
+    COT_3SHOT_EXAMPLES
+)
 
-# only edit these values
 MODEL_PATH = "./checkpoints/rl_tree_sft_checkpoint_350_merged"
+
 SYSTEM_PROMPT = RIDDLEBENCH_SYSTEM_PROMPT
 # SYSTEM_PROMPT = DEEPTHEOREM_SYSTEM_PROMPT
+# SYSTEM_PROMPT = COT_3SHOT_SYSTEM_PROMPT
+
+USE_COT_3SHOT = False  # Set to True to enable CoT 3-shot examples
 
 class TrainingInference(BaseInference):
 
     def format_prompt(self, prompt: str) -> str:
+        # For CoT 3-shot, prepend examples to the user prompt
+        if USE_COT_3SHOT:
+            user_content = f"{COT_3SHOT_EXAMPLES}\n\n{prompt}"
+        else:
+            user_content = prompt
+
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": prompt}
+            {"role": "user", "content": user_content}
         ]
         return self.tokenizer.apply_chat_template(
             messages,
@@ -42,6 +55,8 @@ class TrainingInference(BaseInference):
 def training_inference():
     model_path = MODEL_PATH
     print(f"Loading merged model from {model_path}...")
+    print(f"System prompt: {SYSTEM_PROMPT}")
+    print(f"CoT 3-shot: {'ENABLED' if USE_COT_3SHOT else 'DISABLED'}")
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(
