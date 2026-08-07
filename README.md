@@ -1,4 +1,4 @@
-# masters-project-rl-llm
+# Post-Training LLMs Using Reinforcement Learning To Develop Critical Thinking
 
 Training and evaluating LLMs using Reinforcement Learning (RL) and Supervised Fine-Tuning (SFT) with chain-of-thought (CoT) prompting capabilities.
 
