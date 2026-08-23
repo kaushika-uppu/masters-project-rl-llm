@@ -6,13 +6,27 @@ from typing import Dict, Callable
 # Lazy imports - only import when functions are actually requested
 def _get_registry() -> Dict[str, Callable[[str], str]]:
     """Lazy load inference functions to avoid importing heavy dependencies."""
-    from src.inference import dummy_inference, cot_3shot
-    from src.inference.limo_inference import limo
-    from src.inference.deepseek_r1_inference import deepseek_r1
-    from src.inference.sft_inference import sft_merged
-    from src.inference.qwen_base_inference import qwen_base
-    from src.inference.training_inference import training_inference
+    from src.inference import (
+        dummy_inference,
+        cot_3shot,
+        limo,
+        deepseek_r1,
+        sft_merged,
+        qwen_base,
+        rl_sft_merged,
+        rl_sft_merged_cot,
+        rl_from_base_merged,
+        rl_from_base_merged_cot,
+        rl_tree_base_checkpoint_350_merged,
+        rl_tree_base_checkpoint_350_merged_cot,
+        rl_tree_sft_merged,
+        rl_tree_sft_merged_cot,
+        rl_sft_merged_deeptheorem,
+        rl_from_base_merged_deeptheorem,
+        rl_tree_base_checkpoint_350_merged_deeptheorem,
+        rl_tree_sft_merged_deeptheorem,
 
+    )
     return {
         "dummy": dummy_inference,
         "cot_3shot": cot_3shot,
@@ -20,12 +34,44 @@ def _get_registry() -> Dict[str, Callable[[str], str]]:
         "deepseek_r1": deepseek_r1,
         "sft_merged": sft_merged,
         "qwen_base": qwen_base,
-        "training_inference": training_inference,
+        "rl_sft_merged": rl_sft_merged,
+        "rl_sft_merged": rl_sft_merged_cot,
+        "rl_from_base_merged": rl_from_base_merged,
+        "rl_from_base_merged_cot": rl_from_base_merged_cot,
+        "rl_tree_base_checkpoint_350_merged": rl_tree_base_checkpoint_350_merged,
+        "rl_tree_base_checkpoint_350_merged_cot": rl_tree_base_checkpoint_350_merged_cot,
+        "rl_tree_sft_merged": rl_tree_sft_merged,
+        "rl_tree_sft_merged_cot": rl_tree_sft_merged_cot,
+        "rl_sft_merged_deeptheorem": rl_sft_merged_deeptheorem,
+        "rl_from_base_merged_deeptheorem": rl_from_base_merged_deeptheorem,
+        "rl_tree_base_checkpoint_350_merged_deeptheorem": rl_tree_base_checkpoint_350_merged_deeptheorem,
+        "rl_tree_sft_merged_deeptheorem": rl_tree_sft_merged_deeptheorem,
+
+
     }
 
 def get_available_functions() -> list[str]:
     """Return list of available inference function names."""
-    return ["dummy", "cot_3shot", "limo", "deepseek_r1", "sft_merged", "qwen_base", "training_inference"]
+    return ["dummy", 
+        "cot_3shot", 
+        "limo", 
+        "deepseek_r1", 
+        "sft_merged", 
+        "qwen_base", 
+        "rl_sft_merged", 
+        "rl_sft_merged_cot", 
+        "rl_from_base_merged", 
+        "rl_from_base_merged_cot", 
+        "rl_tree_base_checkpoint_350_merged",
+        "rl_tree_base_checkpoint_350_merged_cot",
+        "rl_tree_sft_merged",
+        "rl_tree_sft_merged_cot",
+        "rl_sft_merged_deeptheorem",
+        "rl_from_base_merged_deeptheorem",
+        "rl_tree_base_checkpoint_350_merged_deeptheorem",
+        "rl_tree_sft_merged_deeptheorem"
+
+        ]
 
 def get_inference_function(name: str) -> Callable[[str], str]:
     """Get an inference function by name. Uses lazy imports to avoid loading heavy dependencies."""
@@ -50,8 +96,52 @@ def get_inference_function(name: str) -> Callable[[str], str]:
         from src.inference.qwen_base_inference import qwen_base
         return qwen_base()
 
-    if name == 'training_inference':
-        from src.inference.training_inference import training_inference
-        return training_inference()
+    if name == 'rl_sft_merged':
+        from src.inference import rl_sft_merged
+        return rl_sft_merged()
+    
+    if name == 'rl_sft_merged_cot':
+        from src.inference import rl_sft_merged_cot
+        return rl_sft_merged_cot()
+    
+    if name == 'rl_from_base_merged':
+        from src.inference import rl_from_base_merged
+        return rl_from_base_merged()
 
+    if name == 'rl_from_base_merged_cot':
+        from src.inference import rl_from_base_merged_cot
+        return rl_from_base_merged_cot()
+
+    if name == 'rl_tree_base_checkpoint_350_merged':
+        from src.inference import rl_tree_base_checkpoint_350_merged
+        return rl_tree_base_checkpoint_350_merged()
+    
+    if name == 'rl_tree_base_checkpoint_350_merged_cot':
+        from src.inference import rl_tree_base_checkpoint_350_merged_cot 
+        return rl_tree_base_checkpoint_350_merged_cot()   
+
+    if name == 'rl_tree_sft_merged':
+        from src.inference import rl_tree_sft_merged
+        return rl_tree_sft_merged()
+    
+    if name == 'rl_tree_sft_merged_cot':
+        from src.inference import rl_tree_sft_merged_cot
+        return rl_tree_sft_merged_cot()   
+
+    if name == 'rl_sft_merged_deeptheorem':
+        from src.inference import rl_sft_merged_deeptheorem
+        return rl_sft_merged_deeptheorem()
+
+    if name == 'rl_from_base_merged_deeptheorem':
+        from src.inference import rl_from_base_merged_deeptheorem
+        return rl_from_base_merged_deeptheorem()
+
+    if name == 'rl_tree_base_checkpoint_350_merged_deeptheorem':
+        from src.inference import rl_tree_base_checkpoint_350_merged_deeptheorem
+        return rl_tree_base_checkpoint_350_merged_deeptheorem()    
+
+    if name == 'rl_tree_sft_merged_deeptheorem':
+        from src.inference import rl_tree_sft_merged_deeptheorem
+        return rl_tree_sft_merged_deeptheorem()
+    
     return registry[name]

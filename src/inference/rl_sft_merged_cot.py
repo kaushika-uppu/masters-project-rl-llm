@@ -8,13 +8,12 @@ from .constants import (
     COT_3SHOT_EXAMPLES
 )
 
-MODEL_PATH = "./checkpoints/rl_tree_sft_checkpoint_350_merged"
+MODEL_PATH = "./checkpoints/rl_sft_merged"
 
 SYSTEM_PROMPT = RIDDLEBENCH_SYSTEM_PROMPT
 # SYSTEM_PROMPT = DEEPTHEOREM_SYSTEM_PROMPT
-# SYSTEM_PROMPT = COT_3SHOT_SYSTEM_PROMPT
 
-USE_COT_3SHOT = False  # Set to True to enable CoT 3-shot examples
+USE_COT_3SHOT = True  # Set to True to enable CoT 3-shot examples
 
 class TrainingInference(BaseInference):
 
@@ -52,7 +51,7 @@ class TrainingInference(BaseInference):
         generated_text = self.tokenizer.decode(outputs[0][input_length:], skip_special_tokens=True)
         return generated_text
 
-def training_inference():
+def rl_sft_merged_cot():
     model_path = MODEL_PATH
     print(f"Loading merged model from {model_path}...")
     print(f"System prompt: {SYSTEM_PROMPT}")
