@@ -1,6 +1,8 @@
 #!/bin/bash
 # Train a model with RL Tree(GRPO) starting from the BASE instruct model (no SFT).
-# Submit with:  sbatch slurm/rl_tree_from_base.sbatch
+# Submit with:  sbatch slurm/rl_tree_from_base.sbatch [CONFIG]
+#   CONFIG defaults to src/training/configs/rl_tree_from_base.yaml
+#   e.g. sbatch --job-name=rl_tree_from_base_1k slurm/rl_tree_from_base.sbatch src/training/configs/rl_tree_from_base_1k.yaml
 #SBATCH --job-name=rl_tree_from_base
 #SBATCH --output=logs/rl_tree_from_base_%j.out
 #SBATCH --partition=gpuql
@@ -12,7 +14,7 @@
 
 set -euo pipefail
 
-CONFIG="src/training/configs/rl_tree_from_base.yaml"
+CONFIG="${1:-src/training/configs/rl_tree_from_base.yaml}"
 source /home/018230446/miniconda3/etc/profile.d/conda.sh
 conda activate v_env
 mkdir -p logs
@@ -31,6 +33,6 @@ trap 'rm -rf "$TMPDIR"' EXIT
 # Reduce CUDA allocator fragmentation (the OOM report showed ~2GB reserved-but-unallocated).
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
-echo "[$(date)] Starting RL-Tree-from-base on $(hostname), GPUs: ${CUDA_VISIBLE_DEVICES:-unset}"
+echo "[$(date)] Starting RL-Tree-from-base on $(hostname), GPUs: ${CUDA_VISIBLE_DEVICES:-unset}, config: $CONFIG"
 python -m src.training.run "$CONFIG"
-echo "[$(date)] Done. Checkpoint in checkpoints/rl_tree_from_base"
+echo "[$(date)] Done. Config: $CONFIG"
