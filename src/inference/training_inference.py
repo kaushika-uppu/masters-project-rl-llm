@@ -1,31 +1,25 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+
 from src.inference.base_inference import BaseInference
-from .constants import (
-    RIDDLEBENCH_SYSTEM_PROMPT,
-    DEEPTHEOREM_SYSTEM_PROMPT,
-    COT_3SHOT_SYSTEM_PROMPT,
-    COT_3SHOT_EXAMPLES
-)
+from src.inference.constants import COT_3SHOT_EXAMPLES
 
-MODEL_PATH = "./checkpoints/rl_sft_merged"
-
-SYSTEM_PROMPT = RIDDLEBENCH_SYSTEM_PROMPT
-# SYSTEM_PROMPT = DEEPTHEOREM_SYSTEM_PROMPT
-
-USE_COT_3SHOT = True  # Set to True to enable CoT 3-shot examples
 
 class TrainingInference(BaseInference):
 
+    def __init__(self, model, tokenizer, config, system_prompt: str, use_cot_3shot: bool = False):
+        super().__init__(model=model, tokenizer=tokenizer, config=config)
+        self.system_prompt = system_prompt
+        self.use_cot_3shot = use_cot_3shot
+
     def format_prompt(self, prompt: str) -> str:
-        # For CoT 3-shot, prepend examples to the user prompt
-        if USE_COT_3SHOT:
+        if self.use_cot_3shot:
             user_content = f"{COT_3SHOT_EXAMPLES}\n\n{prompt}"
         else:
             user_content = prompt
 
         messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": user_content}
         ]
         return self.tokenizer.apply_chat_template(
@@ -42,7 +36,7 @@ class TrainingInference(BaseInference):
             outputs = self.model.generate(
                 **inputs,
                 max_new_tokens=1024,
-                temperature=0.1,  
+                temperature=0.1,
                 do_sample=False,
                 pad_token_id=self.tokenizer.eos_token_id
             )
@@ -51,11 +45,11 @@ class TrainingInference(BaseInference):
         generated_text = self.tokenizer.decode(outputs[0][input_length:], skip_special_tokens=True)
         return generated_text
 
-def rl_sft_merged_cot():
-    model_path = MODEL_PATH
+
+def load_training_inference(model_path: str, system_prompt: str, use_cot_3shot: bool = False):
     print(f"Loading merged model from {model_path}...")
-    print(f"System prompt: {SYSTEM_PROMPT}")
-    print(f"CoT 3-shot: {'ENABLED' if USE_COT_3SHOT else 'DISABLED'}")
+    print(f"System prompt: {system_prompt}")
+    print(f"CoT 3-shot: {'ENABLED' if use_cot_3shot else 'DISABLED'}")
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     model = AutoModelForCausalLM.from_pretrained(
@@ -65,6 +59,12 @@ def rl_sft_merged_cot():
     )
 
     config = {"model": {"is_instruct": True}}
-    inference_engine = TrainingInference(model=model, tokenizer=tokenizer, config=config)
+    inference_engine = TrainingInference(
+        model=model,
+        tokenizer=tokenizer,
+        config=config,
+        system_prompt=system_prompt,
+        use_cot_3shot=use_cot_3shot,
+    )
 
     return inference_engine.generate
