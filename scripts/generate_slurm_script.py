@@ -199,8 +199,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python scripts/generate_slurm_script.py --inference-fn limo --benchmark gsm8k
-  python scripts/generate_slurm_script.py --inference-fn limo --benchmark math500 --limit 50
+  python scripts/generate_slurm_script.py --inference-fn limo --benchmark gsm8k --limit 50
   python scripts/generate_slurm_script.py --inference-fn limo --benchmark riddlebench --trimmed
   python scripts/generate_slurm_script.py --inference-fn limo --benchmark riddlebench --output my_script.sh
         """
