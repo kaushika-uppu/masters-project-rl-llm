@@ -4,10 +4,10 @@
 # Submit with:  sbatch slurm/rl_tree_from_sft.sbatch
 #SBATCH --job-name=rl_tree_from_sft
 #SBATCH --output=logs/rl_tree_from_sft_%j.out
-#SBATCH --partition=gpuqm
-#SBATCH --gres=gpu:1
+#SBATCH --partition=gpuql
+#SBATCH --gres=gpu:2   # GPU 0 = policy (trained), GPU 1 = judge + embedder (offloaded)
 #SBATCH --mem=80G
-#SBATCH --time=12:00:00
+#SBATCH --time=14-01:00:0
 #SBATCH --mail-type=END,FAIL
 #SBATCH --exclude=cs002  # Exclude cs002 because GPU 0 has ECC errors
 
@@ -31,28 +31,15 @@ export TMPDIR="/tmp/$USER-rl-$SLURM_JOB_ID"
 mkdir -p "$TMPDIR"
 trap 'rm -rf "$TMPDIR"' EXIT
 
+# Reduce CUDA allocator fragmentation (the OOM report showed ~2GB reserved-but-unallocated).
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
 # GPU 0 on cs002 has ECC errors (199 uncorrectable), so exclude it
 # Force use of GPUs 1,2,3 if we're on cs002
 if [ "$(hostname)" == "cs002.hpc.coe" ] || [ "$(hostname)" == "cs002" ]; then
     echo "WARNING: cs002 GPU 0 has ECC errors, restricting to GPUs 1-3"
     export CUDA_VISIBLE_DEVICES="1,2,3"
 fi
-
-# Verify GPU access and show memory
-echo "=== GPU Status ==="
-nvidia-smi || echo "WARNING: nvidia-smi failed"
-
-# Check for zombie processes
-echo "=== Checking for zombie processes ==="
-for gpu in $(echo ${CUDA_VISIBLE_DEVICES} | tr ',' ' '); do
-    echo "Checking GPU $gpu for processes..."
-    nvidia-smi -i $gpu --query-compute-apps=pid --format=csv,noheader | while read pid; do
-        if [ ! -z "$pid" ]; then
-            echo "WARNING: Found process $pid on GPU $gpu"
-            ps -p $pid -o user,cmd || true
-        fi
-    done
-done
 
 echo "[$(date)] Starting Tree-GRPO from SFT on $(hostname), GPUs: ${CUDA_VISIBLE_DEVICES:-unset}"
 python -m src.training.run "$CONFIG"
