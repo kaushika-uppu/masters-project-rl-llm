@@ -1,6 +1,6 @@
 #!/bin/bash
 # Full pipeline in one job: SFT first, then RL (GRPO) on the resulting checkpoint.
-# Submit with:  sbatch slurm/sft_then_rl.sbatch
+# Submit with:  sbatch sh_scripts/templates/sft_then_rl.sbatch
 #SBATCH --job-name=sft_then_rl
 #SBATCH --output=logs/sft_then_rl_%j.out
 #SBATCH --partition=gpuqm

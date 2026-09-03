@@ -1,7 +1,7 @@
 #!/bin/bash
 # Train a model with RL (GRPO) starting from the pushed SFT checkpoint.
 # Set the checkpoint in src/training/configs/rl_from_sft.yaml first.
-# Submit with:  sbatch slurm/rl_from_sft.sbatch
+# Submit with:  sbatch sh_scripts/templates/rl_from_sft.sbatch
 #SBATCH --job-name=rl_from_sft
 #SBATCH --output=logs/rl_from_sft_%j.out
 #SBATCH --partition=gpuqm

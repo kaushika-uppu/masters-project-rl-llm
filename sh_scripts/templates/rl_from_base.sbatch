@@ -1,6 +1,6 @@
 #!/bin/bash
 # Train a model with RL (GRPO) starting from the BASE instruct model (no SFT).
-# Submit with:  sbatch slurm/rl_from_base.sbatch
+# Submit with:  sbatch sh_scripts/templates/rl_from_base.sbatch
 #SBATCH --job-name=rl_from_base
 #SBATCH --output=logs/rl_from_base_%j.out
 #SBATCH --partition=gpuqm
