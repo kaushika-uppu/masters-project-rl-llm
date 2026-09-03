@@ -1,7 +1,7 @@
 #!/bin/bash
 # Train a model with Tree-GRPO starting from the pushed SFT checkpoint.
 # Set the checkpoint in src/training/configs/rl_tree_from_sft.yaml first.
-# Submit with:  sbatch slurm/rl_tree_from_sft.sbatch
+# Submit with:  sbatch sh_scripts/templates/rl_tree_from_sft.sbatch
 #SBATCH --job-name=rl_tree_from_sft
 #SBATCH --output=logs/rl_tree_from_sft_%j.out
 #SBATCH --partition=gpuql

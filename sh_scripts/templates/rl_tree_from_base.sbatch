@@ -1,8 +1,8 @@
 #!/bin/bash
 # Train a model with RL Tree(GRPO) starting from the BASE instruct model (no SFT).
-# Submit with:  sbatch slurm/rl_tree_from_base.sbatch [CONFIG]
+# Submit with:  sbatch sh_scripts/templates/rl_tree_from_base.sbatch [CONFIG]
 #   CONFIG defaults to src/training/configs/rl_tree_from_base.yaml
-#   e.g. sbatch --job-name=rl_tree_from_base_1k slurm/rl_tree_from_base.sbatch src/training/configs/rl_tree_from_base_1k.yaml
+#   e.g. sbatch --job-name=rl_tree_from_base_1k sh_scripts/templates/rl_tree_from_base.sbatch src/training/configs/rl_tree_from_base_1k.yaml
 #SBATCH --job-name=rl_tree_from_base
 #SBATCH --output=logs/rl_tree_from_base_%j.out
 #SBATCH --partition=gpuql
