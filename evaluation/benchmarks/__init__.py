@@ -1,8 +1,6 @@
 from evaluation.benchmarks.base_benchmark import BaseBenchmark, DataSetItem
 from evaluation.benchmarks.test_benchmark import TestBenchmark
 from evaluation.benchmarks.riddlebench import RiddleBench
-from evaluation.benchmarks.livecodebench.livecodebench import LiveCodeBench
 from evaluation.benchmarks.gsm8k import GSM8K
-from evaluation.benchmarks.math_500.math_500 import MATH500
 from evaluation.benchmarks.deeptheorem_eval import DeepTheoremEval
 from evaluation.benchmarks.deeptheorem_judge import DeepTheoremJudgeEval
