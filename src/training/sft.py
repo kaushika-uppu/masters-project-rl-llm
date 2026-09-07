@@ -37,11 +37,9 @@ def run_sft(
     else:
         ds = get_dataset(dataset)
 
-    filt_ds = format_dataset(ds, dataset)
-
-    # Get config with defaults
+    # Get config with defaults and format the dataset that was loaded above.
+    # Local JSONL datasets must not be passed back through get_dataset().
     config = sft_config or {}
-    ds = get_dataset(dataset)
     filt_ds = format_dataset(ds, dataset, config)
 
     # Limit dataset size if max_samples is specified (useful for testing)
@@ -82,12 +80,13 @@ def run_sft(
     trainer.save_model(output_dir)
 
 
-def format_dataset(ds: Dataset, dataset: str) -> Dataset:
+def format_dataset(ds: Dataset, dataset: str, config: dict = None) -> Dataset:
     """Get subset of dataset and format for use in SFT. Default is unchanged."""
+    config = config or {}
     if dataset.endswith(".jsonl"):
         return format_local_dataset(ds)
     if dataset == "deeptheorem":
-        return get_deeptheorem(ds)
+        return get_deeptheorem(ds, config)
 
     if dataset == "gsm8k":
         return ds
