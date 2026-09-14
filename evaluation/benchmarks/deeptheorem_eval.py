@@ -15,6 +15,24 @@ from typing import List, Optional
 from evaluation.benchmarks.base_benchmark import BaseBenchmark, DataSetItem
 
 _DEFAULT_PATH = "data/deeptheorem_eval.jsonl"
+_VERDICT_PATTERNS = (
+    re.compile(r"verdict\s*:?\s*(proved|disproved)", re.IGNORECASE),
+    re.compile(
+        r"\\boxed\s*\{\s*(?:\\(?:text|mathrm)\s*\{\s*)?"
+        r"(proved|disproved)\s*(?:\}\s*)?\}",
+        re.IGNORECASE,
+    ),
+)
+
+
+def _extract_verdict(text: str) -> Optional[str]:
+    """Return the last explicit verdict in either supported output format."""
+    matches = [
+        (match.start(), match.group(1).lower())
+        for pattern in _VERDICT_PATTERNS
+        for match in pattern.finditer(text or "")
+    ]
+    return max(matches, key=lambda item: item[0])[1] if matches else None
 
 
 def _coerce_label(v) -> bool:
@@ -66,16 +84,18 @@ class DeepTheoremEval(BaseBenchmark[str, bool]):
 
     def get_user_prompt(self, input: str) -> str:
         return (
-            f"Prove or disprove the following:\n{input}\n\n"
-            "Reason step by step, wrapping each step in <step>...</step>. "
-            "End with a final line exactly: 'Verdict: PROVED' or 'Verdict: DISPROVED'."
+            f"{input}\n\n"
+            "Provide a rigorous step-by-step proof or counterexample. "
+            "Wrap each reasoning step in <step>...</step>. "
+            r"End with the verdict in the same format as the examples: "
+            r"\boxed{proved} or \boxed{disproved}."
         )
 
     def parse_output(self, output: str) -> Optional[bool]:
-        m = re.findall(r"verdict\s*:?\s*(proved|disproved)", output, re.IGNORECASE)
-        if not m:
+        verdict = _extract_verdict(output)
+        if verdict is None:
             return None
-        return m[-1].lower() == "proved"
+        return verdict == "proved"
 
     def score(self, item: DataSetItem[str, bool], at_output: Optional[bool]) -> float:
         if item.output is None or at_output is None:

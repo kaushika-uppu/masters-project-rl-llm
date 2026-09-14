@@ -8,7 +8,7 @@ import re
 from typing import Any
 
 from evaluation.benchmarks.base_benchmark import BaseBenchmark, DataSetItem
-from evaluation.benchmarks.deeptheorem_eval import _coerce_label
+from evaluation.benchmarks.deeptheorem_eval import _coerce_label, _extract_verdict
 from src.judge.step_judge import DeterministicJudge
 from src.training.rl.types import Problem, StepJudgement
 
@@ -16,7 +16,6 @@ from src.training.rl.types import Problem, StepJudgement
 _DEFAULT_PATH = "data/deeptheorem_judge_mvp.jsonl"
 _QUOTED_RE = re.compile(r'"([^"\r\n]*(?:\\.[^"\r\n]*)*)"', re.DOTALL)
 _STEP_RE = re.compile(r"<step>\s*(.*?)\s*</step>", re.IGNORECASE | re.DOTALL)
-_VERDICT_RE = re.compile(r"verdict\s*:?\s*(proved|disproved)", re.IGNORECASE)
 _STEP_PREFIX_RE = re.compile(r"^\s*(?:[-*]\s+|\d+[.)]\s+|step\s*\d+\s*[:.)-]\s*)", re.IGNORECASE)
 
 
@@ -63,7 +62,7 @@ def _line_steps(text: str) -> list[str]:
     steps = []
     for line in text.splitlines():
         line = line.strip()
-        if not line or _VERDICT_RE.search(line):
+        if not line or _extract_verdict(line) is not None:
             continue
         line = _STEP_PREFIX_RE.sub("", line).strip()
         if line:
@@ -131,26 +130,30 @@ class DeepTheoremJudgeEval(BaseBenchmark[str, dict[str, Any]]):
 
     def get_user_prompt(self, input: str) -> str:
         return (
-            f"Prove or disprove the following:\n{input}\n\n"
-            'Write each proof step either as its own quoted string or inside <step>...</step>. '
-            'End with a final line: "Verdict: PROVED" or "Verdict: DISPROVED".'
+            f"{input}\n\n"
+            "Provide a rigorous step-by-step proof or counterexample. "
+            "Write each proof step inside <step>...</step>. "
+            r"End with the verdict in the same format as the examples: "
+            r"\boxed{proved} or \boxed{disproved}."
         )
 
     def parse_output(self, output: str) -> dict[str, Any]:
         text = output or ""
         quoted = [_decode_quoted(m.group(1)) for m in _QUOTED_RE.finditer(text)]
         q_verdicts = [
-            m.group(1).upper()
+            verdict.upper()
             for part in quoted
-            for m in [_VERDICT_RE.search(part)]
-            if m
+            for verdict in [_extract_verdict(part)]
+            if verdict is not None
         ]
-        found = [m.upper() for m in _VERDICT_RE.findall(text)]
-        verdicts = q_verdicts or found
-        verdict = verdicts[-1].upper() if verdicts else None
-        steps = [part for part in quoted if part and not _VERDICT_RE.search(part)]
+        verdict = q_verdicts[-1] if q_verdicts else None
+        if verdict is None:
+            found = _extract_verdict(text)
+            verdict = found.upper() if found is not None else None
+        verdicts = q_verdicts or ([verdict] if verdict else [])
+        steps = [part for part in quoted if part and _extract_verdict(part) is None]
         if not steps:
-            steps = [m.strip() for m in _STEP_RE.findall(text) if m.strip() and not _VERDICT_RE.search(m)]
+            steps = [m.strip() for m in _STEP_RE.findall(text) if m.strip() and _extract_verdict(m) is None]
         if not steps and verdicts:
             steps = _line_steps(text)
         return {

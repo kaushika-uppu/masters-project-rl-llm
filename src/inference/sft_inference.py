@@ -2,12 +2,13 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from typing import Dict, Any
 from src.inference.base_inference import BaseInference
+from src.inference.constants import DEEPTHEOREM_SYSTEM_PROMPT
 
 class SFTInference(BaseInference):
     
     def format_prompt(self, prompt: str) -> str:
         messages = [
-            {"role": "system", "content": "You are a helpful reasoning assistant. Break down your reasoning into clear, logical steps."},
+            {"role": "system", "content": DEEPTHEOREM_SYSTEM_PROMPT},
             {"role": "user", "content": prompt}
         ]
         return self.tokenizer.apply_chat_template(
