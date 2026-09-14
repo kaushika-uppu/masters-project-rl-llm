@@ -71,4 +71,14 @@ TRAINING_INFERENCE_CONFIGS = {
         "system_prompt": DEEPTHEOREM_SYSTEM_PROMPT,
         "use_cot_3shot": False,
     },
+    "sft_from_base_merged_deeptheorem": {
+        "model_path": "./checkpoints/sft_combined_merged",
+        "system_prompt": DEEPTHEOREM_SYSTEM_PROMPT,
+        "use_cot_3shot": False,
+    },
+     "sft_from_base_merged_riddlebench": {
+        "model_path": "./checkpoints/sft_combined_merged",
+        "system_prompt": RIDDLEBENCH_SYSTEM_PROMPT,
+        "use_cot_3shot": False,
+    },
 }
