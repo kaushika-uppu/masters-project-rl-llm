@@ -66,15 +66,33 @@ def grade_rollout(rollout_text: str, label: bool) -> bool:
     return predicted == label
 
 
+def _is_valid_rollout_json(path: str) -> bool:
+    try:
+        with open(path, encoding="utf-8") as f:
+            return isinstance(json.load(f), list)
+    except (OSError, TypeError, json.JSONDecodeError):
+        return False
+
+
 def load_rollout_rows(rollouts_dir: str) -> list[dict]:
-    files = sorted(glob.glob(os.path.join(rollouts_dir, "*.json")))
+    json_files = sorted(glob.glob(os.path.join(rollouts_dir, "*.json")))
+    recovery_files = sorted(glob.glob(os.path.join(rollouts_dir, "*.recovery.jsonl")))
+    valid_json_files = [path for path in json_files if _is_valid_rollout_json(path)]
+    final_outputs = set(valid_json_files)
+    files = valid_json_files + [
+        path for path in recovery_files
+        if path.removesuffix(".recovery.jsonl") + ".json" not in final_outputs
+    ]
     if not files:
         raise FileNotFoundError(f"No rollout chunk files found in '{rollouts_dir}'. "
                                  "Run generate_rollouts.py first.")
     rows = []
     for fp in files:
-        with open(fp) as f:
-            rows.extend(json.load(f))
+        with open(fp, encoding="utf-8") as f:
+            if fp.endswith(".recovery.jsonl"):
+                rows.extend(json.loads(line) for line in f if line.strip())
+            else:
+                rows.extend(json.load(f))
     print(f"[grade_and_filter] Loaded {len(rows)} variant rows from {len(files)} chunk file(s).")
     return rows
 

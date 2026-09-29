@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 
 import pandas as pd
@@ -47,6 +48,61 @@ def build_user_prompt(statement: str) -> str:
         r"End with the verdict in the same format as the examples: "
         r"\boxed{proved} or \boxed{disproved}."
     )
+
+
+def _to_jsonable(value):
+    """Convert pandas/NumPy values and nested containers to JSON-safe values."""
+    if value is None or isinstance(value, (str, int, bool)):
+        return value
+    if isinstance(value, float):
+        return value if math.isfinite(value) else None
+    if isinstance(value, dict):
+        return {str(_to_jsonable(key)): _to_jsonable(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_to_jsonable(item) for item in value]
+
+    item_method = getattr(value, "item", None)
+    if callable(item_method):
+        try:
+            return _to_jsonable(item_method())
+        except (TypeError, ValueError):
+            pass
+
+    # Preserve unexpected values as text rather than losing completed rollouts.
+    return str(value)
+
+
+def save_rollout_results(results: list[dict], output_file: str) -> str:
+    """Write recoverable JSONL first, then atomically publish the JSON array."""
+    safe_results = _to_jsonable(results)
+    recovery_file = f"{output_file}.recovery.jsonl"
+    temp_file = f"{output_file}.tmp"
+
+    with open(recovery_file, "w", encoding="utf-8") as handle:
+        for result in safe_results:
+            handle.write(json.dumps(result, ensure_ascii=False, allow_nan=False) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+
+    try:
+        with open(temp_file, "w", encoding="utf-8") as handle:
+            json.dump(safe_results, handle, ensure_ascii=False, indent=2, allow_nan=False)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temp_file, output_file)
+    except Exception:
+        try:
+            os.unlink(temp_file)
+        except OSError:
+            pass
+        print(
+            f"WARNING: final JSON write failed; recover completed rows from {recovery_file}",
+            flush=True,
+        )
+        raise
+
+    return recovery_file
 
 
 def parse_args():
@@ -130,10 +186,10 @@ def main():
 
     os.makedirs(args.output_dir, exist_ok=True)
     output_file = os.path.join(args.output_dir, f"rollouts_chunk_{args.chunk_id}.json")
-    with open(output_file, "w") as f:
-        json.dump(results, f, indent=2)
+    recovery_file = save_rollout_results(results, output_file)
 
     print(f"Saved {len(results)} rows x {args.n_rollouts} rollouts each to {output_file}")
+    print(f"Recovery copy retained at {recovery_file}")
 
 
 if __name__ == "__main__":
