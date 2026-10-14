@@ -3,6 +3,13 @@ from typing import List
 from datasets import load_dataset
 import re
 
+# Tolerant matcher for a boxed answer. Accepts all of:
+#   \boxed{42}   boxed{42}   Boxed{42}   $\boxed{42}$   <boxed{42}>   .Boxed{ 42 }
+# i.e. the leading backslash is OPTIONAL and the keyword is case-insensitive. RL
+# checkpoints frequently drop the backslash, which the old `r'\\boxed\{...\}'` regex
+# silently scored 0 (prediction == ""), under-reporting accuracy.
+_BOXED_RE = re.compile(r"\\?boxed\s*\{\s*([^}]*?)\s*\}", re.IGNORECASE | re.DOTALL)
+
 class RiddleBench(BaseBenchmark[str, str]):
     def load_dataset(self) -> List[DataSetItem[str, str]]:
         """
@@ -29,11 +36,18 @@ class RiddleBench(BaseBenchmark[str, str]):
         """
 
     def parse_output(self, output: str) -> str:
-        answer_match = re.search(r'\\boxed\{([^}]+)\}', output)
-        
-        if answer_match:
-            return answer_match.group(1).strip()
-        return ""
+        """Extract the final boxed answer, tolerating a missing backslash / case / $ / tags.
+
+        Takes the LAST match (models sometimes restate earlier candidates) and strips
+        surrounding LaTeX/whitespace so `\\boxed{ 42 }` and `$\\boxed{42}$` both yield
+        `42`. Returns "" when there is no boxed answer at all (scored 0, as before).
+        """
+        if not output:
+            return ""
+        matches = _BOXED_RE.findall(output)
+        if not matches:
+            return ""
+        return matches[-1].strip().strip("$").strip()
         
     def score(self, item: DataSetItem[str, str], at_output: str) -> float:
         if item.output is None:

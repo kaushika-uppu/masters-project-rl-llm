@@ -18,7 +18,9 @@ def run_rl(config: dict, model, tokenizer) -> None:
     if method == "grpo_baseline":
         run_grpo_baseline(model, tokenizer, rl_cfg)
     elif method == "grpo_tree":
-        run_grpo_tree(model, tokenizer, rl_cfg)
+        # Pass the model config through so the tree trainer can locate + load the frozen
+        # KL reference (model.from_checkpoint) rather than silently training without KL.
+        run_grpo_tree(model, tokenizer, rl_cfg, config.get("model", {}))
     else:
         raise ValueError(
             f"Unknown rl.method '{method}'. Use 'grpo_baseline' or 'grpo_tree'."

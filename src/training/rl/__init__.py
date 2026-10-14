@@ -5,6 +5,7 @@ from .rollout import RolloutEngine, Trajectory
 from .reward import (
     RewardWeights, endpoint_reward, step_validity_reward,
     redundancy_penalty, novelty_bonus, aggregate_step_reward,
+    novelty_eligible, proof_reward, verifier_score,
 )
 from .advantage import edge_advantages, criticality, most_critical, EdgeAdvantage
 
@@ -14,5 +15,6 @@ __all__ = [
     "RolloutEngine", "Trajectory",
     "RewardWeights", "endpoint_reward", "step_validity_reward",
     "redundancy_penalty", "novelty_bonus", "aggregate_step_reward",
+    "novelty_eligible", "proof_reward", "verifier_score",
     "edge_advantages", "criticality", "most_critical", "EdgeAdvantage",
 ]

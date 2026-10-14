@@ -23,6 +23,13 @@ rl:
   temperature: 0.8
   save_every: 50          # checkpoint every N updates (survives SLURM wall-time/preemption)
 
+  # Frozen KL reference = the checkpoint the policy starts from (model.from_checkpoint).
+  # Without this the trainer skips the KL term entirely (ref_model=None) and the policy
+  # is free to drift off the SFT distribution and collapse. Keep it off the policy card.
+  use_kl: true
+  ref_model_path: null    # null = reuse model.from_checkpoint
+  ref_device: "cuda:1"    # needs ~1 model's worth of memory on that GPU
+
   judge_model: "Qwen/Qwen2.5-7B-Instruct"   # in-process judge; swap/fine-tune later
   judge_load_in_4bit: true                  # 4-bit keeps the judge small (~5GB)
   judge_device: "cuda:1"                    # judge on the 2nd GPU, off the policy's card

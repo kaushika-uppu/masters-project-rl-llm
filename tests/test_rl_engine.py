@@ -2,10 +2,17 @@
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from src.training.rl.types import Problem
+from src.training.rl.types import Problem, StepJudgement
 from src.training.rl.stubs import StubPolicy, StubJudge
 from src.training.rl.rollout import RolloutEngine
-from src.training.rl.reward import endpoint_reward, novelty_bonus, redundancy_penalty
+from src.training.rl.reward import (
+    endpoint_reward,
+    novelty_bonus,
+    novelty_eligible,
+    proof_reward,
+    redundancy_penalty,
+    RewardWeights,
+)
 from src.training.rl.advantage import criticality, most_critical, edge_advantages
 
 PROBLEM = Problem(id="t1", statement="all fibers have the same cardinality", label=True)
@@ -58,12 +65,14 @@ def test_root_is_most_critical():
 def test_mc_values_and_advantage():
     tree, _ = _build()
     root = tree.root
-    # 2/3 rollouts correct -> root value ~0.667
-    assert abs(root.value - 2/3) < 1e-9
+    # Additive reward: correct branch = 1.0 (endpoint) + 0.3 (validity) + 0.1 (progress) = 1.4;
+    # wrong-but-partly-sound branch = 0.0 - 0.1 + 0.1 = 0.2. Root pools to (1.4+1.4+0.2)/3 = 1.0.
+    assert abs(root.value - 1.0) < 1e-9
     advs = {(a.parent_key, a.child_key): a.advantage for a in edge_advantages(tree)}
-    # advantage to the correct (A) child is positive; to the wrong (B) child negative
-    a_child = next(ck for ck in root.children if tree.nodes[ck].value == 1.0)
-    b_child = next(ck for ck in root.children if tree.nodes[ck].value == 0.0)
+    # the correct (A) child is worth more, and carries the positive root advantage
+    a_child = max(root.children, key=lambda ck: tree.nodes[ck].value)
+    b_child = min(root.children, key=lambda ck: tree.nodes[ck].value)
+    assert tree.nodes[a_child].value > tree.nodes[b_child].value
     assert advs[(root.key, a_child)] > 0 > advs[(root.key, b_child)]
 
 
@@ -85,7 +94,7 @@ def test_fallback_without_batch_methods():
     eng = RolloutEngine(_NoBatchPolicy(), _NoBatchJudge(), max_depth=4, retry_budget=2)
     tree, trajs = eng.build_tree(PROBLEM, group_size=3)
     assert most_critical(tree) == tree.root_key
-    assert abs(tree.root.value - 2 / 3) < 1e-9
+    assert abs(tree.root.value - 1.0) < 1e-9  # additive rewards pooled into the root
 
 
 def test_semantic_merge():
@@ -123,9 +132,42 @@ def test_exact_fallback_without_embedder():
     assert a.key == b.key
 
 
-def test_novelty_gated_on_correctness():
-    assert novelty_bonus(edge_count=1, correct=True) > novelty_bonus(edge_count=4, correct=True)
-    assert novelty_bonus(edge_count=1, correct=False) == 0.0  # gated off when wrong
+def test_novelty_gate():
+    # "valid" gate (default): rare moves earn the bonus when the rollout is correct...
+    assert novelty_bonus(edge_count=1, eligible=True) > novelty_bonus(edge_count=4, eligible=True)
+    assert novelty_bonus(edge_count=1, eligible=False) == 0.0
+    # ...or when its steps are sound even though the final verdict is wrong
+    assert novelty_eligible(success=False, validity_frac=1.0) is True
+    assert novelty_eligible(success=False, validity_frac=0.0) is False
+    assert novelty_eligible(success=True, validity_frac=0.0) is True
+    # "correct" gate reproduces the old (correctness-only) behaviour
+    w = RewardWeights(novelty_gate="correct")
+    assert novelty_eligible(success=False, validity_frac=1.0, w=w) is False
+
+
+class _StubNode:
+    """Minimal Node stand-in: proof_reward only reads `.failed` and `.verdict`."""
+
+    def __init__(self, verdict=None, failed=False):
+        self.verdict = verdict
+        self.failed = failed
+
+
+def test_proof_reward_is_additive_not_gated():
+    ok = [StepJudgement(valid=True) for _ in range(4)]
+    bad = [StepJudgement(valid=False) for _ in range(4)]
+    # wrong verdict but every step sound -> still positive (the old product gave 0)
+    wrong_sound = proof_reward(PROBLEM, _StubNode(verdict="DISPROVED"), ok)
+    assert wrong_sound > 0
+    # a correct proof still dominates the most polished wrong one
+    correct = proof_reward(PROBLEM, _StubNode(verdict="PROVED"), ok)
+    assert correct > wrong_sound
+    # unsound steps are penalised relative to sound ones
+    wrong_unsound = proof_reward(PROBLEM, _StubNode(verdict="DISPROVED"), bad)
+    assert wrong_unsound < wrong_sound
+    # a failed rollout with no verdict earns no progress bonus
+    failed = proof_reward(PROBLEM, _StubNode(verdict=None, failed=True), ok)
+    assert failed < wrong_sound
 
 
 def test_redundancy_penalty():

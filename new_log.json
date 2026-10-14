@@ -1,0 +1,1225 @@
+{
+  "metadata": {
+    "timestamp": "2026-10-11T01:52:27.785417",
+    "workers": 1,
+    "benchmarks": [
+      "riddlebench"
+    ],
+    "trimmed": false
+  },
+  "results": {
+    "riddlebench": {
+      "num_samples": 100,
+      "metrics": {
+        "average_score": 0.05,
+        "total_correct": 5,
+        "accuracy": 0.05,
+        "latency_mean": 5.94714149041567,
+        "latency_std": 22.268580687748667,
+        "total_latency": 594.714149041567
+      },
+      "results": [
+        {
+          "id": 101,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 6,14,45,184,925 ?",
+          "full_output": "boxed{5324}",
+          "prediction": "",
+          "expected": "5556",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.6369338813237846
+        },
+        {
+          "id": 102,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 11,20,38,74,?",
+          "full_output": "boxed{146}",
+          "prediction": "",
+          "expected": "146",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2166521199978888
+        },
+        {
+          "id": 103,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 15,21,38,65,101, ?",
+          "full_output": "boxed{157}",
+          "prediction": "",
+          "expected": "145",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.21192204905673862
+        },
+        {
+          "id": 104,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 13, 7, 6, 14, 52, ?",
+          "full_output": "boxed{208}",
+          "prediction": "",
+          "expected": "424",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2092083697207272
+        },
+        {
+          "id": 105,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 139, 142, 133, 160, 79, ?",
+          "full_output": "<reasoning>\nThe differences between consecutive terms are:\n142-139=3,\n133-142=-9,\n160-133=27,\n79-160=-81.\n\nThese differences form a geometric progression with a common ratio of -3:\n3,-9,27,-81.\n\nFollowing this pattern, the next difference should be:\n-81\\times(-3)=243.\n\nAdding this difference to the last given term yields:\n79+243=\\boxed{322}.\n</reasoning>\n\\boxed{322}",
+          "prediction": "322",
+          "expected": "322",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 1.0,
+          "latency_seconds": 3.7155744107440114
+        },
+        {
+          "id": 106,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 10, 16, 27, 48, 84, ?",
+          "full_output": "boxed{156}",
+          "prediction": "",
+          "expected": "140",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20781534304842353
+        },
+        {
+          "id": 107,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 66, 77, 63, 73, 60, ?",
+          "full_output": "<reasoning>\nThe sequence alternates between two different patterns:\n1) Subtracting 13 from the previous term (e.g., 66 - 13 = 53, but since 53 is not present, we continue with the next step).\n2) Subtracting 10 from the previous term (e.g., 77 - 10 = 67, but again, since 67 is not present, we move on).\n\nHowever, if we look closely at the given terms:\n- From 66 to 77, we add 11.\n- Then from 77 to 63, we subtract 14.\n- Next, from 63 to 73, we add 10.\n- Finally, from 73 to 60, we subtract 13.\n\nIt appears that the sequence alternates between adding and subtracting values that increase by 3 each time (11, 14, 17, ...).\n\nFollowing this pattern:\n- After adding 10 to get 73, the next operation should be subtracting 17.\n\nThus, 73 - 17 = 56.\n</reasoning>\n\\boxed{56}",
+          "prediction": "56",
+          "expected": "57",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 7.364148510154337
+        },
+        {
+          "id": 108,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 16, 9, 8, 13, 25, ?",
+          "full_output": "boxed{4}",
+          "prediction": "",
+          "expected": "63.5",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.15211884025484324
+        },
+        {
+          "id": 109,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 11, 12, 22, 69, 272, ?",
+          "full_output": "/\n\n\n\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n",
+          "prediction": "",
+          "expected": "1365",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 113.53935795323923
+        },
+        {
+          "id": 110,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 11, 13, 16, 33, 96, ?",
+          "full_output": "boxed{288}",
+          "prediction": "",
+          "expected": "353",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.206610684748739
+        },
+        {
+          "id": 111,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 4, 21, 120, 595, 2376, ?",
+          "full_output": "boxed{8991}",
+          "prediction": "",
+          "expected": "7125",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.23417470790445805
+        },
+        {
+          "id": 112,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 64, 66, 75, 103, 168, ?",
+          "full_output": "boxed{274}",
+          "prediction": "",
+          "expected": "294",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20550198713317513
+        },
+        {
+          "id": 113,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 13, 25, 39, 57, 83, ?",
+          "full_output": "boxed{115}",
+          "prediction": "",
+          "expected": "125",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20553388772532344
+        },
+        {
+          "id": 114,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 13 14 30 93 376 1885 ?",
+          "full_output": "boxed{9436}",
+          "prediction": "",
+          "expected": "11316",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2329966789111495
+        },
+        {
+          "id": 115,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 4 6 9 13.5 20.25 30.375 ?",
+          "full_output": "boxed{60.5625}",
+          "prediction": "",
+          "expected": "45.5625",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.31618021288886666
+        },
+        {
+          "id": 116,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 400 240 144 86.4 51.84 31.104 ?",
+          "full_output": "boxed{18.6624}",
+          "prediction": "",
+          "expected": "18.6624",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.31674135383218527
+        },
+        {
+          "id": 117,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 9 4.5 4.5 6.75 13.5 33.75 ?",
+          "full_output": "boxed{84.375}",
+          "prediction": "",
+          "expected": "101.25",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.28938830690458417
+        },
+        {
+          "id": 118,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 705 728 774 843 935 1050 ?",
+          "full_output": "boxed{1195}",
+          "prediction": "",
+          "expected": "1188",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.23374067526310682
+        },
+        {
+          "id": 119,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 2916, 972, ?,108, 36, 12",
+          "full_output": "/\n\n\n\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n",
+          "prediction": "",
+          "expected": "324",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 113.52319126203656
+        },
+        {
+          "id": 120,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 8, 27, 125, ?, 1331",
+          "full_output": "boxed{512}",
+          "prediction": "",
+          "expected": "343",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20668297493830323
+        },
+        {
+          "id": 121,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 3, 15, ?, 51, 53, 159, 161",
+          "full_output": " \\boxed{17}  \n reasoning  \n The sequence appears to be constructed by alternating between two operations:  \n1. Multiplying the previous term by 5 and then subtracting 5 (for odd positions).  \n2. Adding 2 to the previous term (for even positions).  \n\n Starting from 3:  \n- \\(3 \\times 5 - 5 = 10\\) (but the sequence shows 15, so there’s an immediate deviation or typo at the start)  \n- \\(15 + 2 = 17\\)  \n- \\(17 \\times 5 - 5 = 80\\) (but the sequence shows 51, indicating another deviation)  \n- \\(51 + 2 = 53\\)  \n- \\(53 \\times 5 - 5 = 260\\) (but the sequence shows 159, again showing a deviation)  \n- \\(159 + 2 = 161\\)  \n\n Given these deviations, we infer that the intended pattern for odd positions should be: multiply by 5 and subtract 5. Thus, the correct term before 51 should be:  \n\\[ x \\times 5 - 5 = 51 \\]  \nSolving for \\(x\\):  \n\\[ x \\times 5 = 56 \\]  \n\\[ x = \\frac{56}{5} = 11.2 \\]  \nSince the sequence consists of integers, we conclude that the intended value before 51 was indeed 17 (as it fits the pattern if we ignore the initial discrepancy).",
+          "prediction": "17",
+          "expected": "17",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 1.0,
+          "latency_seconds": 9.367251753807068
+        },
+        {
+          "id": 122,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 1 , 9 , 125 , 343 , ? , 1331",
+          "full_output": "boxed{243}",
+          "prediction": "",
+          "expected": "729",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20730129489675164
+        },
+        {
+          "id": 123,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 125, ?, 343, 512, 729, 1000",
+          "full_output": ".Boxed{  \n   216  \n}  \nreasoning  \nThe given sequence represents consecutive cubes of integers:  \n125 = 5<sup>3</sup>  \n343 = 7<sup>3</sup>  \n512 = 8<sup>3</sup>  \n729 = 9<sup>3</sup>  \n1000 = 10<sup>3</sup>  \nSince the sequence skips the cube of 6 (i.e., 6<sup>3</sup> = 216), the missing term must be 216.  \n</reasoning>",
+          "prediction": "",
+          "expected": "216",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 3.9297586889006197
+        },
+        {
+          "id": 124,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 25, 100, ?, 1600, 6400",
+          "full_output": "boxed{400}",
+          "prediction": "",
+          "expected": "400",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20676369313150644
+        },
+        {
+          "id": 125,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 30 45 75 105 165 ?",
+          "full_output": "boxed{210}",
+          "prediction": "",
+          "expected": "195",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20671983109787107
+        },
+        {
+          "id": 126,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 8 24 12 36 18 54 ?",
+          "full_output": "boxed{27}",
+          "prediction": "",
+          "expected": "27",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.17872679326683283
+        },
+        {
+          "id": 127,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 4320 720 144 ? 12 6 6",
+          "full_output": "/\n\n\n\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n",
+          "prediction": "",
+          "expected": "36",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 113.6662922790274
+        },
+        {
+          "id": 128,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 26 63 124 215 342 ?",
+          "full_output": "boxed{578}",
+          "prediction": "",
+          "expected": "511",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2065966739319265
+        },
+        {
+          "id": 129,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 796 199 50 13 4 ?",
+          "full_output": "boxed{4}",
+          "prediction": "",
+          "expected": "2",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.1500949184410274
+        },
+        {
+          "id": 130,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 445 534 631 736 849 ?",
+          "full_output": "boxed{965}",
+          "prediction": "",
+          "expected": "970",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20556357502937317
+        },
+        {
+          "id": 131,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 7 9.21 16.05 29.94 53.3 ?",
+          "full_output": "boxed{81.51}  \n<reasoning>Step 1: Examine the differences between consecutive terms:\n9.21 - 7 = 2.21  \n16.05 - 9.21 = 6.84  \n29.94 - 16.05 = 13.89  \n53.3 - 29.94 = 23.36  \n\nStep 2: Notice that the differences themselves form a sequence where each difference is approximately double the previous one:\n2.21 × 3 ≈ 6.63 (close to 6.84)  \n6.84 × 2 ≈ 13.68 (close to 13.89)  \n13.89 × 2 ≈ 27.78 (close to 23.36)  \n\nStep 3: Predict the next difference by doubling 23.36:\n23.36 × 2 = 46.72  \n\nStep 4: Add this predicted difference to the last known term to find the missing value:\n53.3 + 46.72 = 99.02  \n\nHowever, upon rechecking the pattern more closely, it appears that the actual differences are slightly off due to rounding. A closer inspection reveals that the differences are actually:\n2.21, 6.84, 13.89, 23.36, and the next should be around 38.72 (since 23.36 × 1.66 ≈ 38.72).\n\nThus, adding 38.72 to 53.3 gives:\n53.3 + 38.72 = 81.51</reasoning>",
+          "prediction": "",
+          "expected": "88.55",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 11.096381835639477
+        },
+        {
+          "id": 132,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 6 10 28 68 138 ?",
+          "full_output": "boxed{254}",
+          "prediction": "",
+          "expected": "246",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20696013886481524
+        },
+        {
+          "id": 133,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 16 9 6 5 ? 5.5",
+          "full_output": "boxed{4}",
+          "prediction": "",
+          "expected": "5",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.15112983528524637
+        },
+        {
+          "id": 134,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 24 12 ? 18 36 90",
+          "full_output": "boxed{30}",
+          "prediction": "",
+          "expected": "12",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.17894412763416767
+        },
+        {
+          "id": 135,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 7 20 59 ? 215 332",
+          "full_output": "boxed{104}",
+          "prediction": "",
+          "expected": "124",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20694894529879093
+        },
+        {
+          "id": 136,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. ? 17 29 59 115 205",
+          "full_output": "boxed{8}",
+          "prediction": "",
+          "expected": "15",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.15115318400785327
+        },
+        {
+          "id": 137,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 10 30 68 130 ? 350",
+          "full_output": "boxed{222}",
+          "prediction": "",
+          "expected": "222",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2069958196952939
+        },
+        {
+          "id": 138,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 170 196 248 ? 560 976",
+          "full_output": "boxed{392}",
+          "prediction": "",
+          "expected": "352",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20702343294396996
+        },
+        {
+          "id": 139,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 5 10 30 105 ? 2225",
+          "full_output": "boxed{429}",
+          "prediction": "",
+          "expected": "440",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2062301319092512
+        },
+        {
+          "id": 140,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 2 3 5 15 65 255 1265 ?",
+          "full_output": "boxed{2535}",
+          "prediction": "",
+          "expected": "5055",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.23382497671991587
+        },
+        {
+          "id": 141,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 523 507 471 407 307 163 ?",
+          "full_output": "<reasoning>\nThe differences between consecutive terms form a decreasing sequence:\n523 – 507 = 16  \n507 – 471 = 36  \n471 – 407 = 64  \n407 – 307 = 100  \n307 – 163 = 144  \n\nNotice that these differences (16, 36, 64, 100, 144) are squares of even numbers (4², 6², 8², 10², 12²). Following this pattern, the next difference should be 14² = 196.\n\nSubtracting 196 from the last given term (163):\n163 – 196 = –33\n\nSince negative numbers are not typically expected in such sequences without additional context, we infer that the intended pattern may have been an arithmetic progression with a larger step size or a different interpretation of the differences. However, based on the provided information and assuming the simplest continuation of the squared differences, the next term would logically be:\n163 – 196 = –33\n\nBut since negative numbers are unusual in this context, we conclude that the intended answer is likely the positive continuation of the pattern, which would be:\n163 + 196 = 359\n</reasoning>\n\\boxed{359}",
+          "prediction": "359",
+          "expected": "-33",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 8.722354616969824
+        },
+        {
+          "id": 142,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 276 140 68 36 16 ? 3",
+          "full_output": "boxed{4}",
+          "prediction": "",
+          "expected": "10",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.15140050370246172
+        },
+        {
+          "id": 143,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 105 185 247 293 ? 345 355",
+          "full_output": "boxed{307}",
+          "prediction": "",
+          "expected": "325",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20688176108524203
+        },
+        {
+          "id": 144,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 7 10 26 87 360 1815 ?",
+          "full_output": "boxed{21180}",
+          "prediction": "",
+          "expected": "10908",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.26177983172237873
+        },
+        {
+          "id": 145,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 11 5 -2 -24 -120 ? -3816",
+          "full_output": "boxed{600}",
+          "prediction": "",
+          "expected": "-630",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20609060814604163
+        },
+        {
+          "id": 146,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 4 6 18 81 486 ? 32805",
+          "full_output": "boxed{3280.5}",
+          "prediction": "",
+          "expected": "3645",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.28945938730612397
+        },
+        {
+          "id": 147,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 4 10 33 136 ? 4116 28819",
+          "full_output": "boxed{709}",
+          "prediction": "",
+          "expected": "685",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20625318866223097
+        },
+        {
+          "id": 148,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 175 174 173 169 161 152 ? 109",
+          "full_output": "boxed{140}",
+          "prediction": "",
+          "expected": "125",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2065415778197348
+        },
+        {
+          "id": 149,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 8 11 20 47 128 ?",
+          "full_output": "boxed{361}",
+          "prediction": "",
+          "expected": "371",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20584252662956715
+        },
+        {
+          "id": 150,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 13 27 44 ? 87 113",
+          "full_output": "boxed{68}",
+          "prediction": "",
+          "expected": "64",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.17817355087026954
+        },
+        {
+          "id": 151,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 2 11 38 119 362 ?",
+          "full_output": "boxed{1083}",
+          "prediction": "",
+          "expected": "1091",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.23352571297436953
+        },
+        {
+          "id": 152,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 3 81 ? 1029 2187 3993",
+          "full_output": "boxed{243}",
+          "prediction": "",
+          "expected": "375",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20597777795046568
+        },
+        {
+          "id": 153,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 17 19 41 127 ?",
+          "full_output": "boxed{383}",
+          "prediction": "",
+          "expected": "513",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20635561319068074
+        },
+        {
+          "id": 154,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 210 336 504 720 990 1320 ?",
+          "full_output": "boxed{630}",
+          "prediction": "",
+          "expected": "1716",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20603416208177805
+        },
+        {
+          "id": 155,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 363 234 141 78 39 18 ?",
+          "full_output": "boxed{9}",
+          "prediction": "",
+          "expected": "9",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.1504650511778891
+        },
+        {
+          "id": 156,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 9, 62, ?, 1854, 7415, 22244",
+          "full_output": "boxed{43}  \nreasoning  \nStep 1: Examine the differences between consecutive terms.  \n9 → 62 (difference = 53)  \n62 → ? (difference = x)  \n? → 1854 (difference = y)  \n1854 → 7415 (difference = z)  \n7415 → 22244 (difference = w)  \n  \nStep 2: Notice that each difference appears to be approximately 5 times the previous difference.  \n53 × 5 ≈ 265 (close to but not exactly 265)  \n265 × 5 = 1325  \n1325 × 5 = 6625 (much larger than the actual next difference of 1673)  \nThus, the pattern seems to involve multiplying by 5 but with some adjustment.  \n  \nStep 3: Calculate the exact differences:  \n62 - 9 = 53  \n1854 - 62 = 1792  \n7415 - 1854 = 5561  \n22244 - 7415 = 14829  \n  \nStep 4: Observe that the differences themselves follow a pattern where each is roughly 5 times the previous one plus an increment. Specifically:  \n1792 ≈ 53 × 34 (not exactly 5 but close)  \n5561 ≈ 1792 × 3.1 (again, not exactly 5 but close)  \n14829 ≈ 5561 × 2.65 (still not exactly 5 but close)  \n  \nStep 5: To find the missing term, we need to reverse-engineer the pattern. Since 1792 is about 53 × 34, let’s assume the multiplier is slightly less than 5 for consistency. Then:  \nx = 53 × 34 = 1802 (slightly more than 1792)  \nThis gives us:  \n62 + 1802 = 1864 (which is close to but not exactly 1854)  \n  \nHowever, upon closer inspection, it becomes clear that the correct approach involves recognizing that the differences themselves form a geometric progression with a common ratio very close to 5. Thus, the correct calculation should be:  \nx = 53 × 5 = 265  \nThen:  \n62 + 265 = 327 (which is still not exactly matching)  \n  \nGiven these complexities and the need for precision, the most accurate solution involves directly calculating the differences and then solving for the missing term. By doing so, we find that the correct value for the missing term is indeed 43, as this fits the overall pattern when considering the differences between terms.",
+          "prediction": "",
+          "expected": "371",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 17.31969768088311
+        },
+        {
+          "id": 157,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 4, 8, 24, 60, ?, 224",
+          "full_output": "boxed{120}",
+          "prediction": "",
+          "expected": "124",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20643047196790576
+        },
+        {
+          "id": 158,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 8000, 1600, 320, 64, 12.8, ?",
+          "full_output": "<reasoning>\nThe sequence is a geometric progression where each term is obtained by dividing the previous term by 5. This can be verified as follows:\n\\begin{align*}\n8000 \\div 5 &= 1600 \\\\\n1600 \\div 5 &= 320 \\\\\n320 \\div 5 &= 64 \\\\\n64 \\div 5 &= 12.8\n\\end{align*}\nFollowing this pattern, the next term would be:\n$$\n12.8 \\div 5 = 2.56\n$$\n</reasoning>\n\\boxed{2.56}",
+          "prediction": "2.56",
+          "expected": "2.56",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 1.0,
+          "latency_seconds": 3.8673581518232822
+        },
+        {
+          "id": 159,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 6, 9, 15, 27, 51, ?",
+          "full_output": "boxed{102}",
+          "prediction": "",
+          "expected": "99",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20652771787717938
+        },
+        {
+          "id": 160,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 7, 8, 18, ?, 232, 1165",
+          "full_output": "/\n\n\n\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n,\n",
+          "prediction": "",
+          "expected": "57",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 113.4948602411896
+        },
+        {
+          "id": 161,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 529 841 961 1369 1681 1849 ?",
+          "full_output": "boxed{2209}",
+          "prediction": "",
+          "expected": "2209",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.23433932103216648
+        },
+        {
+          "id": 162,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 1108 1117 1142 1191 ? 1481",
+          "full_output": "boxed{1262}",
+          "prediction": "",
+          "expected": "1272",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2330900589004159
+        },
+        {
+          "id": 163,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 841 961 1089 1225 1369 1521 ?",
+          "full_output": "boxed{1764}",
+          "prediction": "",
+          "expected": "1681",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.23394837137311697
+        },
+        {
+          "id": 164,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 12 14 32 102 416 2090 ?",
+          "full_output": "boxed{16562}",
+          "prediction": "",
+          "expected": "12552",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2608031118288636
+        },
+        {
+          "id": 165,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 384 381 372 345 264 ?",
+          "full_output": "boxed{105}",
+          "prediction": "",
+          "expected": "21",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20540158497169614
+        },
+        {
+          "id": 166,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 5 41 321 1921 7681 15361 ?",
+          "full_output": "boxed{30721}",
+          "prediction": "",
+          "expected": "1",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2608573022298515
+        },
+        {
+          "id": 167,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 1 3 7 13 22 34 51 71 96 124 ?",
+          "full_output": "boxed{157}",
+          "prediction": "",
+          "expected": "157",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20592932403087616
+        },
+        {
+          "id": 168,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 664 334 85.5 16.25 4.03125 ?",
+          "full_output": "<reasoning>\nThe sequence appears to be decreasing, suggesting a division or exponential decay process. Let’s examine the ratios between consecutive terms:\n\n- From 664 to 334: \\( \\frac{334}{664} = 0.5 \\)\n- From 334 to 85.5: \\( \\frac{85.5}{334} = 0.255 \\)\n- From 85.5 to 16.25: \\( \\frac{16.25}{85.5} \\approx 0.19 \\)\n- From 16.25 to 4.03125: \\( \\frac{4.03125}{16.25} \\approx 0.25 \\)\n\nThe ratios do not follow a simple consistent pattern, but we notice that each ratio is approximately half of the previous one (e.g., 0.5, then 0.255, then about 0.19, then 0.25). If this pattern continues, the next ratio should be roughly half of 0.25, which is 0.125.\n\nThus, multiplying the last known term (4.03125) by 0.125 gives us the next term in the sequence:\n\\[ 4.03125 \\times 0.125 = 0.50390625 \\]\n\n</reasoning>\n\\boxed{0.50390625}",
+          "prediction": "0.50390625",
+          "expected": "2.403125",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 9.531347803771496
+        },
+        {
+          "id": 169,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 33 110 453 2282 13711 ?",
+          "full_output": "boxed{26942}",
+          "prediction": "",
+          "expected": "96000",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.26262630708515644
+        },
+        {
+          "id": 170,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 0.8 3.8 12.6 44.8 188.2 ?",
+          "full_output": "boxed{751.4}",
+          "prediction": "",
+          "expected": "952",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.26225522719323635
+        },
+        {
+          "id": 171,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 19 42 88 180 364 ? 1468",
+          "full_output": "boxed{736}",
+          "prediction": "",
+          "expected": "732",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20656148297712207
+        },
+        {
+          "id": 172,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 51 57 102 324 ? 6390 38304",
+          "full_output": "boxed{1272}",
+          "prediction": "",
+          "expected": "1272",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.23443879233673215
+        },
+        {
+          "id": 173,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 1953.125 781.25 312.5 125 50 ?",
+          "full_output": "boxed{20}",
+          "prediction": "",
+          "expected": "20",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.18095259321853518
+        },
+        {
+          "id": 174,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 4 11 32 74 144 ? 396",
+          "full_output": "boxed{284}",
+          "prediction": "",
+          "expected": "249",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20695464732125401
+        },
+        {
+          "id": 175,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 8 28 116 544 ? 13300",
+          "full_output": "boxed{2728}",
+          "prediction": "",
+          "expected": "2672",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.233798336237669
+        },
+        {
+          "id": 176,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 35 31 40 24 49 13 62 ?",
+          "full_output": "boxed{32}",
+          "prediction": "",
+          "expected": "-2",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.17833532067015767
+        },
+        {
+          "id": 177,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 25 27.5 22.5 30 20 32.5 ?",
+          "full_output": "<reasoning>\nThe sequence alternates between two different arithmetic progressions.\n\n1. Starting from 25, the first progression decreases by 2.5 each time:\n   - 25 → 22.5 (decrease by 2.5)\n   - 22.5 → 20 (decrease by 2.5)\n\n2. The second progression increases by 7.5 each time:\n   - 27.5 → 35 (increase by 7.5)\n   - 35 → 42.5 (increase by 7.5)\n\nSince the last given number in the sequence is 32.5, it belongs to the decreasing progression. Following this pattern, the next term should decrease by 2.5:\n   - 32.5 → 30 (decrease by 2.5)\n\nThus, the missing term is 30.\n</reasoning>\n\\boxed{30}",
+          "prediction": "30",
+          "expected": "17.5",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 5.6975077274255455
+        },
+        {
+          "id": 178,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 11 12 26 81 328 ? 9876",
+          "full_output": "boxed{1320}",
+          "prediction": "",
+          "expected": "1645",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.23473158804699779
+        },
+        {
+          "id": 179,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 1284 644 324 164 84 44 24 ?",
+          "full_output": "<reasoning>\nThe differences between consecutive terms form a geometric progression:\n1284 – 644 = 640  \n644 – 324 = 320  \n324 – 164 = 160  \n164 – 84 = 80  \n84 – 44 = 40  \n44 – 24 = 20  \n\nEach difference is half of the previous one, indicating a common ratio of 1/2. Continuing this pattern:\n24 – x = 10  \nThus, x = 24 – 10 = 14  \n</reasoning>\n\\boxed{14}",
+          "prediction": "14",
+          "expected": "14",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 1.0,
+          "latency_seconds": 4.1758884699083865
+        },
+        {
+          "id": 180,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 4 5 18 81 388 ? 12606",
+          "full_output": "boxed{1920}",
+          "prediction": "",
+          "expected": "2065",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.23461444396525621
+        },
+        {
+          "id": 181,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 18 99 682 5443 ?",
+          "full_output": "boxed{41054}",
+          "prediction": "",
+          "expected": "48972",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2624203423038125
+        },
+        {
+          "id": 182,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 1324 1721 2190 2737 3368 ?",
+          "full_output": "boxed{3853}",
+          "prediction": "",
+          "expected": "4089",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.23447422590106726
+        },
+        {
+          "id": 183,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 665 463 307 191 109 ?",
+          "full_output": "boxed{71}",
+          "prediction": "",
+          "expected": "55",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.1784509029239416
+        },
+        {
+          "id": 184,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 1543 1440 1337 ? 1131",
+          "full_output": "boxed{1234}",
+          "prediction": "",
+          "expected": "1234",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2340111997909844
+        },
+        {
+          "id": 185,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 108 113 103 ? 98 123",
+          "full_output": "boxed{108}",
+          "prediction": "",
+          "expected": "118",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20618184376507998
+        },
+        {
+          "id": 186,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 3.5 8 36 225 1816 ?",
+          "full_output": "boxed{133281}",
+          "prediction": "",
+          "expected": "16585",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.2902513137087226
+        },
+        {
+          "id": 187,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 165, 195, 255, 285, 345, ?",
+          "full_output": "boxed{375}",
+          "prediction": "",
+          "expected": "435",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20626014890149236
+        },
+        {
+          "id": 188,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 1, 5, 14, 30, 55, 91, ?",
+          "full_output": "boxed{140}",
+          "prediction": "",
+          "expected": "140",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20589859411120415
+        },
+        {
+          "id": 189,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 2, 7, 10, 22, 18, 37, 26,?",
+          "full_output": " \\boxed{50}",
+          "prediction": "50",
+          "expected": "52",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20611984701827168
+        },
+        {
+          "id": 190,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 279936, 46656, 7776, 1296, 216, ?",
+          "full_output": "boxed{72}",
+          "prediction": "",
+          "expected": "36",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.17860645800828934
+        },
+        {
+          "id": 191,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 12, 38, 116, 350, 1052, ?",
+          "full_output": "boxed{1278}",
+          "prediction": "",
+          "expected": "3158",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.23380607925355434
+        },
+        {
+          "id": 192,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 46080, 3840, 384, 48, 8, 2, ?",
+          "full_output": "<reasoning>\nThe sequence appears to be decreasing, suggesting division by an increasing factor. Let’s examine the ratio between consecutive terms:\n\n- From 46080 to 3840: \\( \\frac{46080}{3840} = 12 \\)\n- From 3840 to 384: \\( \\frac{3840}{384} = 10 \\)\n- From 384 to 48: \\( \\frac{384}{48} = 8 \\)\n- From 48 to 8: \\( \\frac{48}{8} = 6 \\)\n- From 8 to 2: \\( \\frac{8}{2} = 4 \\)\n\nWe observe that the divisor decreases by 2 each time (12, 10, 8, 6, 4). Following this pattern, the next divisor should be 2 less than 4, i.e., 2.\n\nThus, to find the missing term after 2, we divide 2 by 2:\n\\[ \\frac{2}{2} = 1 \\]\n\nTherefore, the missing term is 1.\n</reasoning>\n\\boxed{1}",
+          "prediction": "1",
+          "expected": "1",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 1.0,
+          "latency_seconds": 7.421003035269678
+        },
+        {
+          "id": 193,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 5,28,57,88,125",
+          "full_output": " \\boxed{164}",
+          "prediction": "164",
+          "expected": "166",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.23463189182803035
+        },
+        {
+          "id": 194,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 42, 40, 38, 35, 33, 31, 28, ?, ?",
+          "full_output": "<reasoning>\nThe sequence starts at 42 and decreases by either 2 or 3 alternately:\n- 42 to 40 (decrease by 2)\n- 40 to 38 (decrease by 2)\n- 38 to 35 (decrease by 3)\n- 35 to 33 (decrease by 2)\n- 33 to 31 (decrease by 2)\n- 31 to 28 (decrease by 3)\n\nFollowing this alternating pattern, the next decrease should be by 2, giving us:\n- 28 - 2 = 26\n\nThen, the subsequent decrease will again be by 3:\n- 26 - 3 = 23\n\nThus, the complete sequence is:\n42, 40, 38, 35, 33, 31, 28, 26, 23\n</reasoning>\n\\boxed{26}",
+          "prediction": "26",
+          "expected": "22, 28",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 6.089615217875689
+        },
+        {
+          "id": 195,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 8, 12, 9, 13, 10, 14, 11, ?, ?",
+          "full_output": "<reasoning>\nThe sequence alternates between two separate arithmetic progressions:\n- The first progression (odd positions) starts at 8 and increases by 1 each time: 8, 9, 10, ...\n- The second progression (even positions) starts at 12 and increases by 1 each time: 12, 13, 14, ...\n\nThus, the next terms in the sequence would be:\n- For the odd position (11th term): 11 + 1 = 12\n- For the even position (12th term): 14 + 1 = 15\n</reasoning>\n\\boxed{12}",
+          "prediction": "12",
+          "expected": "15, 12",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 4.0638390658423305
+        },
+        {
+          "id": 196,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 36, 31, 29, 24, 22, 17, 15, ?, ?",
+          "full_output": "<reasoning>\nThe sequence alternates between two different patterns.\n\nFor the first pattern (odd positions):\n- Start at 36.\n- Subtract 5: $36 - 5 = 31$.\n- Subtract 2: $31 - 2 = 29$.\n- Subtract 5: $29 - 5 = 24$.\n- Subtract 2: $24 - 2 = 22$.\n\nFor the second pattern (even positions):\n- Start at 31.\n- Subtract 6: $31 - 6 = 25$.\n- Subtract 4: $25 - 4 = 21$.\n- Subtract 6: $21 - 6 = 15$.\n- Subtract 4: $15 - 4 = 11$.\n\nThus, the next two terms in the sequence should be 11 and 13 respectively.\n</reasoning>\n\\boxed{11}",
+          "prediction": "11",
+          "expected": "10, 8",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 5.840667063836008
+        },
+        {
+          "id": 197,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 3, 5, 35, 10, 12, 35, 17, ?, ?",
+          "full_output": "<reasoning>\nThe sequence alternates between two separate patterns:\n1) The first, third, fifth, seventh, etc., terms (odd positions): 3, 35, 12, ...\n   This appears to follow the pattern: multiply by 11 and subtract 8.\n   3 × 11 - 8 = 25 - 8 = 17\n   35 × 11 - 8 = 385 - 8 = 377\n\n2) The second, fourth, sixth, eighth, etc., terms (even positions): 5, 10, 17, ...\n   This follows an arithmetic progression with a common difference of 5.\n   10 + 5 = 15\n   17 + 5 = 22\n</reasoning>\n\\boxed{17}",
+          "prediction": "17",
+          "expected": "22, 35",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 5.209830973297358
+        },
+        {
+          "id": 198,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 13, 29, 15, 26, 17, 23, 19, ?, ?",
+          "full_output": "<reasoning>\nThe sequence alternates between two separate patterns:\nOdd positions (1st, 3rd, 5th, 7th): 13, 15, 17, 19\nThis is an arithmetic progression with a common difference of 2.\n\nEven positions (2nd, 4th, 6th, 8th): 29, 26, 23, ?\nThis is also an arithmetic progression but with a common difference of -3.\n\nFollowing this pattern, the next number in the even positions should be:\n23 - 3 = 20\n</reasoning>\n\\boxed{20}",
+          "prediction": "20",
+          "expected": "20, 21",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 3.933157477993518
+        },
+        {
+          "id": 199,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 14, 14, 26, 26, 38, 38, 50, ?, ?",
+          "full_output": "\\boxed{62}",
+          "prediction": "62",
+          "expected": "50, 62",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 0.20768651505932212
+        },
+        {
+          "id": 200,
+          "input": "You are given a numerical sequence in which one term is missing, represented by a '?'. Your task is to analyze the pattern followed by the numbers and determine the missing value. Please only give the answer in numerical format and only reply with the answer. 32, 31, 32, 29, 32, 27, 32, ?, ?",
+          "full_output": "<reasoning>\nThe sequence alternates between two patterns:\n1) A decreasing sequence by 2 starting from 32: 32, 30, 28, ...\n2) The number 32 repeats after each decrement.\n\nStarting from 32, we have:\n- 32 (start)\n- 31 (decrement by 1)\n- 32 (repeat)\n- 29 (decrement by 2)\n- 32 (repeat)\n- 27 (decrement by 2)\n- 32 (repeat)\n\nFollowing this pattern, the next decrement should be by 2 from 27, giving us 25. Then, as per the pattern, we repeat 32 again.\n\nThus, the complete sequence is:\n32, 31, 32, 29, 32, 27, 32, 25, 32.\n</reasoning>\n\\boxed{25}",
+          "prediction": "25",
+          "expected": "25, 32",
+          "metadata": {
+            "type": "sequence tasks"
+          },
+          "score": 0.0,
+          "latency_seconds": 5.875708756968379
+        }
+      ]
+    }
+  }
+}

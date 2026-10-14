@@ -159,7 +159,10 @@ class GRPOTreeTrainer:
         """Log-prob of `continuation` under `model`, scored on the SAME chat-template
         rendering the policy generated with (fixes the prompt-format mismatch). The
         prompt span is found by longest-common-prefix of token ids, so tokenizer merges
-        at the prompt/continuation seam can't misalign the masked target."""
+        at the prompt/continuation seam can't misalign the masked target.
+
+        Returns `(sum_logprob, n_continuation_tokens)`. `(None, 0)` signals "too long to
+        score safely" so the caller can skip the sample."""
         import torch
 
         tok = self.tokenizer
@@ -179,11 +182,11 @@ class GRPOTreeTrainer:
         max_tok = getattr(self.cfg, "max_score_tokens", 0)
         if max_tok and f_ids.shape[1] > max_tok:
             # Too long to score safely on this GPU; signal the caller to skip it.
-            return None
+            return None, 0
         f_ids = f_ids.to(model.device)
         p_len = _common_prefix_len(p_ids, f_ids[0].tolist())
         if f_ids.shape[1] <= p_len:  # nothing to score
-            return torch.zeros((), device=model.device)
+            return torch.zeros((), device=model.device), 0
         logits = model(f_ids).logits[:, :-1, :]
         targets = f_ids[:, 1:]
         # Memory-efficient token log-probs: log p(t) = logit_t - logsumexp(logits).
@@ -193,7 +196,10 @@ class GRPOTreeTrainer:
         sel = logits.gather(-1, targets.unsqueeze(-1)).squeeze(-1)  # [1, L-1]
         tok_logp = (sel - torch.logsumexp(logits, dim=-1))[0]
         del logits, sel
-        return tok_logp[p_len - 1 :].sum()
+        cont_logp = tok_logp[p_len - 1 :]
+        # (sum, n_continuation_tokens): the sum is what the policy-gradient loss wants,
+        # and the count lets the KL term be length-normalized by the caller.
+        return cont_logp.sum(), int(cont_logp.shape[0])
 
     def _update(self, samples: list[TrainingSample]) -> dict:
         import torch
@@ -233,15 +239,20 @@ class GRPOTreeTrainer:
         empty_cache_every = 8  # release fragmented blocks periodically
         for i, s in enumerate(samples):
             adv = (s.advantage - mean) / std
-            lp = self._seq_logprob(self.model, s.messages, s.continuation)
+            lp, lp_n = self._seq_logprob(self.model, s.messages, s.continuation)
             if lp is None:  # sequence exceeded max_score_tokens; skip it
                 continue
             loss_s = -(adv * s.weight) * lp
             if self.ref_model is not None:
                 with torch.no_grad():
-                    rlp = self._seq_logprob(self.ref_model, s.messages, s.continuation)
+                    rlp, _ = self._seq_logprob(
+                        self.ref_model, s.messages, s.continuation
+                    )
                 if rlp is not None:
-                    loss_s = loss_s + self.cfg.kl_coef * (lp - rlp)
+                    # Per-token KL: lp/rlp are sequence SUMS, so divide by the continuation
+                    # length. Otherwise kl_coef scales with rollout length and long rollouts
+                    # get over-regularized (the opposite of what we want here).
+                    loss_s = loss_s + self.cfg.kl_coef * (lp - rlp) / max(lp_n, 1)
             (loss_s / n).backward()
             running += float(loss_s.detach())
             scored += 1
@@ -396,7 +407,52 @@ def _assert_single_process(output_dir: str) -> None:
         )
 
 
-def run_grpo_tree(model, tokenizer, rl_cfg: dict):
+def _load_ref_model(rl_cfg: dict, model_config: Optional[dict]):
+    """Load a FROZEN copy of the starting policy for the KL term.
+
+    The trainer only applies KL when `ref_model is not None`; if we don't build one here
+    the penalty is silently skipped and the policy is free to drift off the SFT
+    distribution (which is what let it collapse to bare `boxed{X}` / comma spam). The
+    reference is the checkpoint the policy was initialised from, so KL anchors us to SFT
+    — NOT to the base model (disabling the LoRA adapter would give the base, which is
+    the wrong target).
+    """
+    if not rl_cfg.get("use_kl", True):
+        print("[grpo_tree] use_kl=false -> training WITHOUT a KL penalty (not recommended)")
+        return None
+
+    model_config = model_config or {}
+    path = rl_cfg.get("ref_model_path") or model_config.get("from_checkpoint")
+    if not path:
+        print(
+            "[grpo_tree] WARNING: no reference checkpoint found "
+            "(set rl.ref_model_path or model.from_checkpoint) -> KL DISABLED"
+        )
+        return None
+
+    from transformers import AutoModelForCausalLM
+    from peft import AutoPeftModelForCausalLM
+
+    device = rl_cfg.get("ref_device")
+    if not device:
+        device = "cpu"
+        print(
+            "[grpo_tree] WARNING: rl.ref_device not set -> KL reference on CPU (slow). "
+            "Set rl.ref_device (e.g. 'cuda:1') to speed it up."
+        )
+
+    is_peft = model_config.get("is_peft_checkpoint", False)
+    dtype = model_config.get("torch_dtype", "bfloat16")
+    print(f"Loading frozen KL reference from {path} (device={device})...", flush=True)
+    loader = AutoPeftModelForCausalLM if is_peft else AutoModelForCausalLM
+    ref = loader.from_pretrained(path, torch_dtype=dtype, device_map={"": device})
+    ref.eval()
+    for p in ref.parameters():
+        p.requires_grad_(False)
+    return ref
+
+
+def run_grpo_tree(model, tokenizer, rl_cfg: dict, model_config: Optional[dict] = None):
     """Entry from run.py. In-process policy (the trained model) + in-process judge."""
     _assert_single_process(rl_cfg["output_dir"])
 
@@ -415,12 +471,16 @@ def run_grpo_tree(model, tokenizer, rl_cfg: dict):
         rl_cfg.get("merge", {})
     )  # semantic merging by default
 
+    ref_model = _load_ref_model(rl_cfg, model_config)
+
     problems = load_problems_jsonl(
         rl_cfg["problems_path"], limit=rl_cfg.get("max_problems")
     )
 
     cfg = TreeGRPOConfig(**rl_cfg.get("tree", {}))
-    trainer = GRPOTreeTrainer(model, tokenizer, policy, judge, cfg=cfg, matcher=matcher)
+    trainer = GRPOTreeTrainer(
+        model, tokenizer, policy, judge, ref_model=ref_model, cfg=cfg, matcher=matcher
+    )
     stats = trainer.train(
         problems,
         output_dir=rl_cfg["output_dir"],

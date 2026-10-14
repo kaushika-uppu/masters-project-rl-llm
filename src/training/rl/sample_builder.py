@@ -1,9 +1,12 @@
 """Turn a rollout tree into weighted policy-gradient training samples.
 
 For each step on each trajectory:
-  advantage = MC advantage [V(child) - V(parent)]  +  novelty bonus (gated on success)
+  advantage = MC advantage [V(child) - V(parent)]  +  novelty bonus (gated, see below)
               +  redundancy penalty (if the step revisits a seen state)
   weight    = base + criticality(parent)   (concentrate updates at decision forks)
+
+The MC advantage is derived from the (now additive) `proof_reward`, so sound-but-wrong
+rollouts carry a non-zero value through the tree instead of being flattened to 0.
 
 The trainer multiplies the step's log-prob by (advantage * weight). This is the
 "train on the path, especially the critical nodes" objective with no value network.
@@ -17,7 +20,7 @@ from typing import Callable
 
 from .advantage import criticality
 from .policy import build_step_messages, reconstruct_continuation
-from .reward import RewardWeights, novelty_bonus
+from .reward import RewardWeights, novelty_bonus, novelty_eligible
 from .rollout import Trajectory
 from .tree import ProofTree
 from .types import Problem
@@ -58,7 +61,11 @@ def build_samples(
             parent = tree.nodes[traj.path_keys[i]]
             child = tree.nodes[traj.path_keys[i + 1]]
             mc_adv = child.value - parent.value
-            nov = novelty_bonus(tree.edge_count(parent, child), traj.success, weights)
+            # Novelty is gated by `weights.novelty_gate` (default "valid"): rare moves on a
+            # correct OR fully-sound rollout earn the bonus, so exploration keeps a gradient
+            # even when the final verdict is wrong.
+            nov_ok = novelty_eligible(traj.success, traj.verifier_score, weights)
+            nov = novelty_bonus(tree.edge_count(parent, child), nov_ok, weights)
             redundancy = -weights.redundancy if child.key in seen else 0.0
             seen.add(child.key)
             advantage = mc_adv + nov + redundancy
