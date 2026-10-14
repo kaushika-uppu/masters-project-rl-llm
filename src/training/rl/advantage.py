@@ -51,6 +51,24 @@ def criticality(tree: ProofTree) -> dict[str, float]:
     return crit
 
 
+def normalized_criticality(tree: ProofTree) -> dict[str, float]:
+    """Criticality rescaled per tree to [0, 1] (divide by the tree's max; unchanged if the
+    max is 0). Removes the sqrt(visits) * spread scale so one decision (typically the root)
+    can't dominate every update by 10-40x."""
+    crit = criticality(tree)
+    mx = max(crit.values(), default=0.0)
+    if mx <= 0:
+        return crit
+    return {k: v / mx for k, v in crit.items()}
+
+
+def step_weight(base_weight: float, norm_crit: float, max_weight: float | None = 1.0) -> float:
+    """Per-step loss weight = base + normalized criticality, clipped to max_weight
+    (None = no clip)."""
+    w = base_weight + norm_crit
+    return w if max_weight is None else min(w, max_weight)
+
+
 def most_critical(tree: ProofTree) -> str | None:
     crit = criticality(tree)
     if not crit:

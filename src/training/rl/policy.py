@@ -53,6 +53,15 @@ def build_step_messages(
     return msgs
 
 
+def revise_extra_user(failed_step: str, reason: str) -> str:
+    """Extra user text prepended to STEP_INSTRUCTION when a rejected step is revised.
+    Single source of truth for generation (policies) and scoring (rollout -> sample_builder)."""
+    return (
+        f"Your previous step was rejected.\nRejected step: {failed_step}\n"
+        f"Reason: {reason}\nProduce a corrected, valid next step instead."
+    )
+
+
 def reconstruct_continuation(step: str) -> str:
     """Rebuild the assistant text the policy emitted for a stored step. Normal steps were
     generated wrapped in <step>...</step>; terminal steps were a bare 'Verdict: ...' line."""
@@ -97,10 +106,7 @@ class VLLMPolicy:
     def revise_step(
         self, problem: Problem, history: list[str], failed_step: str, reason: str
     ) -> str:
-        extra = (
-            f"Your previous step was rejected.\nRejected step: {failed_step}\n"
-            f"Reason: {reason}\nProduce a corrected, valid next step instead."
-        )
+        extra = revise_extra_user(failed_step, reason)
         outs = self.client.chat(
             self._messages(problem, history, extra_user=extra),
             temperature=self.temperature,

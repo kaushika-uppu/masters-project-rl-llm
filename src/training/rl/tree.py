@@ -44,6 +44,23 @@ class Node:
         return self.value_sum / self.visits if self.visits else 0.0
 
 
+def _signature(failed: bool, is_terminal: bool, verdict: Optional[str]) -> tuple:
+    """Merge-compatibility signature: nodes only ever merge with an identical one."""
+    return (bool(failed), bool(is_terminal), verdict.upper() if verdict else None)
+
+
+_PLAIN_SIG = (False, False, None)
+
+
+def _sig_suffix(sig: tuple) -> str:
+    if sig == _PLAIN_SIG:
+        return ""
+    failed, term, verdict = sig
+    if failed:
+        return "::F"
+    return "::T" + (verdict or "?") if term else "::V" + (verdict or "?")
+
+
 class ProofTree:
     def __init__(self, root_summary: str, matcher: Optional[StateMatcher] = None):
         self.matcher = matcher or StateMatcher()
@@ -51,9 +68,10 @@ class ProofTree:
         self._emb: dict[str, list[float]] = {}   # node.key -> cached state embedding
         self._alias: dict[str, str] = {}         # canonical text key -> representative node.key
         # Merge tracking (must be initialized before _intern is called)
+        self.root_key: Optional[str] = None
         self.merge_count = 0  # number of times states were merged
         self.state_count = 0  # total number of states added (including merged ones)
-        self.root_key = self._intern(root_summary, depth=0).key
+        self._intern(root_summary, depth=0)  # sets self.root_key
 
     # -- structure ---------------------------------------------------------------
     def _update_flags(self, node: Node, depth: int, kw: dict) -> Node:
@@ -64,21 +82,38 @@ class ProofTree:
         return node
 
     def _intern(self, summary: str, depth: int, **kw) -> Node:
-        ck = self.matcher.key(summary)
+        """Intern a state. Merge safety rules:
+          * nodes only merge with the same (failed, is_terminal, verdict) signature -- the
+            signature is baked into the identity key, so exact-key hits are checked too;
+          * failed dead-ends never merge semantically (exact key only);
+          * nothing merges into the root (a later state equal/similar to the root is a
+            distinct node, so long proofs don't register false "revisits").
+        """
+        sig = _signature(kw.get("failed", False), kw.get("is_terminal", False), kw.get("verdict"))
+        ck = self.matcher.key(summary) + _sig_suffix(sig)
         self.state_count += 1
+        is_first = self.root_key is None  # the root itself is being created
 
-        # 1. exact / previously-seen text -> same node (fast path)
+        # 1. exact / previously-seen text (same signature) -> same node (fast path)
         nk = self._alias.get(ck)
+        if nk is not None and nk == self.root_key and not is_first:
+            ck = ck + "::notroot"  # never merge into root; dedicated node for this text
+            nk = self._alias.get(ck)
         if nk is not None:
             self.merge_count += 1
             return self._update_flags(self.nodes[nk], depth, kw)
 
-        # 2. semantic nearest-neighbour merge (embedding cosine >= threshold)
+        # 2. semantic nearest-neighbour merge, restricted to same-signature, non-root,
+        #    non-failed nodes
+        can_embed = self.matcher.has_embedder and not sig[0] and not is_first
         vec = None
-        if self.matcher.has_embedder and self.nodes:
+        if can_embed:
             vec = self.matcher.embed(summary)
             best_key, best_sim = None, -1.0
             for k, ev in self._emb.items():
+                n = self.nodes[k]
+                if _signature(n.failed, n.is_terminal, n.verdict) != sig:
+                    continue
                 sim = cosine(vec, ev)
                 if sim > best_sim:
                     best_sim, best_key = sim, k
@@ -88,12 +123,14 @@ class ProofTree:
                 self.merge_count += 1
                 return self._update_flags(self.nodes[best_key], depth, kw)
 
-        # 3. new node
+        # 3. new node (embedded only if it can be a semantic merge target)
         node = Node(key=ck, summary=summary, depth=depth, **kw)
         self.nodes[ck] = node
         self._alias[ck] = ck
-        if self.matcher.has_embedder:
-            self._emb[ck] = vec if vec is not None else self.matcher.embed(summary)
+        if is_first:
+            self.root_key = ck
+        elif can_embed and not ck.endswith("::notroot"):
+            self._emb[ck] = vec
         return node
 
     @property

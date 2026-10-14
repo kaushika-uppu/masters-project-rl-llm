@@ -13,7 +13,7 @@ from typing import Optional
 
 from src.judge.prompts import JUDGE_SYSTEM_PROMPT, build_judge_user_prompt
 from src.judge.step_judge import parse_step_judgement
-from .policy import _extract_step, build_step_messages
+from .policy import _extract_step, build_step_messages, revise_extra_user
 from .types import Problem, StepJudgement
 
 
@@ -89,8 +89,7 @@ class TransformersPolicy:
     # -- batched (used by RolloutEngine lock-step expansion) ---------------------
     @staticmethod
     def _revise_extra(failed_step: str, reason: str) -> str:
-        return (f"Your previous step was rejected.\nRejected step: {failed_step}\n"
-                f"Reason: {reason}\nProduce a corrected, valid next step instead.")
+        return revise_extra_user(failed_step, reason)
 
     def propose_steps_batch(self, problem: Problem, histories: list[list[str]]) -> list[str]:
         """One next step per history, generated in a single batched forward."""

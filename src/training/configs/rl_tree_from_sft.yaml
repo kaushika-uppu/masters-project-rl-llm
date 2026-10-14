@@ -41,6 +41,24 @@ rl:
     cosine_threshold: 0.9   # >= this cosine => same state (raise to under-merge)
     device: "cuda:1"  # embedder on GPU 1 too (off the policy card); use "cpu" if preferred
 
+  # Reward weights -> RewardWeights (reward.py). Printed at startup. Unknown keys error.
+  reward:
+    correct: 1.0            # terminal reward for the correct verdict (keep > whole shaping budget)
+    incorrect: 0.0          # terminal reward for a wrong verdict
+    fail: 0.0               # terminal reward for failed / no-verdict / premature (guessed) rollouts
+    validity: 0.3           # scale of mean per-step validity reward, in [-validity, +validity]
+    reached_verdict: 0.1    # small bonus for terminating with any (non-premature) verdict
+    redundancy: 0.2         # per-step penalty for revisiting a state (keep << correct)
+    min_steps: 2            # verdict after < min_steps reasoning steps = guess -> treated as fail,
+                            # no validity/reached bonus, not novelty-eligible. 0 disables.
+    novelty: 0.3            # rarity bonus scale (novelty / edge_count)
+    novelty_gate: "valid"   # "correct" | "valid" | "none"
+    novelty_min_validity: 1.0   # mean step validity needed for the "valid" gate
+    step_validity: 0.2          # + added to a step's advantage if the judge accepted it FIRST try (0 on premature rollouts)
+    revised_step_validity: 0.1  # + added if accepted only after revision
+    invalid_step: 0.3           # judge-rejected attempts become negative samples with advantage -invalid_step
+    train_on_rejected: true     # false = discard rejected attempts (old behaviour)
+
   tree:
     group_size: 8
     max_depth: 8
@@ -50,7 +68,29 @@ rl:
     epochs: 1
     batch_problems: 4
     base_weight: 0.1
+    max_weight: 1.0    # criticality is normalized to [0,1] per tree; weight = min(base_weight + crit, max_weight)
+    loss_norm: "constant"      # "constant" (token sum / loss_norm_const, Dr.GRPO) | "mean" (per-seq token mean) | "sum" (legacy)
+    loss_norm_const: 384       # = policy max_new_tokens; used when loss_norm=constant. Applies to KL too.
+    max_grad_norm: 1.0         # global grad-norm clip before opt.step() (<=0 disables)
+    adv_whiten: "std_only"     # "std_only" (a/std, keeps signs) | "batch" ((a-mean)/std, old) | "none"
     num_workers: 1     # >1 parallelizes trees across problems; safe only with a
                        # served/replicated backend or one model per worker (see grpo_tree.py)
     grad_checkpointing: true   # recompute activations in backward; big memory saving in _update
     max_score_tokens: 4096     # skip scoring sequences longer than this (0 = disabled)
+
+  # Early stopping on training pathologies (early_stop.py). On stop: reason printed, written to
+  # train_metrics.jsonl, checkpoint "early-stop-<step>" saved, "last-healthy" kept at save_every.
+  early_stop:
+    enabled: true
+    mode: "stop"                # "stop" | "warn" (log only)
+    warmup: 5                   # updates before trend checks can fire; baseline = mean over these
+    patience: 3                 # consecutive bad updates required for trend checks
+    max_empty_updates: 3        # consecutive updates with zero samples (immediate)
+    max_premature_frac: 0.3     # reasoning collapse: guessed-verdict fraction
+    min_mean_steps_ratio: 0.5   # mean_steps below this x baseline
+    min_cont_tokens_ratio: 0.5  # mean_cont_tokens below this x baseline
+    max_kl: 0.5                 # mean per-token KL to reference
+    reward_hack_delta: 0.2      # reward up by this while first-try validity drops by first_try_drop
+    first_try_drop: 0.15
+    max_grad_norm_spike: 50.0   # pre-clip grad norm
+    max_degenerate_frac: 0.1    # fraction of empty/repetitive proposed steps

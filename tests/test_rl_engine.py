@@ -18,9 +18,14 @@ from src.training.rl.advantage import criticality, most_critical, edge_advantage
 PROBLEM = Problem(id="t1", statement="all fibers have the same cardinality", label=True)
 
 
+# The stub scenario verdicts after <=1 reasoning step, so the legacy-shape tests disable the
+# anti-guessing rule (min_steps=0); min_steps behaviour has its own tests in test_rl_fixes.py.
+W0 = RewardWeights(min_steps=0)
+
+
 def _build():
     eng = RolloutEngine(StubPolicy(), StubJudge(), max_depth=4, retry_budget=2)
-    return eng.build_tree(PROBLEM, group_size=3)
+    return eng.build_tree(PROBLEM, group_size=3, weights=W0)
 
 
 def test_sibling_merge():
@@ -92,7 +97,7 @@ class _NoBatchJudge:
 def test_fallback_without_batch_methods():
     # engine must work when Policy/Judge lack *_batch (per-item fallback path)
     eng = RolloutEngine(_NoBatchPolicy(), _NoBatchJudge(), max_depth=4, retry_budget=2)
-    tree, trajs = eng.build_tree(PROBLEM, group_size=3)
+    tree, trajs = eng.build_tree(PROBLEM, group_size=3, weights=W0)
     assert most_critical(tree) == tree.root_key
     assert abs(tree.root.value - 1.0) < 1e-9  # additive rewards pooled into the root
 

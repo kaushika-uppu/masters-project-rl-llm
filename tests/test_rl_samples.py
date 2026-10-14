@@ -3,6 +3,7 @@ import sys, os, json, tempfile
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from src.training.rl.types import Problem
+from src.training.rl.reward import RewardWeights
 from src.training.rl.stubs import StubPolicy, StubJudge
 from src.training.rl.rollout import RolloutEngine
 from src.training.rl.sample_builder import build_samples, default_prompt
@@ -14,8 +15,9 @@ PROBLEM = Problem(id="t1", statement="all fibers have the same cardinality", lab
 
 def test_build_samples_basic():
     eng = RolloutEngine(StubPolicy(), StubJudge(), max_depth=4, retry_budget=2)
-    tree, trajs = eng.build_tree(PROBLEM, group_size=3)
-    samples = build_samples(tree, trajs, PROBLEM)
+    w0 = RewardWeights(min_steps=0)  # stub verdicts after <=1 step; see test_rl_fixes.py
+    tree, trajs = eng.build_tree(PROBLEM, group_size=3, weights=w0)
+    samples = build_samples(tree, trajs, PROBLEM, w0)
     assert samples, "should produce training samples"
     # every sample has a prompt, a step, and a positive weight
     assert all(s.prompt and s.step and s.weight > 0 for s in samples)

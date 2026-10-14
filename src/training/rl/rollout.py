@@ -19,9 +19,21 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from .merge import StateMatcher
-from .reward import RewardWeights, proof_reward, verifier_score
+from .policy import revise_extra_user
+from .degeneracy import is_degenerate_step
+from .reward import RewardWeights, is_premature_verdict, proof_reward, verifier_score
 from .tree import Node, ProofTree
 from .types import Judge, Policy, Problem, StepJudgement
+
+
+@dataclass
+class RejectedStep:
+    """A judge-rejected attempt: what it was generated under and why it failed."""
+    parent_key: str
+    history: list[str]      # applied steps before this attempt
+    extra_user: str         # "" for a first attempt, the revise prompt for a retry
+    step: str
+    reason: str = ""
 
 
 @dataclass
@@ -33,6 +45,19 @@ class Trajectory:
     reward: float = 0.0
     judgements: list[StepJudgement] = field(default_factory=list)
     verifier_score: float = 0.0
+    # Extra user text each applied step was GENERATED under ("" for a plain proposal, the
+    # "Your previous step was rejected..." text for a revision). Aligned with `steps`, so
+    # training scores log-probs under the real generation prompt.
+    step_extras: list[str] = field(default_factory=list)
+    n_reasoning_steps: int = 0   # non-terminal steps taken (the verdict step excluded)
+    premature: bool = False      # reached a verdict with < weights.min_steps reasoning steps
+    # Per applied step: accepted by the judge on the first try (no revision)? Aligned with `steps`.
+    step_first_try: list[bool] = field(default_factory=list)
+    rejected: list[RejectedStep] = field(default_factory=list)
+    n_proposed: int = 0          # depths at which this rollout proposed a step
+    n_first_try_valid: int = 0   # ...of which the first proposal was accepted
+    n_attempts: int = 0          # all generated attempts (proposals + revisions)
+    n_degenerate: int = 0        # attempts flagged by is_degenerate_step
 
 
 @dataclass
@@ -42,6 +67,13 @@ class _RState:
     history: list[str] = field(default_factory=list)
     path: list[str] = field(default_factory=list)
     steps: list[str] = field(default_factory=list)
+    step_extras: list[str] = field(default_factory=list)
+    step_first_try: list[bool] = field(default_factory=list)
+    rejected: list[RejectedStep] = field(default_factory=list)
+    n_proposed: int = 0
+    n_first_try_valid: int = 0
+    n_attempts: int = 0
+    n_degenerate: int = 0
     done: bool = False
     terminal: Optional[Node] = None
     judgements: list[StepJudgement] = field(default_factory=list)
@@ -100,9 +132,14 @@ class RolloutEngine:
 
             steps = self._propose(problem, [s.history for s in active])
             judged = self._judge(problem, [(s.history, st) for s, st in zip(active, steps)])
-            for s, j in zip(active, judged):
+            for s, j, st in zip(active, judged, steps):
                 s.judgements.append(j)
+                s.n_proposed += 1
+                s.n_attempts += 1
+                s.n_first_try_valid += int(j.valid)
+                s.n_degenerate += int(is_degenerate_step(st))
             tries = [0] * len(active)
+            extras = [""] * len(active)  # extra_user each pending step was generated under
             last_fail: dict[int, Node] = {}
 
             # batched bounded retry: re-generate only the still-invalid rollouts
@@ -110,6 +147,11 @@ class RolloutEngine:
                 invalid = [i for i, s in enumerate(active) if not s.done and not judged[i].valid]
                 if not invalid:
                     break
+                for i in invalid:  # keep each rejected attempt as a negative sample
+                    active[i].rejected.append(RejectedStep(
+                        parent_key=active[i].node.key, history=list(active[i].history),
+                        extra_user=extras[i], step=steps[i], reason=judged[i].reason,
+                    ))
                 for i in invalid:  # record each bad move as a merged dead-end leaf
                     last_fail[i] = tree.add_transition(
                         active[i].node, steps[i], f"FAILED::{steps[i]}", failed=True
@@ -129,12 +171,15 @@ class RolloutEngine:
                     problem, [(active[i].history, steps[i], judged[i].reason) for i in still]
                 )
                 for k, i in enumerate(still):
+                    extras[i] = revise_extra_user(steps[i], judged[i].reason)
                     steps[i] = revised[k]
                     tries[i] += 1
                 rej = self._judge(problem, [(active[i].history, steps[i]) for i in still])
                 for k, i in enumerate(still):
                     judged[i] = rej[k]
                     active[i].judgements.append(rej[k])
+                    active[i].n_attempts += 1
+                    active[i].n_degenerate += int(is_degenerate_step(steps[i]))
 
             # apply the valid step for each rollout that didn't exhaust its retries
             for i, s in enumerate(active):
@@ -146,6 +191,8 @@ class RolloutEngine:
                 )
                 s.history = s.history + [st]
                 s.steps.append(st)
+                s.step_extras.append(extras[i])
+                s.step_first_try.append(tries[i] == 0)
                 s.path.append(child.key)
                 s.node = child
                 if j.is_terminal:
@@ -158,11 +205,24 @@ class RolloutEngine:
         for s in states:
             terminal = s.terminal if s.terminal is not None else s.node
             traj = Trajectory(s.path, terminal, s.steps)
+            traj.step_extras = list(s.step_extras)
+            traj.step_first_try = list(s.step_first_try)
+            traj.rejected = list(s.rejected)
+            traj.n_proposed, traj.n_first_try_valid = s.n_proposed, s.n_first_try_valid
+            traj.n_attempts, traj.n_degenerate = s.n_attempts, s.n_degenerate
+            ends_in_verdict = (
+                s.terminal is not None and terminal.is_terminal and not terminal.failed
+            )
+            traj.n_reasoning_steps = len(s.steps) - (1 if ends_in_verdict else 0)
+            traj.premature = is_premature_verdict(terminal, traj.n_reasoning_steps, weights)
             traj.judgements = list(s.judgements)
             traj.verifier_score = verifier_score(traj.judgements)
-            traj.reward = proof_reward(problem, terminal, traj.judgements, weights)
+            traj.reward = proof_reward(
+                problem, terminal, traj.judgements, weights, traj.n_reasoning_steps
+            )
             traj.success = (
-                not terminal.failed
+                not traj.premature
+                and not terminal.failed
                 and terminal.verdict is not None
                 and terminal.verdict.upper() == truth
             )
