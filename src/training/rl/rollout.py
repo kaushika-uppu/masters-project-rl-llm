@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from .merge import StateMatcher
-from .policy import revise_extra_user
+from .policy import is_bare_verdict, revise_extra_user
 from .degeneracy import is_degenerate_step
 from .reward import RewardWeights, is_premature_verdict, proof_reward, verifier_score
 from .tree import Node, ProofTree
@@ -49,7 +49,8 @@ class Trajectory:
     # "Your previous step was rejected..." text for a revision). Aligned with `steps`, so
     # training scores log-probs under the real generation prompt.
     step_extras: list[str] = field(default_factory=list)
-    n_reasoning_steps: int = 0   # non-terminal steps taken (the verdict step excluded)
+    n_reasoning_steps: int = 0   # steps taken, excluding a terminal BARE "Verdict: ..." line
+    ends_bare_verdict: bool = False  # terminal step is a bare verdict line (no reasoning content)
     premature: bool = False      # reached a verdict with < weights.min_steps reasoning steps
     # Per applied step: accepted by the judge on the first try (no revision)? Aligned with `steps`.
     step_first_try: list[bool] = field(default_factory=list)
@@ -213,7 +214,13 @@ class RolloutEngine:
             ends_in_verdict = (
                 s.terminal is not None and terminal.is_terminal and not terminal.failed
             )
-            traj.n_reasoning_steps = len(s.steps) - (1 if ends_in_verdict else 0)
+            # Only a BARE verdict line ("Verdict: PROVED") is excluded from the reasoning count;
+            # a terminal step with real content (the judge marks the concluding argument step
+            # terminal) is itself reasoning.
+            traj.ends_bare_verdict = bool(
+                ends_in_verdict and s.steps and is_bare_verdict(s.steps[-1])
+            )
+            traj.n_reasoning_steps = len(s.steps) - (1 if traj.ends_bare_verdict else 0)
             traj.premature = is_premature_verdict(terminal, traj.n_reasoning_steps, weights)
             traj.judgements = list(s.judgements)
             traj.verifier_score = verifier_score(traj.judgements)

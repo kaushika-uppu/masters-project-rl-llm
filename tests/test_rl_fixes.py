@@ -17,7 +17,7 @@ from src.training.rl.tree import ProofTree
 from src.training.rl.advantage import normalized_criticality, criticality, step_weight
 from src.training.rl.rollout import RolloutEngine
 from src.training.rl.sample_builder import build_samples
-from src.training.rl.policy import build_step_messages, revise_extra_user, STEP_INSTRUCTION
+from src.training.rl.policy import is_bare_verdict, build_step_messages, revise_extra_user, STEP_INSTRUCTION
 from src.training.rl.stubs import StubPolicy, StubJudge
 from src.training.rl.grpo_tree import GRPOTreeTrainer, TreeGRPOConfig
 
@@ -80,7 +80,7 @@ def test_constant_norm_removes_length_bias():
 
 # ---- min_steps guess penalty ---------------------------------------------------
 def test_min_steps_penalizes_guess():
-    w = RewardWeights()  # min_steps=2
+    w = RewardWeights(min_steps=2)
     ok = [StepJudgement(valid=True)]
     guess = proof_reward(PROBLEM, _N("PROVED"), ok, w, n_reasoning_steps=0)
     assert guess == w.fail
@@ -117,6 +117,83 @@ def test_engine_marks_guess_premature_and_not_success():
     _, trajs = eng.build_tree(PROBLEM, 2, RewardWeights())
     for t in trajs:
         assert t.premature and not t.success and t.reward == 0.0 and t.n_reasoning_steps == 0
+
+
+# ---- bare-verdict vs substantive terminal step ----------------------------------
+@pytest.mark.parametrize("step", [
+    "Verdict: PROVED", "verdict: disproved.", "Verdict: PROVED\n", "  VERDICT PROVED  ",
+    "Verdict: DISPROVED by the above",
+])
+def test_is_bare_verdict_true(step):
+    assert is_bare_verdict(step)
+
+
+@pytest.mark.parametrize("step", [
+    "Hence f(x) >= 0 for all x, so the claim holds",
+    "Take x = 0: then f(0) = -1 < 0, a counterexample, so the claim is false",
+    "Verdict: PROVED because f(x) = (x-1)^2 + 1 >= 1 > 0 for every real x",
+    "", "<step>", "Therefore proved",
+])
+def test_is_bare_verdict_false(step):
+    assert not is_bare_verdict(step)
+
+
+class _OneShotPolicy:
+    """Emits `moves` in order, one per depth."""
+    def __init__(self, *moves):
+        self.moves = list(moves)
+    def propose_steps_batch(self, problem, histories):
+        return [self.moves[len(h)] for h in histories]
+    def revise_steps_batch(self, problem, items):
+        return [self.moves[len(h)] for (h, _, _) in items]
+
+
+class _TerminalContentJudge:
+    """Marks any step containing 'claim holds' or a Verdict line terminal."""
+    def judge_steps_batch(self, problem, items):
+        out = []
+        for h, s in items:
+            term = "claim holds" in s or s.lower().startswith("verdict")
+            out.append(StepJudgement(valid=True, reason="ok", state_summary=" > ".join(h + [s]),
+                                     is_terminal=term, verdict="PROVED" if term else None))
+        return out
+    def judge_step(self, problem, history, step):
+        return self.judge_steps_batch(problem, [(history, step)])[0]
+
+
+def test_substantive_terminal_step_counts_as_reasoning():
+    eng = RolloutEngine(_OneShotPolicy("Hence f(x)>=0 for all x, so the claim holds"),
+                        _TerminalContentJudge(), max_depth=4)
+    _, trajs = eng.build_tree(PROBLEM, 2, RewardWeights(min_steps=1))
+    for t in trajs:
+        assert t.n_reasoning_steps == 1 and not t.ends_bare_verdict
+        assert not t.premature and t.success and t.reward > 1.0
+
+
+def test_two_step_proof_not_premature_at_default_min_steps():
+    eng = RolloutEngine(_OneShotPolicy("Let x be real.", "Hence f(x)>=0, so the claim holds"),
+                        _TerminalContentJudge(), max_depth=4)
+    _, trajs = eng.build_tree(PROBLEM, 2, RewardWeights())
+    assert all(t.n_reasoning_steps == 2 and not t.premature and t.success for t in trajs)
+
+
+def test_substantive_step_then_bare_verdict():
+    eng = RolloutEngine(_OneShotPolicy("Let x be real.", "Verdict: PROVED"),
+                        _TerminalContentJudge(), max_depth=4)
+    _, trajs = eng.build_tree(PROBLEM, 2, RewardWeights(min_steps=1))
+    assert all(t.n_reasoning_steps == 1 and t.ends_bare_verdict and not t.premature for t in trajs)
+
+
+def test_bare_verdict_first_is_premature_and_stats():
+    eng = RolloutEngine(_OneShotPolicy("Verdict: PROVED"), _TerminalContentJudge(), max_depth=4)
+    _, trajs = eng.build_tree(PROBLEM, 2, RewardWeights(min_steps=1))
+    assert all(t.premature and t.ends_bare_verdict and t.n_reasoning_steps == 0
+               and not t.success and t.reward == 0.0 for t in trajs)
+    st = aggregate_rollout_stats([
+        {"reward": 0, "success": False, "n_steps": 1, "premature": True, "failed": False, "bare_verdict": True},
+        {"reward": 1, "success": True, "n_steps": 2, "premature": False, "failed": False, "bare_verdict": False},
+    ])
+    assert st["bare_verdict_frac"] == 0.5 and st["premature_frac"] == 0.5
 
 
 # ---- criticality normalization -------------------------------------------------
@@ -232,7 +309,7 @@ def test_revised_step_scored_under_generation_prompt():
 # ---- config -> RewardWeights ---------------------------------------------------
 def test_reward_weights_defaults():
     w = RewardWeights()
-    assert w.min_steps == 2 and w.redundancy == 0.2
+    assert w.min_steps == 1 and w.redundancy == 0.2
 
 
 def test_reward_weights_from_dict_and_yaml():
@@ -268,7 +345,7 @@ def test_rollout_stats_and_metrics_jsonl():
     expected = {"step", "loss", "pg_loss", "kl", "grad_norm", "n_samples", "mean_reward",
                 "success_rate", "mean_steps_per_rollout", "frac_premature_verdict",
                 "frac_failed", "mean_cont_tokens", "first_try_valid_rate", "rejected_samples",
-                "mean_reasoning_steps", "degenerate_frac"}
+                "mean_reasoning_steps", "degenerate_frac", "bare_verdict_frac"}
     assert set(rec) == expected
     with tempfile.TemporaryDirectory() as d:
         tr._append_metrics(d, rec); tr._append_metrics(d, rec)

@@ -7,7 +7,7 @@ Hard failures (immediate, even during warmup): NaN/inf loss, kl or grad_norm;
 `max_empty_updates` consecutive updates with n_samples == 0.
 
 Trend checks (ignored during the first `warmup` updates; fire after `patience`
-consecutive bad updates): premature-verdict fraction, mean_steps / mean_cont_tokens
+consecutive bad updates): premature-verdict fraction (relative to the warmup baseline, with an absolute floor), mean_steps / mean_cont_tokens
 collapse vs the warmup baseline, KL drift, reward-hacking signature (reward up while
 first-try validity down), grad-norm spikes, degenerate-step fraction.
 
@@ -34,7 +34,8 @@ class EarlyStopConfig:
     warmup: int = 5                    # updates with no trend-based stopping; also the baseline window
     patience: int = 3                  # consecutive bad updates for trend checks
     max_empty_updates: int = 3         # consecutive n_samples == 0 updates (immediate)
-    max_premature_frac: float = 0.3
+    max_premature_frac: float = 0.5    # absolute floor for the premature threshold
+    premature_delta: float = 0.15      # fire when premature_frac > max(baseline + delta, floor)
     min_mean_steps_ratio: float = 0.5  # mean_steps < ratio * baseline
     min_cont_tokens_ratio: float = 0.5 # mean_cont_tokens < ratio * baseline
     max_kl: float = 0.5                # mean per-token k3 KL
@@ -86,7 +87,7 @@ def _finite(v) -> bool:
 
 
 class EarlyStopper:
-    BASELINE_KEYS = ("mean_steps", "mean_cont_tokens", "mean_reward", "first_try_valid_rate")
+    BASELINE_KEYS = ("premature_frac", "mean_steps", "mean_cont_tokens", "mean_reward", "first_try_valid_rate")
 
     def __init__(self, cfg: Optional[EarlyStopConfig] = None):
         self.cfg = cfg or EarlyStopConfig()
@@ -125,8 +126,12 @@ class EarlyStopper:
         """name -> human reason, for every trend check that is bad THIS update."""
         c, b, flags = self.cfg, self.baseline, {}
         prem = _num(_get(m, "premature_frac"))
-        if _finite(prem) and prem > c.max_premature_frac:
-            flags["premature"] = f"premature_frac {prem:.2f} > {c.max_premature_frac}"
+        if _finite(prem):
+            thr = max(b.get("premature_frac", 0.0) + c.premature_delta, c.max_premature_frac)
+            if prem > thr:
+                flags["premature"] = (
+                    f"premature_frac {prem:.2f} > {thr:.2f} (max(baseline "
+                    f"{b.get('premature_frac', 0.0):.2f} + {c.premature_delta}, floor {c.max_premature_frac}))")
         steps = _num(_get(m, "mean_steps"))
         if _finite(steps) and b.get("mean_steps", 0) > 0 and steps < c.min_mean_steps_ratio * b["mean_steps"]:
             flags["steps_collapse"] = (

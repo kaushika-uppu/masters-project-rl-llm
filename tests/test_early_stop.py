@@ -86,7 +86,7 @@ def test_patience_needs_consecutive():
 
 
 @pytest.mark.parametrize("over,needle", [
-    (dict(premature_frac=0.5), "premature"),
+    (dict(premature_frac=0.7), "premature"),
     (dict(mean_steps=1.0), "mean_steps"),
     (dict(mean_cont_tokens=20.0), "mean_cont_tokens"),
     (dict(kl=0.9), "kl"),
@@ -102,7 +102,7 @@ def test_each_trend_rule_fires(over, needle):
 
 
 @pytest.mark.parametrize("over", [
-    dict(premature_frac=0.3),            # boundary: not strictly greater
+    dict(premature_frac=0.5),            # absolute floor boundary: not strictly greater
     dict(mean_steps=2.0),                # exactly 0.5 x baseline
     dict(mean_cont_tokens=50.0),
     dict(kl=0.5),
@@ -166,3 +166,40 @@ def test_best_ok_tracks_last_healthy_step():
     assert es.best_ok == 6 and not es.last_healthy
     es.update(healthy(8))
     assert es.best_ok == 8 and es.last_healthy
+
+
+def _warm_prem(es, base):
+    for i in range(1, 6):
+        assert es.update(healthy(i, premature_frac=base)) is None
+
+
+def test_premature_relative_high_stable_baseline_does_not_fire():
+    es = EarlyStopper()
+    _warm_prem(es, 0.55)                       # starting policy already high
+    d, _ = feed(es, 6, 10, premature_frac=0.60)  # < 0.55 + 0.15 = 0.70
+    assert d is None
+
+
+def test_premature_relative_rise_above_baseline_plus_delta_fires():
+    es = EarlyStopper()
+    _warm_prem(es, 0.55)
+    assert feed(es, 6, 2, premature_frac=0.75)[0] is None   # only 2 updates (steps 6-7)
+    d, at = feed(es, 8, 1, premature_frac=0.75)              # 3rd consecutive
+    assert d is not None and "premature" in d.reason and at == 8
+
+
+def test_premature_absolute_floor_still_applies():
+    es = EarlyStopper()
+    _warm_prem(es, 0.0)                        # baseline + delta = 0.15 < floor 0.5
+    assert feed(es, 6, 6, premature_frac=0.4)[0] is None
+    d, _ = feed(es, 12, 3, premature_frac=0.6)
+    assert d is not None and "premature" in d.reason
+
+
+def test_premature_delta_configurable_and_defaults():
+    c = EarlyStopConfig()
+    assert c.max_premature_frac == 0.5 and c.premature_delta == 0.15
+    es = EarlyStopper(EarlyStopConfig.from_dict({"premature_delta": 0.5, "max_premature_frac": 0.1}))
+    _warm_prem(es, 0.2)
+    assert feed(es, 6, 6, premature_frac=0.6)[0] is None    # thr 0.7
+    assert feed(es, 12, 3, premature_frac=0.8)[0] is not None

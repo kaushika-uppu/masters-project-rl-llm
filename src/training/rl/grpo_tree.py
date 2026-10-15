@@ -145,6 +145,7 @@ class GRPOTreeTrainer:
                 "premature": t.premature,
                 "failed": bool(t.terminal.failed),
                 "n_reasoning_steps": t.n_reasoning_steps,
+                "bare_verdict": t.ends_bare_verdict,
                 "n_proposed": t.n_proposed,
                 "n_first_try_valid": t.n_first_try_valid,
                 "n_attempts": t.n_attempts,
@@ -386,6 +387,7 @@ class GRPOTreeTrainer:
             "mean_steps_per_rollout": r["mean_steps"],
             "frac_premature_verdict": r["premature_frac"],  # verdict with < min_steps steps
             "frac_failed": r["failed_frac"],
+            "bare_verdict_frac": r.get("bare_verdict_frac"),  # terminal step is a bare "Verdict:" line
             "mean_cont_tokens": update_stats.get("mean_cont_tokens"),
             "first_try_valid_rate": r.get("first_try_valid_rate"),
             "rejected_samples": r.get("rejected_samples"),

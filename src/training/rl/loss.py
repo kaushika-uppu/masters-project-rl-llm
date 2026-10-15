@@ -81,7 +81,7 @@ def aggregate_rollout_stats(rows: Sequence[dict]) -> dict:
         return {"n_rollouts": 0, "mean_reward": 0.0, "success_rate": 0.0,
                 "mean_steps": 0.0, "premature_frac": 0.0, "failed_frac": 0.0,
                 "first_try_valid_rate": 0.0, "degenerate_frac": 0.0,
-                "mean_reasoning_steps": 0.0}
+                "mean_reasoning_steps": 0.0, "bare_verdict_frac": 0.0}
     prop = sum(r.get("n_proposed", 0) for r in rows)
     ftv = sum(r.get("n_first_try_valid", 0) for r in rows)
     att = sum(r.get("n_attempts", 0) for r in rows)
@@ -94,6 +94,7 @@ def aggregate_rollout_stats(rows: Sequence[dict]) -> dict:
         "mean_steps": sum(r["n_steps"] for r in rows) / n,
         "premature_frac": sum(1 for r in rows if r["premature"]) / n,
         "failed_frac": sum(1 for r in rows if r["failed"]) / n,
+        "bare_verdict_frac": sum(1 for r in rows if r.get("bare_verdict")) / n,
         "first_try_valid_rate": ftv / prop if prop else 0.0,
         "degenerate_frac": deg / att if att else 0.0,
         "mean_reasoning_steps": (

@@ -16,6 +16,26 @@ from .types import Problem
 
 _STEP_RE = re.compile(r"<step>(.*?)</step>", re.DOTALL)
 _VERDICT_RE = re.compile(r"^\s*verdict\s*:?", re.IGNORECASE)
+_BARE_VERDICT_RE = re.compile(r"^verdict\s*:?\s*(proved|disproved)\W*$", re.IGNORECASE)
+_VERDICT_WORDS = {"verdict", "proved", "disproved"}
+_BARE_MAX_OTHER_WORDS = 5  # a "Verdict: ..." step with fewer other words than this is bare
+
+
+def is_bare_verdict(step: str) -> bool:
+    """True if `step` is just a verdict line with no substantive reasoning, e.g.
+    "Verdict: PROVED" / "verdict: disproved." Also true for a step that STARTS with
+    "Verdict" and has fewer than 5 words besides the verdict keywords. A terminal step with
+    real content ("Hence f(x) >= 0 for all x, so the claim holds") is NOT bare, so it counts
+    as a reasoning step."""
+    text = (step or "").strip()
+    if not text:
+        return False
+    if _BARE_VERDICT_RE.match(text):
+        return True
+    if _VERDICT_RE.match(text):
+        others = [w for w in re.findall(r"[A-Za-z0-9_]+", text) if w.lower() not in _VERDICT_WORDS]
+        return len(others) < _BARE_MAX_OTHER_WORDS
+    return False
 
 # The exact instruction the policy is generation-prompted with. Shared by the served and
 # in-process policies AND by the trainer, so the text the model is scored on (sample_builder

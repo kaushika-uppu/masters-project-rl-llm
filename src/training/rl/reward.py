@@ -44,7 +44,7 @@ class RewardWeights:
     # Anti-guessing: a rollout whose terminal verdict arrives after FEWER than `min_steps`
     # non-terminal reasoning steps is treated like a failure (endpoint = `fail`, no
     # reached_verdict bonus, no validity shaping, not novelty-eligible). 0 disables.
-    min_steps: int = 2
+    min_steps: int = 1
     # -- per-step reasoning signals (sample_builder), added directly to each step's advantage --
     # +step_validity if the judge accepted the step on the FIRST try, +revised_step_validity
     # if it was accepted only after revision. Not granted on premature rollouts.

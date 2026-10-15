@@ -49,8 +49,9 @@ rl:
     validity: 0.3           # scale of mean per-step validity reward, in [-validity, +validity]
     reached_verdict: 0.1    # small bonus for terminating with any (non-premature) verdict
     redundancy: 0.2         # per-step penalty for revisiting a state (keep << correct)
-    min_steps: 2            # verdict after < min_steps reasoning steps = guess -> treated as fail,
-                            # no validity/reached bonus, not novelty-eligible. 0 disables.
+    min_steps: 1            # verdict after < min_steps reasoning steps = guess -> treated as fail,
+                            # no validity/reached bonus, not novelty-eligible. 0 disables. 1 = a bare
+                            # "Verdict:" line with ZERO reasoning is premature; 1 substantive step is OK.
     novelty: 0.3            # rarity bonus scale (novelty / edge_count)
     novelty_gate: "valid"   # "correct" | "valid" | "none"
     novelty_min_validity: 1.0   # mean step validity needed for the "valid" gate
@@ -86,7 +87,8 @@ rl:
     warmup: 5                   # updates before trend checks can fire; baseline = mean over these
     patience: 3                 # consecutive bad updates required for trend checks
     max_empty_updates: 3        # consecutive updates with zero samples (immediate)
-    max_premature_frac: 0.3     # reasoning collapse: guessed-verdict fraction
+    max_premature_frac: 0.5     # absolute floor for the guessed-verdict fraction threshold
+    premature_delta: 0.15       # fires when premature_frac > max(warmup baseline + delta, floor)
     min_mean_steps_ratio: 0.5   # mean_steps below this x baseline
     min_cont_tokens_ratio: 0.5  # mean_cont_tokens below this x baseline
     max_kl: 0.5                 # mean per-token KL to reference

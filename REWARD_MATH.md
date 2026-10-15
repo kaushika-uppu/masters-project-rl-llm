@@ -19,7 +19,7 @@ many rollouts.
 
 ## 1. Terminal reward (additive) and the anti-guessing rule
 
-Let `k(τ)` = number of **non-terminal reasoning steps** in `τ` (the verdict step excluded).
+Let `k(τ)` = number of **reasoning steps** in `τ`: all steps, excluding a terminal step only if it is a *bare verdict line* (`Verdict: PROVED`, `policy.is_bare_verdict`). A terminal step with real content (the concluding argument) counts.
 A rollout is **premature** if it reached a verdict (not failed) with `k(τ) < min_steps`.
 
 ```
@@ -31,7 +31,7 @@ R(τ)  =         ⎨
 
 Premature rollouts get **no** endpoint credit, no validity shaping, no `reached_verdict`
 bonus, are never `success`, and are never novelty-eligible. Without this, a 1-step 50/50 guess
-(≈ 0.5 + 0.3 + 0.1) scored as well as a careful proof. `min_steps = 0` disables the rule.
+(≈ 0.5 + 0.3 + 0.1) scored as well as a careful proof. `min_steps = 0` disables the rule; the default `min_steps = 1` only catches a verdict with zero reasoning.
 The correct anchor stays larger than the whole shaping budget (`r_correct > w_val + r_reached`).
 
 ## 2. Monte-Carlo node value (no value network)
@@ -124,7 +124,7 @@ values are printed at startup.
 | `w_val` | step-validity scale (mean in [−w, +w]) | `reward.validity` | 0.3 |
 | `r_reached` | bonus for any non-premature verdict | `reward.reached_verdict` | 0.1 |
 | `w_red` | revisit penalty | `reward.redundancy` | 0.2 (was 1.0) |
-| `min_steps` | reasoning steps required before a verdict counts | `reward.min_steps` | 2 |
+| `min_steps` | reasoning steps required before a verdict counts | `reward.min_steps` | 1 |
 | `w_sv` | per-step credit, accepted first try | `reward.step_validity` | 0.2 |
 | `w_rsv` | per-step credit, accepted after revision | `reward.revised_step_validity` | 0.1 |
 | `w_inv` | advantage of a rejected attempt is `−w_inv` | `reward.invalid_step` | 0.3 |
@@ -143,7 +143,7 @@ values are printed at startup.
 **Early stopping** (`rl.early_stop`, `early_stop.py`, enabled by default; `mode: stop|warn`).
 Immediate: non-finite loss/kl/grad_norm; `max_empty_updates`=3 zero-sample updates in a row.
 After `warmup`=5 updates (baseline = mean over warmup), for `patience`=3 consecutive updates:
-premature_frac > 0.3; mean_steps < 0.5×baseline; mean_cont_tokens < 0.5×baseline; kl > 0.5;
+premature_frac > max(warmup-baseline + `premature_delta`=0.15, `max_premature_frac`=0.5 floor); mean_steps < 0.5×baseline; mean_cont_tokens < 0.5×baseline; kl > 0.5;
 reward > baseline+0.2 while first_try_valid_rate < baseline−0.15; pre-clip grad_norm > 50;
 degenerate_frac > 0.1. On stop: reason printed + written to train_metrics.jsonl
 (`{"early_stop": true, "reason", "step"}`), checkpoint `early-stop-<step>`; `last-healthy` is
@@ -152,7 +152,7 @@ the optimizer step.
 
 **Telemetry.** `<output_dir>/train_metrics.jsonl`, one line per update: step, loss, pg_loss, kl,
 grad_norm, n_samples, mean_reward, success_rate, mean_steps_per_rollout,
-frac_premature_verdict, frac_failed, mean_cont_tokens, first_try_valid_rate (first-proposal acceptance), rejected_samples (count), mean_reasoning_steps (successful rollouts), degenerate_frac (empty/repetitive proposed steps). Watch `mean_steps_per_rollout` falling
+frac_premature_verdict, frac_failed, bare_verdict_frac (terminal step is a bare "Verdict:" line), mean_cont_tokens, first_try_valid_rate (first-proposal acceptance), rejected_samples (count), mean_reasoning_steps (successful rollouts), degenerate_frac (empty/repetitive proposed steps). Watch `mean_steps_per_rollout` falling
 toward 1, `frac_premature_verdict` rising, `mean_cont_tokens` collapsing, or `kl` blowing up.
 
 **Tuning notes.** Revised steps are scored under the rejection prompt they were generated with.
