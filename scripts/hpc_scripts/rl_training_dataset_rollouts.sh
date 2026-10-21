@@ -25,21 +25,25 @@
 #   python -c "import math,sys; print(math.ceil(sum(1 for _ in open(sys.argv[1]))/int(sys.argv[2]))-1)" \
 #       scripts/rl_training_dataset/candidates.jsonl 500
 
-source v_env/bin/activate
+source /home/018230446/miniconda3/etc/profile.d/conda.sh
+conda activate v_env
+mkdir -p logs
+
+export VLLM_USE_FLASHINFER_SAMPLER=0
+export NCCL_P2P_DISABLE=1
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
+
+# --- runtime env (vLLM + single-node) ---
+export PYTHONPATH="$PWD:${PYTHONPATH:-}"
 export MASTER_ADDR="127.0.0.1"
 export MASTER_PORT=$(shuf -n 1 -i 30000-65000)
 export VLLM_HOST_IP=$(hostname -I | awk '{print $1}')
 export NCCL_SOCKET_IFNAME=^lo
-export VLLM_USE_V1=0
-export NCCL_P2P_DISABLE=1
+export TMPDIR="/tmp/$USER-rl-$SLURM_JOB_ID"
+mkdir -p "$TMPDIR"
+trap 'rm -rf "$TMPDIR"' EXIT
 
-export TMPDIR=/tmp/$USER-vllm-$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID
-mkdir -p $TMPDIR
-trap "rm -rf $TMPDIR" EXIT
-
-export PYTHONPATH="$PWD:$PYTHONPATH"
-
-MODEL="Qwen/Qwen2.5-7B-Instruct"
+MODEL="checkpoints/sft_combined_merged"
 CHUNK_SIZE=500
 
 echo "============================================================"

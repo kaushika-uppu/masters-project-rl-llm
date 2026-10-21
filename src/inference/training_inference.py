@@ -4,6 +4,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from src.inference.base_inference import BaseInference
 from src.inference.constants import COT_3SHOT_EXAMPLES
 
+MAX_NEW_TOKENS = 4096
 
 class TrainingInference(BaseInference):
 
@@ -35,7 +36,7 @@ class TrainingInference(BaseInference):
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
-                max_new_tokens=1024,
+                max_new_tokens=MAX_NEW_TOKENS,
                 temperature=0.1,
                 do_sample=False,
                 pad_token_id=self.tokenizer.eos_token_id

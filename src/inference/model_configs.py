@@ -71,4 +71,24 @@ TRAINING_INFERENCE_CONFIGS = {
         "system_prompt": DEEPTHEOREM_SYSTEM_PROMPT,
         "use_cot_3shot": False,
     },
+     "rl_tree_from_sft_v2_merged_riddlebench": {
+        "model_path": "./checkpoints/rl_tree_from_sft_v2.0_merged",
+        "system_prompt": RIDDLEBENCH_SYSTEM_PROMPT,
+        "use_cot_3shot": False,
+    },
+    "rl_tree_from_sft_v2_merged_deeptheorem": {
+        "model_path": "./checkpoints/rl_tree_from_sft_v2.0_merged",
+        "system_prompt": DEEPTHEOREM_SYSTEM_PROMPT,
+        "use_cot_3shot": False,
+    },
+     "rl_tree_from_sft_v2.1_merged_riddlebench": {
+        "model_path": "./checkpoints/rl_tree_from_sft_v2.1_merged",
+        "system_prompt": RIDDLEBENCH_SYSTEM_PROMPT,
+        "use_cot_3shot": False,
+    },
+    "rl_tree_from_sft_v2.1_merged_deeptheorem": {
+        "model_path": "./checkpoints/rl_tree_from_sft_v2.1_merged",
+        "system_prompt": DEEPTHEOREM_SYSTEM_PROMPT,
+        "use_cot_3shot": False,
+    },
 }
