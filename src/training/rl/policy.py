@@ -8,11 +8,20 @@ the fast sampler. Keep weights in sync between runs (trainer reloads / vLLM rest
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING
 
 from src.data.deeptheorem import PROVE_OR_DISPROVE_SYSTEM_PROMPT
-from src.judge.step_judge import OpenAICompatClient
 
 from .types import Problem
+
+if TYPE_CHECKING:
+    # Type-only import. `OpenAICompatClient` is used solely as an annotation (see
+    # VLLMPolicy.__init__ below) and `from __future__ import annotations` makes
+    # annotations lazy, so this is never needed at runtime. Importing it at runtime
+    # closes a circular import:
+    #   src.judge.step_judge -> src.training.rl.types -> src.training.rl.__init__
+    #   -> .rollout -> .policy -> src.judge.step_judge (partially initialised)
+    from src.judge.step_judge import OpenAICompatClient
 
 _STEP_RE = re.compile(r"<step>(.*?)</step>", re.DOTALL)
 _VERDICT_RE = re.compile(r"^\s*verdict\s*:?", re.IGNORECASE)
