@@ -345,7 +345,8 @@ def test_rollout_stats_and_metrics_jsonl():
     expected = {"step", "loss", "pg_loss", "kl", "grad_norm", "n_samples", "mean_reward",
                 "success_rate", "mean_steps_per_rollout", "frac_premature_verdict",
                 "frac_failed", "mean_cont_tokens", "first_try_valid_rate", "rejected_samples",
-                "mean_reasoning_steps", "degenerate_frac", "bare_verdict_frac"}
+                "mean_reasoning_steps", "degenerate_frac", "bare_verdict_frac",
+                    "oom_skipped", "rollout_oom_skipped", "oom_step_skipped"}
     assert set(rec) == expected
     with tempfile.TemporaryDirectory() as d:
         tr._append_metrics(d, rec); tr._append_metrics(d, rec)

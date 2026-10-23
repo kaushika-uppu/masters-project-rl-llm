@@ -29,6 +29,21 @@ rl:
   use_kl: true
   ref_model_path: null    # null = reuse model.from_checkpoint
   ref_device: "cuda:1"    # needs ~1 model's worth of memory on that GPU
+  ref_mode: "adapter"     # "adapter" (default): reuse the policy's base weights and load the SAME
+                          #   SFT adapter a 2nd time as a frozen adapter "ref" -> frees ~15 GiB on
+                          #   GPU1 (no second 7B copy); ref forward runs on the policy GPU.
+                          # "separate": old behaviour, full frozen copy on ref_device (needs ~15 GiB
+                          #   there). Non-PEFT (full fine-tune) policies fall back to "separate".
+
+  # RESUME. Every save_every updates the trainer writes checkpoint-<N> AND a rolling
+  # checkpoint-latest, each holding: adapter weights, optimizer.pt (AdamW state),
+  # trainer_state.json (step, problem_index, epoch, early-stop state, RNG states).
+  # To continue a crashed/killed run, set resume_from to one of those dirs and relaunch with the
+  # SAME config (same problems_path / batch_problems / output_dir):
+  #   resume_from: "checkpoints/rl_tree_from_sft/checkpoint-latest"
+  # Weights/optimizer/state are restored, already-processed problems are skipped, and
+  # train_metrics.jsonl keeps appending (records past the checkpoint step are dropped; backup kept).
+  resume_from: null
 
   judge_model: "Qwen/Qwen2.5-7B-Instruct"   # in-process judge; swap/fine-tune later
   judge_load_in_4bit: true                  # 4-bit keeps the judge small (~5GB)
@@ -77,6 +92,7 @@ rl:
     num_workers: 1     # >1 parallelizes trees across problems; safe only with a
                        # served/replicated backend or one model per worker (see grpo_tree.py)
     grad_checkpointing: true   # recompute activations in backward; big memory saving in _update
+    max_oom_skip_frac: 0.25    # if MORE than this fraction of a batch's samples OOM in scoring, skip opt.step() for it
     max_score_tokens: 4096     # skip scoring sequences longer than this (0 = disabled)
 
   # Early stopping on training pathologies (early_stop.py). On stop: reason printed, written to
@@ -96,3 +112,4 @@ rl:
     first_try_drop: 0.15
     max_grad_norm_spike: 50.0   # pre-clip grad norm
     max_degenerate_frac: 0.1    # fraction of empty/repetitive proposed steps
+    max_oom_updates: 5          # stop after this many consecutive updates with OOM-skipped work (0 = off)

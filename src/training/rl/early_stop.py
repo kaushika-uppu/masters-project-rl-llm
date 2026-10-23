@@ -43,6 +43,7 @@ class EarlyStopConfig:
     first_try_drop: float = 0.15       # ... while first_try_valid_rate < baseline - drop
     max_grad_norm_spike: float = 50.0  # pre-clip grad norm
     max_degenerate_frac: float = 0.1
+    max_oom_updates: int = 5           # consecutive updates with oom_skipped > 0 (immediate; 0 = off)
 
     @classmethod
     def from_dict(cls, d: Optional[dict]) -> "EarlyStopConfig":
@@ -100,6 +101,33 @@ class EarlyStopper:
         self.last_healthy = False            # did the most recent update pass every check?
         self.decision: Optional[StopDecision] = None
         self.warnings: list[StopDecision] = []
+        self.oom_streak = 0                  # consecutive updates with any OOM-skipped work
+
+    # ---- persistence (for trainer_state.json / resume) ----
+    def state_dict(self) -> dict:
+        return {
+            "n_updates": self.n_updates,
+            "empty_streak": self.empty_streak,
+            "oom_streak": self.oom_streak,
+            "streaks": dict(self.streaks),
+            "base_vals": {k: list(v) for k, v in self._base_vals.items()},
+            "baseline": dict(self.baseline),
+            "best_ok": self.best_ok,
+            "last_healthy": self.last_healthy,
+        }
+
+    def load_state_dict(self, d: Optional[dict]) -> None:
+        if not d:
+            return
+        self.n_updates = int(d.get("n_updates", 0))
+        self.empty_streak = int(d.get("empty_streak", 0))
+        self.oom_streak = int(d.get("oom_streak", 0))
+        self.streaks = {k: int(v) for k, v in d.get("streaks", {}).items()}
+        bv = d.get("base_vals", {})
+        self._base_vals = {k: [float(x) for x in bv.get(k, [])] for k in self.BASELINE_KEYS}
+        self.baseline = {k: float(v) for k, v in d.get("baseline", {}).items()}
+        self.best_ok = d.get("best_ok")
+        self.last_healthy = bool(d.get("last_healthy", False))
 
     # ---- baseline (mean over the warmup updates) ----
     def _accumulate_baseline(self, m: dict) -> None:
@@ -120,6 +148,14 @@ class EarlyStopper:
                 return f"no training samples for {self.empty_streak} consecutive updates"
         else:
             self.empty_streak = 0
+        # Persistent OOM: scoring OOMs (oom_skipped) and rollout OOMs (rollout_oom_skipped).
+        n_oom = (_num(m.get("oom_skipped")) or 0) + (_num(m.get("rollout_oom_skipped")) or 0)
+        if n_oom > 0:
+            self.oom_streak += 1
+            if self.cfg.max_oom_updates > 0 and self.oom_streak >= self.cfg.max_oom_updates:
+                return f"OOM-skipped work in {self.oom_streak} consecutive updates"
+        else:
+            self.oom_streak = 0
         return None
 
     def _trend_flags(self, m: dict) -> dict[str, str]:

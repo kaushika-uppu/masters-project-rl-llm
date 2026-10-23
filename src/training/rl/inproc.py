@@ -115,8 +115,11 @@ class TransformersJudge:
     def judge_step(self, problem: Problem, history: list[str], step: str) -> StepJudgement:
         return self.judge_steps_batch(problem, [(history, step)])[0]
 
-    def judge_steps_batch(self, problem: Problem, items: list) -> list[StepJudgement]:
-        """items: (history, step). All steps judged in a single batched forward."""
+    def judge_steps_batch(self, problem: Problem, items: list, return_raw: bool = False):
+        """items: (history, step). All steps judged in a single batched forward.
+
+        With return_raw=True returns (judgements, raw_outputs) (used by the judge eval);
+        default behaviour is unchanged."""
         batch = [
             [
                 {"role": "system", "content": JUDGE_SYSTEM_PROMPT},
@@ -126,7 +129,8 @@ class TransformersJudge:
         ]
         raws = _generate_batch(self.model, self.tokenizer, batch,
                                temperature=0.0, max_new_tokens=self.max_new_tokens)
-        return [
+        judgements = [
             parse_step_judgement(raw, history=h, step=s)
             for raw, (h, s) in zip(raws, items)
         ]
+        return (judgements, raws) if return_raw else judgements

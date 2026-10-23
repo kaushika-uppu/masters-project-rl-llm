@@ -159,3 +159,25 @@ toward 1, `frac_premature_verdict` rising, `mean_cont_tokens` collapsing, or `kl
 With `loss_norm=constant`, `kl_coef` is relative to a 384-token budget, so per-token KL pressure
 is the same for every sequence length. `r_incorrect = r_fail = 0` means all-fail groups have
 zero advantage; consider partial credit if cold-start is sparse.
+
+## Evaluating the judge
+
+`python scripts/eval_judge.py` (or `sbatch sh_scripts/templates/eval_judge.sbatch`) scores the step judge
+on a labeled set built from reference proofs of a held-out problem file: gold steps (should be accepted),
+a gold terminal verdict, and synthetic bad steps of several kinds. It writes `items.jsonl`, `metrics.json`,
+`report.txt`, `comparison.txt` under `results/judge_eval/`. Hand-labeled real rollout steps can be scored with
+`--labeled-file` (`{statement, label?, history, step, gold_valid, kind?}` per line). Use `--stub` for a no-GPU smoke test.
+
+How to read the metrics ("invalid" is the positive class):
+- **recall (bad-step catch rate)**: fraction of bad steps the judge rejects. This is the key number for reward
+  reliability; a low value means invalid steps earn reward.
+- **precision**: of the steps the judge rejects, how many were really bad.
+- **false-reject rate** (gold steps judged invalid): over-strictness; high values starve the policy of reward.
+- **per-kind accept rate** (fraction judged valid, with Wilson 95% CI): want high for `gold`, low for every bad kind.
+  High accept on `premature_verdict` (bare guess), `wrong_verdict` (opposite verdict after the full proof) or
+  `degenerate` (junk) means the judge rewards exactly the failure modes seen in training (verdict-only collapse,
+  repetitive junk). `negated`/`numeric_perturb` can occasionally still be valid, so treat them as softer signals.
+- **parse_error_rate**: unparseable judge output (counted as invalid); high values mean the JSON format is unreliable.
+- **terminal**: on the gold terminal verdict item, how often the judge sets `is_terminal` and returns the correct verdict.
+
+Evaluate on a held-out file, not the RL training problems (the CLI warns if it looks like the training file).
