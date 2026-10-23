@@ -162,6 +162,19 @@ zero advantage; consider partial credit if cold-start is sparse.
 
 ## Evaluating the judge
 
+Two steps. The held-out eval file `data/deeptheorem_eval.jsonl` has no reference proofs, so first attach them
+(this writes a new file and never modifies the eval file; needs the `datasets` library / HF access):
+
+```
+python scripts/build_judge_eval_set.py   # -> data/deeptheorem_judge_eval.jsonl (adds "reference", "reference_check")
+python scripts/eval_judge.py             # defaults to data/deeptheorem_judge_eval.jsonl
+```
+
+The build step prints total/written/skipped (by reason)/statement-mismatch counts and exits non-zero if nothing was
+written. References: original -> `proof`, entailing/pos -> `pos["response"]`, contradictory/neg -> `neg["response"]`;
+variant comes from `variant_type` or the id suffix, never from the label. `eval_judge.py` exits with a clear message
+if the problems file has no references. The sbatch builds the file automatically if it is missing.
+
 `python scripts/eval_judge.py` (or `sbatch sh_scripts/templates/eval_judge.sbatch`) scores the step judge
 on a labeled set built from reference proofs of a held-out problem file: gold steps (should be accepted),
 a gold terminal verdict, and synthetic bad steps of several kinds. It writes `items.jsonl`, `metrics.json`,

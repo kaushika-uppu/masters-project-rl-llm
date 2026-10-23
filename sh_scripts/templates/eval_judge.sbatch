@@ -16,7 +16,7 @@
 
 set -euo pipefail
 
-PROBLEMS="${PROBLEMS:-data/dt_eval_dataset.jsonl}"   # held-out set, NOT the RL training file
+PROBLEMS="${PROBLEMS:-data/deeptheorem_judge_eval.jsonl}"   # held-out set, NOT the RL training file
 JUDGES="${JUDGES:-Qwen/Qwen2.5-7B-Instruct,Qwen/Qwen2.5-32B-Instruct}"
 
 source /home/018230446/miniconda3/etc/profile.d/conda.sh
@@ -33,6 +33,13 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 if [ "$(hostname)" == "cs002.hpc.coe" ] || [ "$(hostname)" == "cs002" ]; then
     echo "WARNING: cs002 GPU 0 has ECC errors, restricting to GPUs 1-3"
     export CUDA_VISIBLE_DEVICES="1"
+fi
+
+# Step 1: attach reference proofs to the held-out eval file (never modifies it) if not built yet.
+if [ ! -f "$PROBLEMS" ] && [ "$PROBLEMS" == "data/deeptheorem_judge_eval.jsonl" ]; then
+    echo "[$(date)] $PROBLEMS missing; building it from data/deeptheorem_eval.jsonl"
+    python scripts/build_judge_eval_set.py \
+        --eval-file data/deeptheorem_eval.jsonl --output "$PROBLEMS"
 fi
 
 echo "[$(date)] Judge eval on $(hostname), GPUs: ${CUDA_VISIBLE_DEVICES:-unset}"

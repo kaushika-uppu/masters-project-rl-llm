@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Measure how reliable the RL step judge is.
 
+Two-step workflow (the held-out eval file has no reference proofs):
+  1. python scripts/build_judge_eval_set.py   # data/deeptheorem_eval.jsonl -> data/deeptheorem_judge_eval.jsonl
+  2. python scripts/eval_judge.py             # reads data/deeptheorem_judge_eval.jsonl
+
 Examples:
-  python scripts/eval_judge.py --stub --problems data/dt_eval_dataset.jsonl --max-problems 20
+  python scripts/eval_judge.py --stub --problems data/deeptheorem_judge_eval.jsonl --max-problems 20
   python scripts/eval_judge.py --judge-model Qwen/Qwen2.5-7B-Instruct,Qwen/Qwen2.5-32B-Instruct
   python scripts/eval_judge.py --labeled-file my_labels.jsonl --mode labeled --no-4bit
 
@@ -51,7 +55,7 @@ def looks_like_training_file(path: str) -> bool:
 
 def parse_args(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--problems", default="data/dt_eval_dataset.jsonl")
+    ap.add_argument("--problems", default="data/deeptheorem_judge_eval.jsonl")
     ap.add_argument("--max-problems", type=int, default=200)
     ap.add_argument("--n-per-problem", type=int, default=2, help="gold positives per problem")
     ap.add_argument("--corruptions", default="all", help="comma list of: " + ",".join(je.CORRUPTION_KINDS))
@@ -81,7 +85,14 @@ def build_items(args):
                   "use a held-out set for an unbiased judge evaluation.", file=sys.stderr)
         if not os.path.exists(args.problems):
             raise SystemExit(f"problems file not found: {args.problems}")
-        problems = load_problems_jsonl(args.problems)[: args.max_problems]
+        problems = load_problems_jsonl(args.problems)
+        if not any((p.reference or "").strip() for p in problems):
+            raise SystemExit(
+                f"no rows with a reference proof in {args.problems}. Run "
+                "`python scripts/build_judge_eval_set.py` first to attach references to "
+                "data/deeptheorem_eval.jsonl (writes data/deeptheorem_judge_eval.jsonl)."
+            )
+        problems = problems[: args.max_problems]
         kinds = None if args.corruptions.strip().lower() == "all" else \
             [k.strip() for k in args.corruptions.split(",") if k.strip()]
         syn, stats = je.build_eval_items_with_stats(problems, args.n_per_problem, kinds, args.seed)
